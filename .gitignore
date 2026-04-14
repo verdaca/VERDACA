@@ -1,0 +1,69 @@
+# Praxis repo scope: only Praxis planning + implementation artifacts.
+# Everything else excluded by default to prevent accidental leakage of
+# sensitive materials (Tokonomics, third-party source dumps, BMAD
+# framework, CLAUDE.md, settings, memory).
+
+# Step 1: exclude everything at repo root
+/*
+
+# Step 2: re-include .gitignore and the _bmad-output shell
+!.gitignore
+!_bmad-output/
+
+# Step 3: within _bmad-output, keep only the two scope directories
+_bmad-output/*
+!_bmad-output/planning-artifacts/
+!_bmad-output/implementation-artifacts/
+
+# Step 4: within planning-artifacts, keep only Praxis/
+_bmad-output/planning-artifacts/*
+!_bmad-output/planning-artifacts/Praxis/
+
+# Step 5: within implementation-artifacts, keep only praxis/
+_bmad-output/implementation-artifacts/*
+!_bmad-output/implementation-artifacts/praxis/
+
+# Step 5a: praxis/memory and praxis/runtime are their own git repos
+# (embedded .git directories). Excluded from this repo to avoid
+# creating orphan submodule pointers. Push those separately to their
+# own remotes if needed.
+_bmad-output/implementation-artifacts/praxis/memory/
+_bmad-output/implementation-artifacts/praxis/runtime/
+
+# Step 6: RE-exclude development cruft inside the scoped directories.
+# (These must come AFTER the re-includes above because the re-include
+# of praxis/ would otherwise override the pycache/hypothesis blocks.)
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.hypothesis/
+**/.coverage
+**/.coverage.*
+**/htmlcov/
+**/.tox/
+**/dist/
+**/build/
+**/*.egg-info/
+**/.venv/
+**/venv/
+**/env/
+**/node_modules/
+
+# Editor cruft
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Secrets (defensive — none expected in scope but safety net)
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.yaml
