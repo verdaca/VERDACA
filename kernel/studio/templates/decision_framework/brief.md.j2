@@ -1,0 +1,71 @@
+{# decision_framework/brief.md.j2 — ADR-02 decision_framework rendering mode.
+   Decision shape: factor-weighted framework the team can execute against.
+   The deliverable IS the framework, not the conclusion.
+   Structurally distinct from position_to_hold: framework-first, conclusion-last.
+   All four ADR-01 backbone sections present in fixed order.
+   Binding: studio/architecture.md §4.2 (decision_framework family).
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+
+# Decision Framework
+
+*Multi-perspective advisory session — operator/COO orientation.*
+*Deliverable: a framework your team can execute against.*
+
+---
+
+## Framework Overview
+
+This document provides a factor-weighted decision framework. Each factor is
+independently scored; the framework supports team-level execution without
+requiring individual interpretation of trade-offs.
+
+---
+
+## Structured Trade-offs: Factor-Weighted Matrix
+
+| Factor | Weight | Option A | Option B | Recommended |
+|--------|--------|----------|----------|-------------|
+{% for tf in trace.trade_offs %}
+| {{ tf.factor }} | {{ "%.2f"|format(tf.weight) }} | {{ tf.alternatives[0] if tf.alternatives else "—" }} | {{ tf.alternatives[1] if tf.alternatives | length > 1 else "—" }} | {{ tf.recommendation[:80] }} |
+{% endfor %}
+
+---
+
+## Dissent: Competing Frameworks
+
+{{ render_dissent(trace.dissent_frames) }}
+
+---
+
+## Named Scenarios: Framework Decision Rules
+
+{{ render_scenarios(trace.scenarios) }}
+
+---
+
+## What This Analysis Did Not Cover
+
+{{ render_scope_limits(trace.scope_limits) }}
+
+---
+
+## Execution Guidance
+
+{% for rec in trace.recommendations %}
+**{{ loop.index }}.** {{ rec.text }}
+
+*Confidence signal: {{ rec.confidence }}*
+*The framework guides the decision — the team owns execution.*
+
+{% endfor %}
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}

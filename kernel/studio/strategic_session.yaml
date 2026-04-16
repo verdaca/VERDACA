@@ -1,0 +1,156 @@
+name: strategic_session
+product: studio
+description: >
+  Multi-perspective strategic advisory session. Produces a structured
+  analysis with explicit trade-offs, dissent, named scenarios, and
+  scope-limits. Three cycles: wide survey, deep analysis, red team + synthesis.
+version: "0.1.0"
+
+inputs:
+  strategic_question:
+    type: string
+    required: true
+    description: "The strategic question to analyze"
+    max_length: 2000
+  customer_context:
+    type: string
+    required: false
+    description: "Company stage, industry, constraints, stakeholders"
+    max_length: 5000
+  rendering_mode:
+    type: enum
+    required: true
+    description: "Output shape — position_to_hold (founder), decision_framework (COO), firm_voice (consultancy)"
+    enum_values:
+      - position_to_hold
+      - decision_framework
+      - firm_voice
+  provenance_mode:
+    type: enum
+    required: false
+    description: "Tool-provenance visibility — flexible, inspectable, invisible. Defaults from rendering_mode."
+    enum_values:
+      - flexible
+      - inspectable
+      - invisible
+
+rendering_mode: "position_to_hold"
+provenance_mode: null
+
+cycles:
+  - name: wide_survey
+    budget_pct: 20
+    parallel: true
+    asymmetry: false
+    skip_in_quick_mode: false
+    reviewer_count: 1
+    agents:
+      - role: market_researcher
+        agent_id: bmad_mary
+        output_label: market_intel
+        depends_on: []
+      - role: innovation_strategist
+        agent_id: bmad_victor
+        output_label: strategic_framing
+        depends_on: []
+      - role: product_manager
+        agent_id: bmad_john
+        output_label: customer_perspective
+        depends_on: []
+
+  - name: deep_analysis
+    budget_pct: 50
+    parallel: false
+    asymmetry: false
+    skip_in_quick_mode: true
+    reviewer_count: 1
+    agents:
+      - role: architect
+        agent_id: bmad_winston
+        output_label: technical_feasibility
+        depends_on:
+          - market_intel
+          - strategic_framing
+      - role: risk_analyst
+        agent_id: bmad_quinn
+        output_label: risk_analysis
+        depends_on:
+          - market_intel
+          - strategic_framing
+          - customer_perspective
+      - role: contrarian
+        agent_id: bmad_carson
+        output_label: contrarian_angles
+        depends_on:
+          - market_intel
+          - strategic_framing
+          - customer_perspective
+
+  - name: red_team_synthesis
+    budget_pct: 30
+    parallel: false
+    asymmetry: true
+    skip_in_quick_mode: false
+    reviewer_count: 2
+    agents:
+      - role: red_team
+        agent_id: bmad_quinn
+        output_label: red_team_critique
+        depends_on: []
+      - role: narrative_synthesizer
+        agent_id: bmad_sophia
+        output_label: synthesis
+        depends_on:
+          - red_team_critique
+      - role: visual_presenter
+        agent_id: bmad_caravaggio
+        output_label: visual_brief
+        depends_on:
+          - synthesis
+
+quality_gates:
+  - gate_id: R1
+    min_score: 3
+  - gate_id: R2
+    min_score: 3
+  - gate_id: R3
+    min_score: 3
+  - gate_id: R4
+    min_score: 4
+    weight_override: 2
+  - gate_id: R5
+    min_score: 4
+    weight_override: 2
+  - gate_id: R6
+    min_score: 3
+  - gate_id: R7
+    min_score: 3
+  - gate_id: R8
+    min_score: 3
+  - gate_id: R9
+    min_score: 3
+  - gate_id: R10
+    min_score: 3
+  - gate_id: R11
+    min_score: 3
+  - gate_id: R12
+    min_score: 3
+
+outputs:
+  - format: markdown
+    template_path: "position_to_hold/brief.md.j2"
+    rendering_mode: "position_to_hold"
+  - format: html
+    template_path: "position_to_hold/deck.html.j2"
+    rendering_mode: "position_to_hold"
+  - format: markdown
+    template_path: "position_to_hold/executive_summary.md.j2"
+    rendering_mode: "position_to_hold"
+
+shareable_links:
+  auth_gated: true
+  default_expiry_days: 30
+  owner_revocable: true
+
+cost_budget_usd: 10.00
+timeout_seconds: 1800

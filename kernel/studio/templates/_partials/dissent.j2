@@ -1,0 +1,29 @@
+{# dissent.j2 — ADR-05 dissent rendering partial.
+   One steelman per competing frame, four required sub-fields each.
+   STUDIO-T-TPL-DISSENT-01: at least 1 competing frame.
+   STUDIO-T-TPL-DISSENT-02: steelman + evidence + conditions + confidence.
+   Zero competing frames triggers re-run signal (STUDIO-T-TPL-DISSENT-03).
+#}
+{% macro render_dissent(dissent_frames) %}
+{% if dissent_frames | length == 0 %}
+<!-- RERUN_SIGNAL: zero competing frames — MAC re-run required -->
+*No competing frames available. Analysis requires at least one dissenting position.*
+{% else %}
+{% for frame in dissent_frames %}
+## Competing Frame: {{ frame.frame_name }}
+
+**Steelman (strongest version of this position):**
+{{ frame.steelman }}
+
+**Evidence supporting this frame:**
+{{ frame.evidence }}
+
+**Conditions under which this frame becomes the recommendation:**
+{{ frame.conditions }}
+
+**Confidence relative to recommended frame:**
+{{ frame.confidence }}
+
+{% endfor %}
+{% endif %}
+{% endmacro %}

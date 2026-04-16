@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{# firm_voice/deck.html.j2 — ADR-04 deck, firm_voice mode.
+   Consultant-density slide deck. Statement-of-finding titles.
+   Structurally distinct: findings-first, confidence-signaled, alternatives explicit.
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advisory Findings Deck</title>
+<style>
+  body { font-family: 'Times New Roman', serif; max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .slide { border-top: 3px solid #000; padding: 2rem 0; }
+  .finding { background: #f9f9f9; padding: 1rem; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { border: 1px solid #999; padding: 0.4rem; }
+</style>
+</head>
+<body>
+
+<div class="slide">
+<h1>Advisory Findings</h1>
+<p><em>Prepared for client review. Register: specific, hedged, risk-aware.</em></p>
+</div>
+
+<div class="slide">
+<h2>The consolidated finding, with confidence signals</h2>
+{% for rec in trace.recommendations %}
+<div class="finding">
+<p><strong>Finding {{ loop.index }}:</strong> {{ rec.text }}</p>
+<p><em>Confidence: {{ rec.confidence }}</em></p>
+</div>
+{% endfor %}
+</div>
+
+<div class="slide">
+<h2>Trade-off analysis: factors, weights, alternatives</h2>
+<table>
+<tr><th>Factor</th><th>Weight</th><th>Alternatives Evaluated</th><th>Advisory Position</th></tr>
+{% for tf in trace.trade_offs %}
+<tr>
+  <td>{{ tf.factor }}</td>
+  <td>{{ "%.2f"|format(tf.weight) }}</td>
+  <td>{{ tf.alternatives | join("; ") }}</td>
+  <td>{{ tf.recommendation[:120] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="slide">
+<h2>Alternative positions at equal analytical weight</h2>
+{{ render_dissent(trace.dissent_frames) }}
+</div>
+
+<div class="slide">
+<h2>Scenarios: trigger conditions and invalidation conditions</h2>
+{{ render_scenarios(trace.scenarios) }}
+</div>
+
+<div class="slide">
+<h2>Scope limits: what this analysis did not cover</h2>
+{{ render_scope_limits(trace.scope_limits) }}
+</div>
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}
+
+</body>
+</html>

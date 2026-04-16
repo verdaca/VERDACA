@@ -1,0 +1,57 @@
+{# _base.j2 — ADR-01 four-feature backbone (load-bearing).
+   All Studio output templates extend this base.
+   Four mandatory sections rendered in fixed order per ADR-01.
+   Producer-facing vocabulary does NOT appear in this file per §A.0 firewall.
+#}
+
+{% block header %}{% endblock %}
+
+## Structured Trade-offs
+{% block trade_offs %}
+{% for tf in trace.trade_offs %}
+**{{ tf.factor }}** (weight: {{ "%.2f"|format(tf.weight) }})
+
+Options considered: {{ tf.alternatives | join(" / ") }}
+
+Assessment: {{ tf.recommendation }}
+
+{% endfor %}
+{% endblock %}
+
+---
+
+## Dissent
+{% block dissent %}
+{% from "_partials/dissent.j2" import render_dissent %}
+{{ render_dissent(trace.dissent_frames) }}
+{% endblock %}
+
+---
+
+## Named Scenarios
+{% block scenarios %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{{ render_scenarios(trace.scenarios) }}
+{% endblock %}
+
+---
+
+## What This Analysis Did Not Cover
+{% block scope_limits %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+{{ render_scope_limits(trace.scope_limits) }}
+{% endblock %}
+
+---
+
+{% block recommendations %}{% endblock %}
+
+{% block provenance %}
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}
+{% endblock %}

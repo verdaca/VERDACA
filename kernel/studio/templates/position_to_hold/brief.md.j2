@@ -1,0 +1,78 @@
+{# position_to_hold/brief.md.j2 — ADR-02 position_to_hold rendering mode.
+   Decision shape: conditional position the founder can hold for two quarters.
+   Recommendations are commitments with trigger conditions.
+   All four ADR-01 backbone sections present in fixed order.
+   Inherits _base.j2 structure; overrides section presentation.
+   Binding: studio/architecture.md §4.2 (position_to_hold family).
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+
+# Strategic Analysis: Position to Hold
+
+*Multi-perspective advisory session — founder orientation.*
+*Target: 2-quarter commitment horizon.*
+
+---
+
+## Executive Summary
+
+{% for rec in trace.recommendations %}
+**{{ rec.text }}**
+
+Confidence: {{ rec.confidence }}
+{% endfor %}
+
+---
+
+## Structured Trade-offs
+
+{% for tf in trace.trade_offs %}
+### {{ tf.factor }}
+
+**Weight:** {{ "%.2f"|format(tf.weight) }}
+**Options:** {{ tf.alternatives | join(" / ") }}
+**Position:** {{ tf.recommendation }}
+
+{% endfor %}
+
+---
+
+## Dissent
+
+{{ render_dissent(trace.dissent_frames) }}
+
+---
+
+## Named Scenarios
+
+{{ render_scenarios(trace.scenarios) }}
+
+---
+
+## What This Analysis Did Not Cover
+
+{{ render_scope_limits(trace.scope_limits) }}
+
+---
+
+## Recommendations
+
+{% for rec in trace.recommendations %}
+**{{ loop.index }}. {{ rec.text }}**
+
+Confidence: {{ rec.confidence }}
+
+Commitment horizon: Two quarters from analysis date.
+Trigger for revision: See Named Scenarios above.
+
+{% endfor %}
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}

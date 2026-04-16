@@ -1,0 +1,41 @@
+{# scope_limits.j2 — ADR-07 scope-limits rendering partial.
+   Three required sub-categories, each with at least one entry.
+   STUDIO-T-TPL-SCOPE-01: all 3 sub-categories present.
+   STUDIO-T-TPL-SCOPE-02: at least 1 entry per sub-category.
+   STUDIO-T-TPL-SCOPE-03: zero-entry sub-category triggers retry signal.
+   Muted register: "we did not have access to X" per ADR-07 §4.8.
+#}
+{% macro render_scope_limits(scope_limits) %}
+### Data not available
+
+{% if scope_limits.data_gaps | length == 0 %}
+<!-- RETRY_SIGNAL: data_gaps is empty -->
+*Data gap assessment required.*
+{% else %}
+{% for item in scope_limits.data_gaps %}
+- We did not have access to {{ item }}
+{% endfor %}
+{% endif %}
+
+### Adjacent questions out of scope
+
+{% if scope_limits.adjacent_questions | length == 0 %}
+<!-- RETRY_SIGNAL: adjacent_questions is empty -->
+*Adjacent question assessment required.*
+{% else %}
+{% for item in scope_limits.adjacent_questions %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+
+### Assumptions that would invalidate the recommendation
+
+{% if scope_limits.invalidating_assumptions | length == 0 %}
+<!-- RETRY_SIGNAL: invalidating_assumptions is empty -->
+*Invalidating assumption assessment required.*
+{% else %}
+{% for item in scope_limits.invalidating_assumptions %}
+- {{ item }}
+{% endfor %}
+{% endif %}
+{% endmacro %}

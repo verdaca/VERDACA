@@ -1,0 +1,37 @@
+# circular_depends_on.yaml — triggers STUDIO-T-SCHEMA-NEG-07
+# agent_a depends on output_b which is defined AFTER agent_a
+# Creates a forward reference that the sequential validator catches as a circular pattern.
+# In either case (sequential or DFS check) ValidationError is raised.
+name: circular_test
+product: studio
+description: "Circular depends_on test fixture"
+version: "0.1.0"
+rendering_mode: "position_to_hold"
+inputs:
+  strategic_question:
+    type: string
+    required: true
+    description: "Question"
+cycles:
+  - name: only_cycle
+    budget_pct: 100
+    agents:
+      - role: agent_a
+        agent_id: bmad_mary
+        output_label: output_a
+        depends_on:
+          - output_b
+      - role: agent_b
+        agent_id: bmad_victor
+        output_label: output_b
+        depends_on:
+          - output_a
+quality_gates:
+  - gate_id: R1
+    min_score: 3
+outputs:
+  - format: markdown
+    template_path: "position_to_hold/brief.md.j2"
+    rendering_mode: "position_to_hold"
+cost_budget_usd: 5.0
+timeout_seconds: 300

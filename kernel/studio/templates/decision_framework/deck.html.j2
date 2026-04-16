@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+{# decision_framework/deck.html.j2 — ADR-04 deck, decision_framework mode.
+   Factor-weighted framework presentation. Statement-of-finding slide titles.
+   Structurally distinct from position_to_hold: matrix-first, framework-centric.
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Decision Framework Deck</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .slide { border-top: 2px solid #555; padding: 2rem 0; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+  th { background: #f5f5f5; }
+</style>
+</head>
+<body>
+
+<div class="slide">
+<h1>Decision Framework</h1>
+<p><em>Operator / COO orientation — the framework, not the conclusion.</em></p>
+</div>
+
+<div class="slide">
+<h2>The framework supports a clear weighting across these factors</h2>
+<table>
+<tr><th>Factor</th><th>Weight</th><th>Options</th><th>Framework Guidance</th></tr>
+{% for tf in trace.trade_offs %}
+<tr>
+  <td>{{ tf.factor }}</td>
+  <td>{{ "%.2f"|format(tf.weight) }}</td>
+  <td>{{ tf.alternatives | join(" / ") }}</td>
+  <td>{{ tf.recommendation[:100] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="slide">
+<h2>Competing frameworks that merit steelmanning</h2>
+{{ render_dissent(trace.dissent_frames) }}
+</div>
+
+<div class="slide">
+<h2>Decision rules for named scenarios</h2>
+{{ render_scenarios(trace.scenarios) }}
+</div>
+
+<div class="slide">
+<h2>What the framework does not cover</h2>
+{{ render_scope_limits(trace.scope_limits) }}
+</div>
+
+<div class="slide">
+<h2>Execution guidance for the team</h2>
+{% for rec in trace.recommendations %}
+<p><strong>{{ loop.index }}. {{ rec.text }}</strong></p>
+<p><em>{{ rec.confidence }}</em></p>
+{% endfor %}
+</div>
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}
+
+</body>
+</html>

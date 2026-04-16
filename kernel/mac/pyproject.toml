@@ -1,0 +1,92 @@
+[project]
+name = "praxis-mac"
+version = "0.1.0"
+description = "Praxis Multi-Agent Cognition (MAC) kernel — Stage 5"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.6,<3",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+
+# Marker registration per mac/test-strategy.md v0.3 §13.6.
+# Inherited from runtime (declared in runtime/pyproject.toml:29–40) plus the
+# MAC-specific extensions added at Stage 5.2. Each marker here is a contract
+# — the allow-list meta-test at tests/static/runtime/test_no_waiver_inventory.py
+# enforces the no_waiver subset at collection time (meta-test lands at step 6).
+markers = [
+    # Inherited from runtime
+    "critical: test is release-blocking if failing",
+    "no_waiver: deterministic invariant — cannot be waived in any PR; enforced by test_no_waiver_inventory.py",
+    "asyncio_structural: async structural invariant",
+    "f1_absorption: Forge F1 absorption boundary",
+    "f3_absorption: Forge F3 absorption boundary",
+    "integration: multi-component wire-up test",
+    "oqn_escalation_canary: OQ-N escalation canary",
+    "r53_structural: Req-5.3 structural invariant",
+    "static: collection-time / grep-based structural test",
+    "wall_clock: real-time sensitive test",
+    "asymmetry_structural: proxy / bus asymmetry structural invariant",
+
+    # MAC-new
+    "mac_gate_calibration: MAC gate calibration anchor test",
+    "mac_benchmark_harness: MAC benchmark harness test",
+    "mac_bootstrap_loader: MAC bootstrap loader test",
+    "mac_adversarial: MAC adversarial test",
+    "mac_self_consistency: MAC self-consistency invariant",
+    "mac_label_registry: MAC observability label registry test",
+    "nightly_only: runs in nightly CI only, NOT PR gate",
+    "release_gate: runs on release candidate only",
+]
+
+# ------------------------------------------------------------------------
+# Coverage configuration per test-strategy.md v0.3 §13.5.
+#
+# Tension #7 resolution: LLMJudgeClient.call_live is excluded because it is
+# the real-LLM gateway; Tier 3 nightly tests exercise it, PR-gate tests
+# never do. Excluding keeps the ≥90% coverage floor honest. Follows
+# pi-mono/test-strategy.md §7 generated-file exclusion precedent.
+# ------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["src/praxis/kernel/mac"]
+branch = true
+# LLMJudgeClient.call_live() is excluded via in-method `# pragma: no cover`
+# at src/praxis/kernel/mac/judge/llm_judge_client.py body of call_live().
+# Rationale per mac/test-strategy.md v0.3 §13.5 Tension #7 resolution:
+# call_live() is the real-LLM gateway; only invoked from nightly CI
+# live-judge tests, never from PR-gate tests. Excluding keeps the ≥90%
+# coverage floor honest. Follows pi-mono/test-strategy.md §7
+# generated-file exclusion precedent. build_prompt() is NOT excluded
+# (pure logic, Tier 1 testable).
+omit = []
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis", "tests"]

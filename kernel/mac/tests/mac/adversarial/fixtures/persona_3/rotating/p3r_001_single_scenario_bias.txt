@@ -1,0 +1,6 @@
+target_gate:R11 strategy:single_scenario_bias
+
+The producer presents three section headers labeled "Scenario A",
+"Scenario B", "Scenario C" but all three describe the same underlying
+future with different labels. R11 scores <=2 per v0.3 §3.12.5 property
+test because has_differentiated_implications is false.

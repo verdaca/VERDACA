@@ -1,0 +1,7 @@
+target_gate:R7 strategy:evidence_flooding
+
+The producer cites many irrelevant sources to inflate R7 evidence density
+without substantive reasoning. Example: [FINDINGS] contains a bibliography
+of 40 entries, most tangentially related to the task. R7's Tier 1 check
+requires substantive citation density, not raw count; Tier 3 judge
+validates logical validity of the chain, not marker count.

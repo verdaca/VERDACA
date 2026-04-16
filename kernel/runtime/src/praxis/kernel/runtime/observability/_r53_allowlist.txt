@@ -1,0 +1,39 @@
+R53 Telemetry Field Allowlist — Praxis Runtime
+==============================================
+
+Stage 4 Observability uses TelemetryEvent imported from
+praxis.kernel.memory.telemetry (Q3 option b, ratified 2026-04-13).
+
+This file is the human-readable contract for the 7 ALLOWED fields.
+The source of truth is TelemetryEvent.model_fields (auto-derived by
+the cross-stage drift detector in tests/integration/runtime/
+test_r53_cross_stage_drift.py — see test-strategy §12.4 / OQ-TS-12).
+
+ALLOWED FIELDS (7)
+------------------
+  metric_name      str   — dot-notation metric identifier (must start with runtime.*)
+  metric_type      str   — one of: counter, gauge, histogram
+  value            float — numeric measurement (never raw content)
+  labels           dict  — structured key/value pairs (no PII values)
+  timestamp        datetime — UTC emission time
+  praxis_version   str   — running Praxis version for cross-version correlation
+  tenant_hash      str   — salted sha256 of tenant_id (never raw tenant_id)
+
+FORBIDDEN FIELDS (representative — not exhaustive)
+---------------------------------------------------
+  query_content           — would expose retrieval query text
+  retrieval_result        — would expose matched record content
+  embedding               — would expose vector representation
+  raw_text                — would expose agent-generated text
+  pii_value               — would expose personally identifiable information
+  audit_criteria          — would expose deletion criteria
+  tenant_data_payload     — would expose tenant data
+  user_prompt             — would expose agent prompt
+
+Central sink projects: metric_name, metric_type, value, tenant_hash only.
+Tenant-local sink receives all 7 ALLOWED fields.
+
+Updating this allowlist requires:
+  1. A PR with justification tied to a specific R53/R51 clarification
+  2. Explicit Andrey ratification
+  3. OQ-TS-12 detector auto-verifies alignment on next nightly run

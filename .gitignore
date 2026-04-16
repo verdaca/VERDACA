@@ -1,38 +1,35 @@
-# Praxis repo scope: only Praxis planning + implementation artifacts.
-# Everything else excluded by default to prevent accidental leakage of
-# sensitive materials (Tokonomics, third-party source dumps, BMAD
-# framework, CLAUDE.md, settings, memory).
+# Praxis — Clean repo scope
+# Only kernel/, shell/, and docs/ are tracked.
+# Everything else (BMAD framework, planning workspace, research, Claude config) is excluded.
 
-# Step 1: exclude everything at repo root
+# ============================================================
+# Step 1: Exclude everything at root by default
+# ============================================================
 /*
 
-# Step 2: re-include .gitignore and the _bmad-output shell
+# Step 2: Re-include the Praxis project directories
 !.gitignore
-!_bmad-output/
+!README.md
+!kernel/
+!shell/
+!docs/
 
-# Step 3: within _bmad-output, keep only the two scope directories
-_bmad-output/*
-!_bmad-output/planning-artifacts/
-!_bmad-output/implementation-artifacts/
+# ============================================================
+# Workspace files — NEVER tracked
+# ============================================================
+# These exist in the working directory but are not part of Praxis.
+# Listed explicitly for safety even though /* already covers them.
+_bmad/
+_bmad-output/
+.claude/
+Articles/
+Memory/
+CLAUDE.md
+claude-setup-reference.md
 
-# Step 4: within planning-artifacts, keep only Praxis/
-_bmad-output/planning-artifacts/*
-!_bmad-output/planning-artifacts/Praxis/
-
-# Step 5: within implementation-artifacts, keep only praxis/
-_bmad-output/implementation-artifacts/*
-!_bmad-output/implementation-artifacts/praxis/
-
-# Step 5a: praxis/memory and praxis/runtime are their own git repos
-# (embedded .git directories). Excluded from this repo to avoid
-# creating orphan submodule pointers. Push those separately to their
-# own remotes if needed.
-_bmad-output/implementation-artifacts/praxis/memory/
-_bmad-output/implementation-artifacts/praxis/runtime/
-
-# Step 6: RE-exclude development cruft inside the scoped directories.
-# (These must come AFTER the re-includes above because the re-include
-# of praxis/ would otherwise override the pycache/hypothesis blocks.)
+# ============================================================
+# Python development cruft
+# ============================================================
 **/__pycache__/
 **/*.py[cod]
 **/*$py.class
@@ -50,9 +47,18 @@ _bmad-output/implementation-artifacts/praxis/runtime/
 **/.venv/
 **/venv/
 **/env/
-**/node_modules/
 
-# Editor cruft
+# ============================================================
+# Node.js / Next.js cruft
+# ============================================================
+**/node_modules/
+**/.next/
+**/out/
+**/.turbo/
+
+# ============================================================
+# Editor / OS cruft
+# ============================================================
 .idea/
 .vscode/
 *.swp
@@ -60,9 +66,12 @@ _bmad-output/implementation-artifacts/praxis/runtime/
 .DS_Store
 Thumbs.db
 
-# Secrets (defensive — none expected in scope but safety net)
+# ============================================================
+# Secrets (defensive — none expected but safety net)
+# ============================================================
 .env
 .env.*
+.env.local
 *.key
 *.pem
 credentials.json

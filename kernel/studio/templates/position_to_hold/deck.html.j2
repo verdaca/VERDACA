@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{# position_to_hold/deck.html.j2 — ADR-04 deck format (10–18 slides).
+   Text-dense, no stock imagery, statement-of-finding slide titles.
+   All four ADR-01 backbone sections present.
+   Provenance stripped at Python level for invisible mode.
+   Binding: studio/architecture.md §4.4, §4.5.
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Strategic Advisory Deck — Position to Hold</title>
+<style>
+  body { font-family: Georgia, serif; max-width: 900px; margin: 0 auto; padding: 2rem; }
+  .slide { border-top: 2px solid #333; padding: 2rem 0; }
+  .slide h2 { font-size: 1.2rem; color: #111; }
+  .slide h3 { font-size: 1rem; color: #333; }
+  details summary { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide">
+<h1>Strategic Advisory: Position to Hold</h1>
+<p><em>Multi-perspective analysis — founder orientation — 2-quarter commitment horizon.</em></p>
+</div>
+
+<!-- Slide 2: Executive Summary -->
+<div class="slide">
+<h2>The position the evidence supports holding</h2>
+{% for rec in trace.recommendations %}
+<p><strong>{{ rec.text }}</strong></p>
+<p>Confidence: {{ rec.confidence }}</p>
+{% endfor %}
+</div>
+
+<!-- Slides 3–5: Structured Trade-offs -->
+<div class="slide">
+<h2>Structured Trade-offs</h2>
+<p><em>Factors, weights, and the reasoning behind the position</em></p>
+{% for tf in trace.trade_offs %}
+<h3>{{ tf.factor }} (weight: {{ "%.2f"|format(tf.weight) }})</h3>
+<p>Options: {{ tf.alternatives | join(" / ") }}</p>
+<p>Assessment: {{ tf.recommendation }}</p>
+{% endfor %}
+</div>
+
+<!-- Slides 6–8: Dissent -->
+<div class="slide">
+<h2>The strongest case against this position</h2>
+{{ render_dissent(trace.dissent_frames) }}
+</div>
+
+<!-- Slides 9–11: Named Scenarios -->
+<div class="slide">
+<h2>Named Scenarios</h2>
+{{ render_scenarios(trace.scenarios) }}
+</div>
+
+<!-- Slides 12–13: Scope-limits -->
+<div class="slide">
+<h2>What This Analysis Did Not Cover</h2>
+{{ render_scope_limits(trace.scope_limits) }}
+</div>
+
+<!-- Slide 14: Recommendations -->
+<div class="slide">
+<h2>Recommendations with trigger conditions</h2>
+{% for rec in trace.recommendations %}
+<p><strong>{{ loop.index }}. {{ rec.text }}</strong></p>
+<p>Confidence: {{ rec.confidence }} | Horizon: 2 quarters | Trigger: see Named Scenarios</p>
+{% endfor %}
+</div>
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}
+
+</body>
+</html>

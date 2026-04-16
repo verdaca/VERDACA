@@ -1,0 +1,7 @@
+target_gate:R11 strategy:manufactured_non_falsifiable_triggers
+
+The producer presents three distinct scenarios with differentiated
+implications BUT the trigger conditions are unfalsifiable narratives
+("if market sentiment shifts meaningfully", "if the situation warrants
+reassessment"). R11 scores <=2 because has_distinct_triggers is false
+per v0.3 §3.12.5 property.

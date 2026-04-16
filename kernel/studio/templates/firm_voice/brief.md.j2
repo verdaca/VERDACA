@@ -1,0 +1,78 @@
+{# firm_voice/brief.md.j2 — ADR-02 firm_voice rendering mode.
+   Decision shape: consultant-density deliverable.
+   Findings / alternatives / dissent / scope-limits at consultant-acceptable density.
+   Structurally distinct from position_to_hold and decision_framework:
+   findings-first, alternatives-explicit, confidence-signaled.
+   All four ADR-01 backbone sections present in fixed order.
+   Binding: studio/architecture.md §4.2 (firm_voice family).
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+
+# Advisory Findings
+
+*Prepared for: client review*
+*Register: muted, specific, hedged, risk-aware*
+
+---
+
+## Findings
+
+The analysis across multiple analytical perspectives yields the following findings:
+
+{% for rec in trace.recommendations %}
+**Finding {{ loop.index }}:** {{ rec.text }}
+
+*Confidence signal: {{ rec.confidence }}*
+
+{% endfor %}
+
+---
+
+## Structured Trade-offs
+
+{% for tf in trace.trade_offs %}
+**{{ tf.factor }}**
+
+Factor weight in this context: {{ "%.2f"|format(tf.weight) }}
+
+Alternatives evaluated: {{ tf.alternatives | join("; ") }}
+
+Advisory position: {{ tf.recommendation }}
+
+---
+{% endfor %}
+
+## Alternative Positions (Dissent)
+
+{{ render_dissent(trace.dissent_frames) }}
+
+---
+
+## Named Scenarios
+
+{{ render_scenarios(trace.scenarios) }}
+
+---
+
+## What This Analysis Did Not Cover
+
+{{ render_scope_limits(trace.scope_limits) }}
+
+---
+
+## Summary
+
+The findings above represent the consolidated view across multiple analytical
+lenses. Each finding is qualified by a confidence signal and bounded by the
+scope limits above. The alternative positions are presented at equal analytical
+weight — the client exercises judgment on relative weighting.
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}

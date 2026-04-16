@@ -1,0 +1,29 @@
+# invalid_gate_id.yaml — triggers STUDIO-T-SCHEMA-NEG-04
+# gate_id "R13" is not in the Literal["R1".."R12"] type
+name: invalid_gate_test
+product: studio
+description: "Invalid gate_id test fixture"
+version: "0.1.0"
+rendering_mode: "position_to_hold"
+inputs:
+  strategic_question:
+    type: string
+    required: true
+    description: "Question"
+cycles:
+  - name: only_cycle
+    budget_pct: 100
+    agents:
+      - role: researcher
+        agent_id: bmad_mary
+        output_label: research_output
+        depends_on: []
+quality_gates:
+  - gate_id: R13
+    min_score: 3
+outputs:
+  - format: markdown
+    template_path: "position_to_hold/brief.md.j2"
+    rendering_mode: "position_to_hold"
+cost_budget_usd: 5.0
+timeout_seconds: 300

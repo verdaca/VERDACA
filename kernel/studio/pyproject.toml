@@ -1,0 +1,76 @@
+[project]
+name = "praxis-studio"
+version = "0.1.0"
+description = "Praxis Studio Workflow Template layer — Stage 6 (configuration over MAC)"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.6,<3",
+    "jinja2>=3.1,<4",
+    "pyyaml>=6.0,<7",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+    "-m", "not nightly_only and not release_gate",
+]
+
+# Marker registration per studio/test-strategy.md v0.1 §1.4.
+# Inherits critical/integration/static/wall_clock/nightly_only from MAC
+# vocabulary (declared here for --strict-markers; not re-defined in MAC terms).
+markers = [
+    # Inherited vocabulary from mac/runtime (same semantics)
+    "critical: test is release-blocking if failing",
+    "integration: multi-component wire-up test",
+    "static: collection-time / grep-based structural test",
+    "wall_clock: real-time sensitive test",
+    "nightly_only: runs in nightly CI only, NOT PR gate",
+    "release_gate: runs on release candidate only, manual trigger",
+
+    # Studio-specific new markers (test-strategy §1.4)
+    "studio_schema: schema validation test (Pydantic model_validate + negative cases)",
+    "studio_template: Jinja2 template rendering test",
+    "studio_benchmark: benchmark regression test (unit scoring vs nightly LLM run)",
+    "studio_ab_harness: A/B comparison harness test",
+    "studio_register: register-check compliance test",
+    "studio_provenance: provenance-mode leak detection test",
+    "studio_cost: cost budget enforcement test",
+]
+
+# -------------------------------------------------------------------------
+# Coverage — target ≥ 80% per test-strategy §13.3.
+# Lower than MAC's 90% because Studio has less production Python to cover;
+# YAML templates and Jinja2 templates are tested via structural assertions,
+# not line-coverage. LLMJudgeClient live path excluded via pragma no cover.
+# -------------------------------------------------------------------------
+[tool.coverage.run]
+source = ["src/praxis/kernel/studio"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis", "tests"]
