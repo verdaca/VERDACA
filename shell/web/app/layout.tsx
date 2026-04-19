@@ -3,7 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Praxis — Strategic Analysis with Genuine Dissent",
+  title: "Verdaca — Strategic Analysis with Genuine Dissent",
   description:
     "Strategic analysis with genuine dissent. In minutes, not weeks.",
 };

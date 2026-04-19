@@ -636,13 +636,13 @@ If you are a new Claude session seeing this file for the first time, follow this
   - [x] E2E tests: signup → first session → billing
   - [x] Workspace isolation tests
 
-- [ ] **7.3 Amelia (Developer + frontend support)** — `/bmad-agent-dev` _(Model: Opus 4.6 [1M] · Thinking: high — originally specced as Sonnet 4.6 [1M], substituted to Opus [1M] 2026-04-15 because Sonnet [1M] extra-usage budget is exhausted for this account)_
-  - [ ] Implementation in `_bmad-output/implementation-artifacts/praxis/shell/`
-  - [ ] Web UI functional (Next.js app)
-  - [ ] FastAPI backend exposes required endpoints
-  - [ ] Clerk auth integrated
-  - [ ] Stripe billing integrated
-  - [ ] **Context strategy (MANDATORY):** Apply the Universal Sequential Reference Reading rule from Section 4.6. Build in this order: (1) Backend skeleton (FastAPI routes + Pydantic models) from Winston's arch. (2) Clear → auth integration (Clerk docs, separate read). (3) Clear → billing integration (Stripe docs, separate read). (4) Clear → frontend Next.js app (shadcn components, separate read). Never all at once. Also: consult Stage 1 Pi-Mono source selectively for billing reconciliation
+- [x] **7.3 Amelia (Developer + frontend support)** — `/bmad-agent-dev` _(Model: Opus 4.6 [1M] · Thinking: high — originally specced as Sonnet 4.6 [1M], substituted to Opus [1M] 2026-04-15 because Sonnet [1M] extra-usage budget is exhausted for this account)_
+  - [x] Implementation in `_bmad-output/implementation-artifacts/praxis/shell/`
+  - [x] Web UI functional (Next.js app)
+  - [x] FastAPI backend exposes required endpoints
+  - [x] Clerk auth integrated
+  - [x] Stripe billing integrated
+  - [x] **Context strategy (MANDATORY):** Apply the Universal Sequential Reference Reading rule from Section 4.6. Build in this order: (1) Backend skeleton (FastAPI routes + Pydantic models) from Winston's arch. (2) Clear → auth integration (Clerk docs, separate read). (3) Clear → billing integration (Stripe docs, separate read). (4) Clear → frontend Next.js app (shadcn components, separate read). Never all at once. Also: consult Stage 1 Pi-Mono source selectively for billing reconciliation
 
 - [x] **7.3.5 Cleo (Clean Code Review)** — `/bmad-agent-clean-code-reviewer` _(Model: Opus 4.6 [1M] · Thinking: medium — originally specced as Sonnet 4.6 [1M], substituted to Opus [1M] 2026-04-15 because Sonnet [1M] extra-usage budget is exhausted for this account; precedent set at Stage 5.3.5 Cleo run 2026-04-15 with equivalent results)_ — **COMPLETE 2026-04-16** (0 CRITICAL, 7 WARNING all deferred with rationale; 17 files / ~1,325 lines reviewed; no auto-fixes applied; 100 passed / 7 deselected baseline preserved; security scan clean — no SQL injection, no command injection, no hardcoded secrets, no resource leaks; adapter contracts C-2/C-3/C-4 structurally sound; ready for 7.4 Quinn)
   - [x] Target directory: `_bmad-output/implementation-artifacts/praxis/shell/api/` (Python/FastAPI backend only)

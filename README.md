@@ -1,12 +1,14 @@
-# Praxis
+# Verdaca
 
 **Multi-agent reasoning engine for strategic advisory.**
 
-Praxis delivers structured multi-perspective strategic analysis -- explicit trade-offs, red team dissent, named scenarios, and scope-limits -- in minutes, not weeks.
+Verdaca delivers structured multi-perspective strategic analysis -- explicit trade-offs, red team dissent, named scenarios, and scope-limits -- in minutes, not weeks.
+
+> Internal codename: **Praxis** (Stages 1-6). The Python namespace `src/praxis/` preserves the codename as internal module path. See `docs/rename-praxis-to-verdaca.md`.
 
 ## Architecture
 
-Praxis is a 7-layer system built in strict dependency order:
+Verdaca is a 7-layer system built in strict dependency order:
 
 ```
 kernel/
@@ -51,7 +53,7 @@ Each layer is a self-contained Python package with its own `pyproject.toml`, tes
 ```bash
 # Clone
 git clone <repo-url>
-cd praxis
+cd verdaca
 
 # Backend (each kernel module)
 cd kernel/mac
@@ -69,7 +71,7 @@ npm install
 npm run dev
 ```
 
-## Built With Praxis
+## Built With Verdaca
 
 Every architectural decision in the 7-stage build pipeline was run through the same multi-agent deliberation process the product delivers. See `docs/pipeline.md` for the full build history.
 
