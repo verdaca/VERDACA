@@ -119,7 +119,7 @@ For the discipline-ledger `feedback_provenance_pin.md` candidate (Andrey may aut
 | Lockfile size | 352 587 B |
 | Lockfile sha256 | `a3362cb3cd8d0a5e8fa39f920b3639cb4a2befa7fb2ca12e78ae0b3b28d119cb` |
 | Pre-bootstrap commit SHA | `934f5eae5c05d3c77c1b8d1643b813158d9569bf` (HEAD on `main` at memo write; bootstrap deltas live as uncommitted working-tree changes — listed in §2/§3 + visible in `git status --short`) |
-| Bootstrap close commit SHA | TBD (post-advisor-close commit) |
+| Bootstrap close commit SHA | `439c0b71b12a94b06fe32b1d338684ba9168464c` |
 | Memo timestamp | 2026-04-30 |
 
 ---
