@@ -13,6 +13,9 @@
 !kernel/
 !shell/
 !docs/
+!pyproject.toml
+!.python-version
+!uv.lock
 
 # ============================================================
 # Workspace files — NEVER tracked

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "praxis-shell"
 version = "0.1.0"
@@ -25,6 +29,10 @@ dev = [
     "pytest-cov>=6.0,<7",
     "httpx>=0.28,<1",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

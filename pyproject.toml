@@ -1,0 +1,21 @@
+# Verdaca / Praxis — uv workspace root.
+# Virtual workspace; the repo root itself is not a Python project. All code
+# lives in workspace members listed below.
+#
+# Authored 2026-04-29 as part of Stage 9.4.2-pre bootstrap sub-stage.
+# Charter: F3=(d) effective; pin reproducible env going forward.
+# Bootstrap memo: _bmad-output/implementation-artifacts/verdaca/stage9/9.4.2-pre-bootstrap-memo.md
+
+[tool.uv.workspace]
+members = [
+    "ports",
+    "adapters/beads",
+    "adapters/tonl",
+    "tests",
+    "kernel/compression",
+    "kernel/mac",
+    "kernel/memory",
+    "kernel/pi-mono/src",
+    "kernel/runtime",
+    "kernel/studio",
+]
