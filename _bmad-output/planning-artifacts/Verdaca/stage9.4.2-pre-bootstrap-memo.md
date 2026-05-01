@@ -141,8 +141,7 @@ For the discipline-ledger `feedback_provenance_pin.md` candidate (Andrey may aut
 | Lockfile sha256 | `a3362cb3cd8d0a5e8fa39f920b3639cb4a2befa7fb2ca12e78ae0b3b28d119cb` |
 | Pre-bootstrap commit SHA | `934f5eae5c05d3c77c1b8d1643b813158d9569bf` (HEAD on `main` at memo write; bootstrap deltas live as uncommitted working-tree changes — listed in §2/§3 + visible in `git status --short`) |
 | Bootstrap close commit SHA | `439c0b71b12a94b06fe32b1d338684ba9168464c` |
-| 9.4.2-pre.1 corrigendum commit SHA | TBD (post-corrigendum stamp commit) |
-| 9.4.2-pre.1 stamp commit SHA | TBD (post-corrigendum stamp commit) |
+| 9.4.2-pre.1 corrigendum commit SHA | `d9d4cf092692c795220cc239ce1d85af03b8e6f5` |
 | Memo timestamp | 2026-04-30 |
 
 ---
@@ -197,7 +196,7 @@ Charter steps 1–8 complete. M-T-VS-* smoke 10/10 GREEN; §9.C PASS; no binding
 - **`kernel/memory/.gitignore` (kernel-local):** add `pre_sales_demo_result.json` (the other 5 cruft patterns were already covered).
 - **File adds:** 85 files across `ports/` (6), `adapters/beads/` (5), `adapters/tonl/` (5), `tests/` (2), `kernel/memory/` (67). 6 cruft files in `kernel/memory/` excluded per kernel-local `.gitignore`.
 - **Root `pyproject.toml`:** memo-path comment fix (`_bmad-output/implementation-artifacts/verdaca/stage9/9.4.2-pre-bootstrap-memo.md` → `_bmad-output/planning-artifacts/Verdaca/stage9.4.2-pre-bootstrap-memo.md`).
-- **This memo:** §2 full rewrite (per-member `[build-system]` state table + nested-src pi-mono note); §3 addition for `.gitignore` root-cause; this §10; §6 row addition for corrigendum SHA + stamp-follow-up SHA.
+- **This memo:** §2 full rewrite (per-member `[build-system]` state table + nested-src pi-mono note); §3 addition for `.gitignore` root-cause; this §10; §6 row addition for corrigendum SHA.
 
 **9.4.1 substance retroactive tracking note.** The Beads adapter source (`adapters/beads/src/praxis/adapters/beads/...`) and its 10 M-T-VS-* contract tests (`tests/src/praxis/contract_tests/ports/test_versioned_state_contract.py`) were authored as Stage 9.4.1 substance but were never tracked because `adapters/` and `tests/` were both blocked by the same Cause-A `.gitignore` gap. They become tracked under this 9.4.2-pre.1 corrigendum because the workspace declaration at 439c0b7 depends on them — substance, not charter scope. **9.4.1 close at 934f5ea stands; 9.4.1 close memo (`stage9.4.1-close-memo.md`) is not edited.** Future sessions may issue a 9.4.1 retrospective annotation pointing to this corrigendum; deferred.
 
