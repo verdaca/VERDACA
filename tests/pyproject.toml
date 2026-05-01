@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-contract-tests"
+version = "0.1.0"
+description = "Verdaca port contract tests — Amelia 9.5 surface (Stage 9.4.1 partial: VS port only)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "praxis-adapter-beads",
+    "pydantic>=2.0",
+    "pytest>=7.0",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+praxis-adapter-beads = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+# N802 (function naming) intentionally NOT selected — test names embed
+# MAC-T IDs verbatim (e.g., test_M_T_VS_SNAPSHOT_01_*) per test-strategy.md
+# v0.2 §2.2.3 auditability discipline.
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"

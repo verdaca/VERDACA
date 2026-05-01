@@ -1,0 +1,15 @@
+.venv/
+mem0-safety.json
+mem0-audit.err
+mem0-safety.err
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.json
+pre_sales_demo_result.json
+*.egg-info/

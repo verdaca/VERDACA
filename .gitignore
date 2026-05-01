@@ -11,6 +11,9 @@
 !.gitignore
 !README.md
 !kernel/
+!ports/
+!adapters/
+!tests/
 !shell/
 !docs/
 !pyproject.toml
@@ -26,7 +29,7 @@ _bmad/
 _bmad-output/
 .claude/
 Articles/
-Memory/
+/Memory/
 CLAUDE.md
 claude-setup-reference.md
 

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-adapter-tonl"
+version = "0.1.0"
+description = "Verdaca Serialization port adapter — in-tree wrap of kernel TONL substrate (ADR-9.2-V2 v0.2 corrigendum)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "praxis-compression",
+    "pydantic>=2.0",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+praxis-compression = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
