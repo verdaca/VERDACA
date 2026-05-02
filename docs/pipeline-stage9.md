@@ -256,20 +256,22 @@ These are binding for every sub-stage. Deviations require explicit Andrey sign-o
 
 **Sequence (binding per Round 1 Amelia table):**
 
-- [ ] **9.4.1 — Beads adapter** (~1.5 pw, LOW LEGO risk)
-  - [ ] `src/verdaca/ports/versioned_state.py` Protocol
-  - [ ] `src/verdaca/adapters/beads/` — submodule pointer + adapter.py
-  - [ ] `vendor/beads/` as git submodule pinned
-  - [ ] Call-site migration: every kernel module that imports Beads symbols directly
+- [x] **9.4.1 — Beads adapter** — CLOSED 2026-04-28; see `_bmad-output/planning-artifacts/Verdaca/stage9.4.1-close-memo.md`
+  - [x] `ports/src/praxis/ports/versioned_state.py` Protocol (path corrected per v0.3 §4.1 corrigendum)
+  - [x] `adapters/beads/src/praxis/adapters/beads/` — `adapter.py` + `version_pin.py` + `changelog.md` (in-tree greenfield per ADR-9.2-V3 v0.5 corrigendum, not submodule pointer)
+  - [x] ~~`vendor/beads/` as git submodule pinned~~ — RETIRED per ADR-9.2-V3 v0.4 corrigendum (in_tree, no submodule)
+  - [x] ~~Call-site migration~~ — N/A per ADR-9.2-V3 v0.5 corrigendum (kernel `_internal/beads/` is audit-trail substrate, stays put; not a Versioned-State consumer)
 - [ ] **9.4.2 — TONL adapter** (~1.0 pw, LOW risk)
   - [ ] `ports/serialization.py` Protocol
-  - [ ] Submodule + thin Python wrapper
+  - [ ] In-tree adapter wrapping `praxis.kernel.compression.tonl` (per ADR-9.2-V2 v0.2 corrigendum)
   - [ ] Roundtrip fuzz harness wired
-- [ ] **9.4.3 — Mem0 adapter + C-4 closure** (~1.5 pw combined)
-  - [ ] Rename existing `mem0_adapter.py` → `ports/memory.py`
-  - [ ] Tighten interface per 9.2 ADR
-  - [ ] Explicit promotion-semantic assertions (closes C-4)
-  - [ ] PyPI pin in `uv.lock`
+- [ ] **9.4.3 — Memory port + Mem0/Letta dual-adapter + C-4 closure** (~2.0 pw combined — revised from original ~1.5 pw to reflect dual-adapter scope per ADR-9.2-V1 v0.1; revision is corrigendum-class transparency, not a ratified re-estimate)
+  - [x] **Step 1** — `ports/src/praxis/ports/memory.py` Protocol (landed 2026-05-02 at commit `685ecb0`; per ADR-1 §3 + v0.2.1 corrigendum closing F-9.4.3-MEM-DTO-01)
+  - [ ] **Step 2** — `adapters/mem0/src/praxis/adapters/mem0/` Mem0 primary adapter (`adapter.py` + `version_pin.py` + `__init__.py`; in-tree PyPI-pinned per ADR-9.2-V1 v0.1 + ports-architecture.md v0.3 corrigendum §4.1; sha256 in `uv.lock`)
+  - [ ] **Step 3** — `adapters/letta/src/praxis/adapters/letta/` Letta substitute adapter (same in-tree PyPI-pinned shape per ADR-9.2-V1 v0.1; substitute-conformance H1 hedge per port-contracts.md v0.2 ADR-1:241–243)
+  - [ ] **Step 4** — `tests/src/praxis/contract_tests/ports/test_memory_contract.py` (18 MAC-Ts per `test-strategy.md` v0.2 §2.2.1; `@pytest.mark.no_waiver` on PROMO-01..04 per §6.1 allow-list entries #17–#20; structural mirror of step-7 `test_serialization_contract.py`)
+  - [ ] **Step 5** — Matrix-tier conformance (Mem0 + Letta both pass shared suite; per ADR-9.2-V1 v0.1 substitute-readiness + Victor §9.1 amendment #2)
+  - [ ] **C-4 closure** — Explicit promotion-semantic assertions (PS-1..PS-4 per port-contracts.md v0.2 ADR-1 §3.4) ratified via Step 4 contract test substance + Step 5 matrix-tier conformance
 - [ ] **9.4.4 — Pi-Mono reimplement** (~0.5 pw, MEDIUM risk: TS/Python boundary)
   - [ ] `ports/cost_meter.py` Protocol
   - [ ] Reimplement 200 LOC pricing math in `adapters/pi_mono_native/`
