@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-adapter-mem0"
+version = "0.1.0"
+description = "Verdaca Memory port adapter — PyPI-pinned wrap of mem0ai SDK (ADR-9.2-V1; primary half of dual-adapter pair)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "pydantic>=2.0",
+    "mem0ai>=1.0.11,<2.0",
+    "opentelemetry-api>=1.20,<2",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+# mem0ai resolves from PyPI registry; sha256 lock recorded in workspace-root
+# uv.lock at Cleo 9.6 supply-chain review.
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
