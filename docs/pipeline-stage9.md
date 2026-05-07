@@ -265,13 +265,13 @@ These are binding for every sub-stage. Deviations require explicit Andrey sign-o
   - [ ] `ports/serialization.py` Protocol
   - [ ] In-tree adapter wrapping `praxis.kernel.compression.tonl` (per ADR-9.2-V2 v0.2 corrigendum)
   - [ ] Roundtrip fuzz harness wired
-- [ ] **9.4.3 — Memory port + Mem0/Letta dual-adapter + C-4 closure** (~2.0 pw combined — revised from original ~1.5 pw to reflect dual-adapter scope per ADR-9.2-V1 v0.1; revision is corrigendum-class transparency, not a ratified re-estimate)
+- [x] **9.4.3 — Memory port + Mem0/Letta dual-adapter + C-4 closure** (~2.0 pw combined — revised from original ~1.5 pw to reflect dual-adapter scope per ADR-9.2-V1 v0.1; revision is corrigendum-class transparency, not a ratified re-estimate)
   - [x] **Step 1** — `ports/src/praxis/ports/memory.py` Protocol (landed 2026-05-02 at commit `685ecb0`; per ADR-1 §3 + v0.2.1 corrigendum closing F-9.4.3-MEM-DTO-01)
-  - [ ] **Step 2** — `adapters/mem0/src/praxis/adapters/mem0/` Mem0 primary adapter (`adapter.py` + `version_pin.py` + `__init__.py`; in-tree PyPI-pinned per ADR-9.2-V1 v0.1 + ports-architecture.md v0.3 corrigendum §4.1; sha256 in `uv.lock`)
-  - [ ] **Step 3** — `adapters/letta/src/praxis/adapters/letta/` Letta substitute adapter (same in-tree PyPI-pinned shape per ADR-9.2-V1 v0.1; substitute-conformance H1 hedge per port-contracts.md v0.2 ADR-1:241–243)
-  - [ ] **Step 4** — `tests/src/praxis/contract_tests/ports/test_memory_contract.py` (18 MAC-Ts per `test-strategy.md` v0.2 §2.2.1; `@pytest.mark.no_waiver` on PROMO-01..04 per §6.1 allow-list entries #17–#20; structural mirror of step-7 `test_serialization_contract.py`)
-  - [ ] **Step 5** — Matrix-tier conformance (Mem0 + Letta both pass shared suite; per ADR-9.2-V1 v0.1 substitute-readiness + Victor §9.1 amendment #2)
-  - [ ] **C-4 closure** — Explicit promotion-semantic assertions (PS-1..PS-4 per port-contracts.md v0.2 ADR-1 §3.4) ratified via Step 4 contract test substance + Step 5 matrix-tier conformance
+  - [x] **Step 2** — `adapters/mem0/src/praxis/adapters/mem0/` Mem0 primary adapter (landed 2026-05-03 at commit `34a4eca`; `adapter.py` + `version_pin.py` + `__init__.py`; in-tree PyPI-pinned per ADR-9.2-V1 v0.1 + ports-architecture.md v0.3 corrigendum §4.1; sha256 in `uv.lock`)
+  - [x] **Step 3** — `adapters/letta/src/praxis/adapters/letta/` Letta substitute adapter (landed 2026-05-04 at commit `b14285b`; same in-tree PyPI-pinned shape per ADR-9.2-V1 v0.1; substitute-conformance H1 hedge per port-contracts.md v0.2 ADR-1:241–243)
+  - [x] **Step 4** — `tests/src/praxis/contract_tests/ports/test_memory_contract.py` (landed 2026-05-04 at commit `ae1c806`; 18 MAC-Ts per `test-strategy.md` v0.2 §2.2.1; 28P/2S/0F under Option α runner; `@pytest.mark.no_waiver` on PROMO-01..04 per §6.1 allow-list entries #17–#20; structural mirror of step-7 `test_serialization_contract.py`)
+  - [x] **Step 5** — Matrix-tier conformance (verified at B.2 #3 cross-adapter `inspect.signature` parity probe at commit `b14285b`; B.3 cross-adapter QUERY-03 set-equality + QUERY-04 cardinality-drift PASSED at commit `ae1c806`; per ADR-9.2-V1 v0.1 substitute-readiness + Victor §9.1 amendment #2)
+  - [x] **C-4 closure** — Explicit promotion-semantic assertions (PS-1..PS-4 per port-contracts.md v0.2 ADR-1 §3.4) ratified via Step 4 contract test substance + Step 5 matrix-tier conformance (4 PROMO no_waiver markers per allow-list #17–#20 at commit `ae1c806`)
 - [ ] **9.4.4 — Pi-Mono reimplement** (~0.5 pw, MEDIUM risk: TS/Python boundary)
   - [ ] `ports/cost_meter.py` Protocol
   - [ ] Reimplement 200 LOC pricing math in `adapters/pi_mono_native/`
