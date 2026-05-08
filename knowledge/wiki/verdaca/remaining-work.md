@@ -32,10 +32,39 @@
   ↓
 9.5 Architectural review  F10 praxis.kernel asymmetry + F11/F12/F13 coupled marker-registration landing
   ↓
-9.6 Cleo supply-chain    uv.lock SHA pinning for mem0ai==1.0.11 + letta-client==1.10.3
+9.6 Cleo supply-chain    uv.lock SHA pinning + dependency monitoring + CI automation
   ↓
 9.9 Test-strategy ratification  2 gaps: Q-B3-7 Tier 4 marker + Q-B3-17 ContractViolation vocabulary
 ```
+
+---
+
+## Stage 9.6 — Cleo Supply-Chain (Expanded Scope)
+
+Original scope: uv.lock SHA pinning for `mem0ai==1.0.11` + `letta-client==1.10.3`.
+
+**Expanded 2026-05-08:** add full dependency monitoring + CI automation so pins stay current automatically after ratification.
+
+| Deliverable | File | Purpose |
+|---|---|---|
+| SHA pin policy | `uv.lock` + `pyproject.toml` version bounds | Lock `mem0ai` + `letta-client` to exact SHAs; Cleo W-2 license audit |
+| Dependency monitoring config | `.github/renovate.json` (preferred over Dependabot — native uv workspace support) | Weekly scan of all `adapters/*/pyproject.toml` + `shell/package.json`; opens PRs per bump; patch → auto-merge label, minor/major → review label |
+| CI contract-test gate | `.github/workflows/contract-tests.yml` | Triggers on PRs touching `adapters/**` or `uv.lock`; runs `uv run pytest tests/`; all 40+ contract tests must pass before merge |
+| Weekly security audit | `.github/workflows/audit.yml` | Cron Monday 09:00; runs `pip-audit --require-hashes -r uv.lock` + `npm audit` in `shell/`; opens GitHub issue on CVE hit |
+| Auto-merge policy | Renovate config + branch protection rules | Patch bumps auto-merge if contract-test CI green; minor/major require Winston review + Andrey explicit go |
+
+**Bump-type policy (binding after 9.6 ratification):**
+- `PATCH` (1.0.11 → 1.0.12): Renovate auto-merge if all contract tests pass. Zero human involvement.
+- `MINOR` (1.0.x → 1.1.0): Renovate opens PR labeled `dependency:minor`. Winston reviews API surface delta against MemoryPort/CostMeterPort contract. Executor updates adapter if needed.
+- `MAJOR` (1.x → 2.0): Full halt-cycle. Adapter rewrite may be required. Stage gate + Andrey go.
+
+**Who owns ongoing operation after 9.6:**
+- Renovate Bot — detection + PR creation
+- CI — contract test gate
+- Amelia — adapter code changes for minor/major bumps
+- Winston — API delta review on minor/major
+- Murat — confirms contract test catalog covers updated adapter
+- Andrey — approves major version bumps; any no_waiver allow-list changes
 
 ---
 
@@ -63,6 +92,15 @@
 - [ ] Forge G-1 BLOCKING GATE cleared (Cleo W-2 license audit)
 - [ ] 9.4.5 RTK close + 7 live-Letta probes resolved
 
+### 9.6 done when
+- [ ] `uv.lock` SHA-pinned for mem0ai + letta-client (Cleo W-2 satisfied)
+- [ ] `.github/renovate.json` committed + Renovate app installed on repo
+- [ ] `.github/workflows/contract-tests.yml` green on main
+- [ ] `.github/workflows/audit.yml` green on first scheduled run
+- [ ] Auto-merge policy tested: one patch bump merged end-to-end without human touch
+- [ ] Bump-type policy documented in `docs/dependency-policy.md`
+- [ ] Andrey explicit "continue" go to 9.9
+
 ### Before Stage 10 (if applicable)
 - [ ] F10 architectural review complete at 9.5
 - [ ] F11/F12/F13 coupled landing done
@@ -78,8 +116,8 @@
 | 9.4.5 RTK | 3–4 sessions |
 | 9.4.6 Forge | 2–3 sessions |
 | 9.4.7 atomic PR + 9.4.8 | 1 session |
-| 9.5 arch review + 9.6 + 9.9 | 3–4 sessions |
-| **Total Stage 9 remaining** | **~11–15 sessions** |
+| 9.5 arch review + 9.6 + 9.9 | 4–5 sessions |
+| **Total Stage 9 remaining** | **~12–16 sessions** |
 
 ---
 
