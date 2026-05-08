@@ -174,6 +174,12 @@ class SkillPort(Protocol):
 - `M-T-SKILL-PATCH-02` — `apply_patch` raises `AuthorizationError` if `authorized_by` is empty (**non-negotiable — `feedback_memory_authorization`**)
 - `M-T-SKILL-PROV-01` — `propose_improvement` raises `SkillExemptError` for `provenance: user` skills
 
+**⚠️ Open decision — resolve at 9.4.5 advisor session:**
+> *Victor:* Stub `SkillEvolutionPort` (empty Protocol, no implementation) now as an architectural commitment — making the decision costs zero, delaying it costs the moat.
+> *Winston:* Wait until after 9.4.5 `LLMProxyPort` exists — premature port definition risks wrong interface shape; the curator's LLM call surface only becomes clear once the proxy port is ratified.
+>
+> **Action:** At the 9.4.5 advisor preload, explicitly ask: "Should we stub `SkillEvolutionPort` / `SkillPort` as a zero-implementation protocol in this stage, or defer to post-9.6?" Document the decision in `ports-architecture.md` corrigendum v0.6.
+
 ---
 
 ### Phase 3 — Stage 10 (CuratorAdapter + UserModelPort)
