@@ -16,6 +16,7 @@
 !tests/
 !shell/
 !docs/
+!knowledge/
 !pyproject.toml
 !.python-version
 !uv.lock
@@ -32,6 +33,7 @@ Articles/
 /Memory/
 CLAUDE.md
 claude-setup-reference.md
+knowledge/raw/
 
 # ============================================================
 # Python development cruft
@@ -53,6 +55,7 @@ claude-setup-reference.md
 **/.venv/
 **/venv/
 **/env/
+**/graphify-out/
 
 # ============================================================
 # Node.js / Next.js cruft
