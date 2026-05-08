@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-adapter-pi_mono_native"
+version = "0.1.0"
+description = "Verdaca Cost Meter port adapter — in-tree-native Python rewrite of Pi-Mono pricing math (ADR-9.2-V4)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "pydantic>=2.0",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
