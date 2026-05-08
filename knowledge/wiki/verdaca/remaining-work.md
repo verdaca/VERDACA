@@ -28,7 +28,7 @@
   ↓
 9.4.7 Atomic PR  Delete 12 namespace markers + archive legacy _bmad-output/praxis/ tree (F9 audit included)
   ↓
-9.4.8 Upstream bump workflow
+9.4.8 Upstream bump workflow + FTS5 session index (scripts/index-sessions.py → knowledge/sessions.db)
   ↓
 9.5 Architectural review  F10 praxis.kernel asymmetry + F11/F12/F13 coupled marker-registration landing
   ↓
@@ -105,6 +105,46 @@ Original scope: uv.lock SHA pinning for `mem0ai==1.0.11` + `letta-client==1.10.3
 - [ ] F10 architectural review complete at 9.5
 - [ ] F11/F12/F13 coupled landing done
 - [ ] 9.9 test-strategy ratification complete
+- [ ] Stage 9.4.5 `LLMProxyPort` ratified (prerequisite for CuratorAdapter)
+- [ ] Phase 0 self-learning data collection running (provenance tags + `.usage.json` sidecars + MAC telemetry)
+- [ ] Post-9.6 port stubs ratified: `SessionIndexPort`, `SkillObserverPort`, `SkillPort` (5 M-T-SKILL-* tests green)
+
+---
+
+## Stage 10 — Self-Learning Infrastructure (Planned)
+
+Derived from Hermes Agent source analysis, roundtable 2026-05-08. Prerequisite: Stage 9.4.5 `LLMProxyPort` ratified.
+
+### Phase 0 — Zero-cost data collection (start now, no stage gate)
+| Deliverable | File | Notes |
+|---|---|---|
+| Provenance frontmatter | All `.claude/skills/*/SKILL.md` | Add `provenance: user`; curator safety valve |
+| Usage sidecar script | `scripts/track-skill-usage.py` | Reads JSONL → writes `.usage.json` per skill |
+| MAC session telemetry | `knowledge/raw/skill-telemetry/{id}.json` | Gate scores + beat counts at each MAC close |
+
+### Phase 1 — Stage 9.4.8 (FTS5, already in sequence)
+| Deliverable | File | Notes |
+|---|---|---|
+| Session index script | `scripts/index-sessions.py` → `knowledge/sessions.db` | SQLite FTS5; ~50 LOC; zero deps |
+| Wiki-update integration | `/verdaca-wiki-update --index` flag | Replaces grep in freshness scan |
+
+### Phase 2 — Post-9.6 port stubs (no adapters, contracts only)
+| Port | File | Key methods |
+|---|---|---|
+| `SessionIndexPort` | `ports/src/praxis/ports/session_index.py` | `index_session`, `search(mode: keyword\|semantic)` |
+| `SkillObserverPort` | `ports/src/praxis/ports/skill_observer.py` | `record_invocation(outcome_signals)`, `suggest_patch`, `get_usage` |
+| `SkillPort` | `ports/src/praxis/ports/skill.py` | `record_usage`, `query_by_relevance`, `propose_improvement`, `apply_patch(authorized_by)` |
+
+Contract tests (5 M-T-SKILL-*): USAGE-01, USAGE-02, PATCH-01, PATCH-02 (AuthorizationError if no authorized_by), PROV-01 (SkillExemptError for provenance:user).
+
+### Phase 3 — Stage 10 adapters
+| Deliverable | Prerequisite | Notes |
+|---|---|---|
+| `adapters/skill_curator/` | 9.4.5 LLMProxyPort + Phase 0 data | Curator implements `SkillPort`; state machine active→stale→archived; only touches `provenance: agent`; `apply_patch` requires `authorized_by` |
+| `adapters/honcho/` | External users onboarding | Implements `UserModelPort`; `USER.md` behavioral profile |
+| Trajectory capture | 500+ rated MAC sessions | `save_trajectories` flag; Atropos RL environments |
+
+**Victor's constraint:** Stub `SkillEvolutionPort` (alias for `SkillPort`) before Stage 10 opens — empty protocol, no implementation, just the contract. Architectural commitment costs zero now; missing it costs the moat later.
 
 ---
 
@@ -115,9 +155,12 @@ Original scope: uv.lock SHA pinning for `mem0ai==1.0.11` + `letta-client==1.10.3
 | 9.4.4 A.2+B+C | 2–3 sessions |
 | 9.4.5 RTK | 3–4 sessions |
 | 9.4.6 Forge | 2–3 sessions |
-| 9.4.7 atomic PR + 9.4.8 | 1 session |
+| 9.4.7 atomic PR + 9.4.8 (incl. FTS5 index) | 1–2 sessions |
 | 9.5 arch review + 9.6 + 9.9 | 4–5 sessions |
-| **Total Stage 9 remaining** | **~12–16 sessions** |
+| **Total Stage 9 remaining** | **~12–17 sessions** |
+| Stage 10 Phase 0+1 (data + port stubs) | 1–2 sessions |
+| Stage 10 Phase 3 (curator + Honcho adapters) | 3–4 sessions |
+| **Total Stage 9+10** | **~16–23 sessions** |
 
 ---
 
