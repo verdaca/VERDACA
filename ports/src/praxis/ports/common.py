@@ -13,6 +13,10 @@ contract substance beyond §0.
                           machinery lives at this layer.
 §0.4 OTEL Trace Context — correlation_id on every DTO; spans named
                           verdaca.port.<port>.<method>.
+§0.5 Message DTO — chat-API-shaped DTO consumed by LLMProxyPort +
+                   future SkillEvolutionPort + AgentMessagePort (per
+                   `port-contracts.md` v0.2.3 §3.7 corrigendum at SHA
+                   `de365ff`).
 """
 
 from __future__ import annotations
@@ -118,6 +122,38 @@ class VerdacaDTOMixin(BaseModel):
     idempotency_key: str | None = None
 
     model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+# ---------------------------------------------------------------------------
+# §0.5 Message DTO (per `port-contracts.md` v0.2.3 §3.7 corrigendum at
+#                   SHA `de365ff`)
+# ---------------------------------------------------------------------------
+
+
+class Message(VerdacaDTOMixin):
+    """Chat-API-shaped DTO consumed by LLMProxyPort + future
+    SkillEvolutionPort + AgentMessagePort.
+
+    Per `port-contracts.md` v0.2.3 ADR-9.1.2-6 §3.7. Hosted in
+    `common.py` per A.1-WINSTON-1 disposition because chat-API-shape
+    is multi-port-relevant (sibling-add to VerdacaDTOMixin host).
+
+    v1.0.0 deliberate exclusions per A.1-MURAT-1 (semver-clean v1.1.0
+    candidates):
+        - tool_calls: deferred until 9.9+ tool-use MAC-Ts demand it
+        - name: not load-bearing for any current MAC-T
+        - content_parts: multimodal extension; out of v1.0.0 scope
+    """
+
+    role: Literal["system", "user", "assistant"]   # JUDGMENT — chat-API-shaped industry
+                                                   # standard; cross-port sibling:
+                                                   # PromotionTier Enum-with-str-values;
+                                                   # method-sig echo: list[Message]
+    content: str                                   # JUDGMENT minimum-viable per CLAUDE.md
+                                                   # "Don't add features beyond what the
+                                                   # task requires"; cross-port sibling:
+                                                   # MemoryEntry.content (memory.py:50)
+                                                   # str-payload pattern
 
 
 # ---------------------------------------------------------------------------
