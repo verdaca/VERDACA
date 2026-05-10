@@ -35,8 +35,11 @@
       <p class="contact__eyebrow type-eyebrow">CONTACT</p>
       <h1 id="contact-headline" class="contact__headline type-display">Talk to the team.</h1>
 
-      <!-- contact endpoint TBD per team-lead deployment sequencing -->
-      <form class="contact__form" action="#" method="post" novalidate aria-label="Contact form">
+      <!-- contact endpoint: Formspree (Q-#2-3 closed by deployment 2026-05-10) -->
+      <form class="contact__form" action="https://formspree.io/f/mdabprzq" method="post" novalidate aria-label="Contact form">
+
+        <!-- Formspree: clean email subject for inbox triage -->
+        <input type="hidden" name="_subject" value="Verdaca contact form submission">
 
         <!-- §6.10 field: name — §7 default state -->
         <div class="form-field">
