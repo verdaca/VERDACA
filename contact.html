@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact — Verdaca</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <!-- NAV: shared composition -->
+  <header class="site-nav" role="banner">
+    <div class="container nav__inner">
+      <a href="index.html" class="nav__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <nav class="nav__links" aria-label="Primary navigation">
+        <a href="index.html#product"      class="nav__item type-eyebrow">PRODUCT</a>
+        <a href="docs/index.html" class="nav__item type-eyebrow">DOCS</a>
+        <a href="about.html"              class="nav__item type-eyebrow">ABOUT</a>
+        <a href="contact.html"            class="nav__item type-eyebrow" aria-current="page">CONTACT</a>
+        <a href="index.html#pricing"      class="nav__item nav__item--cta type-eyebrow">GET STARTED</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       CONTACT FORM
+       §6.10 form/input primitive + §7 interaction states (focus / error / disabled)
+       form action="#" per Q-#2-3 disposition:
+         "Live endpoint = halt-class; action="#" + annotation for TBD endpoint."
+       ===================================================================== -->
+  <section class="contact" aria-labelledby="contact-headline">
+    <div class="container">
+
+      <p class="contact__eyebrow type-eyebrow">CONTACT</p>
+      <h1 id="contact-headline" class="contact__headline type-display">Talk to the team.</h1>
+
+      <!-- contact endpoint TBD per team-lead deployment sequencing -->
+      <form class="contact__form" action="#" method="post" novalidate aria-label="Contact form">
+
+        <!-- §6.10 field: name — §7 default state -->
+        <div class="form-field">
+          <label class="form-field__label type-label" for="contact-name">Name</label>
+          <input
+            class="form-field__input type-body"
+            type="text"
+            id="contact-name"
+            name="name"
+            autocomplete="name"
+            placeholder="Your full name"
+            required
+          >
+        </div>
+
+        <!-- §6.10 field: email — §7 default state -->
+        <div class="form-field">
+          <label class="form-field__label type-label" for="contact-email">Email</label>
+          <input
+            class="form-field__input type-body"
+            type="email"
+            id="contact-email"
+            name="email"
+            autocomplete="email"
+            placeholder="you@organisation.com"
+            required
+          >
+        </div>
+
+        <!-- §6.10 field: organisation — §7 default state -->
+        <div class="form-field">
+          <label class="form-field__label type-label" for="contact-org">Organisation</label>
+          <input
+            class="form-field__input type-body"
+            type="text"
+            id="contact-org"
+            name="organisation"
+            autocomplete="organization"
+            placeholder="Organisation name"
+          >
+        </div>
+
+        <!-- §6.10 field: message — §7 default + error state demo -->
+        <div class="form-field">
+          <label class="form-field__label type-label" for="contact-message">Message</label>
+          <textarea
+            class="form-field__textarea type-body"
+            id="contact-message"
+            name="message"
+            rows="5"
+            placeholder="What are you evaluating Verdaca for?"
+            required
+          ></textarea>
+          <!-- §7 error state: displayed when .form-field--error class is added to parent -->
+          <span class="form-field__error-msg type-caption" role="alert">Please fill in this field before submitting.</span>
+        </div>
+
+        <!-- §7 disabled state example: submit while processing -->
+        <div class="contact__submit">
+          <button type="submit" class="cta cta--primary type-body">Send message</button>
+        </div>
+
+        <!-- §7 disabled state reference (shown here as comment; activated programmatically):
+             <button type="submit" class="cta cta--primary type-body" disabled>[Processing...]</button>
+        -->
+
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER: shared composition -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__wordmark-col">
+          <a href="index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="index.html#product" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="index.html#pricing" class="footer__link type-caption">Get started</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">DOCS</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="docs/index.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

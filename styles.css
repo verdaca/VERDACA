@@ -1,0 +1,776 @@
+/* =============================================================================
+   Verdaca Phase 2 — landing/styles.css
+   Substrate: design-system-substrate-v0.1 (workshop-binding)
+   Inherits: Phase 1 thin-slice styles.css — all §3 / §4 / §5 tokens verbatim;
+             all Phase 1 surface classes (.hero, .capabilities, .suppliers, .cta,
+             .metric-strip) preserved unchanged.
+   Phase 2 additions: .site-nav · .feature-grid · .pricing-cta · .site-footer
+                      .about-pillars · contact form extensions
+   Mode: light-canonical (R3 / D-6 / PD-X-CHARCOAL-BANDS DEFER) throughout.
+         No charcoal-band sections in Phase 2 landing; pure light-canonical.
+   Composition only per R4. Token reference only per R1 (no atomic redefinition).
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Web font loading per R10 (font-display: swap on @font-face).
+   Free fallbacks: Inter Tight / JetBrains Mono / Source Serif 4.
+   Paid upgrades (Söhne / Söhne Mono / GT Sectra) deferred to team-lead authority.
+   ----------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@1,400&display=swap");
+
+/* =============================================================================
+   §3 — Atomic tokens (substrate §3 verbatim; Phase 1 line-for-line)
+   ============================================================================= */
+:root {
+  /* §3.1 atomic colors */
+  --color-verdaca-oxblood:  #6B1F25;
+  --color-verdaca-charcoal: #1F2226;
+  --color-verdaca-cream:    #F2EDE2;
+  --color-verdaca-graphite: #42454A;
+  --color-verdaca-bronze:   #967853;
+  --color-verdaca-steel:    #979CA3;
+
+  /* §2 font families */
+  --font-family-sans:  "Inter Tight", "Söhne", ui-sans-serif, system-ui;
+  --font-family-mono:  "Söhne Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas;
+  --font-family-serif: "GT Sectra", "Source Serif 4", ui-serif, Georgia;
+
+  /* §3.2 type size scale (1.250 ratio, 16px base) */
+  --font-size-12: 0.8rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-25: 1.563rem;
+  --font-size-31: 1.953rem;
+  --font-size-39: 2.441rem;
+  --font-size-49: 3.052rem;
+  --font-size-61: 3.815rem;
+
+  /* §3.3 weight, tracking, line-height */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+
+  --font-tracking-marque-hero: 0.02em;
+  --font-tracking-marque-body: 0.04em;
+  --font-tracking-eyebrow:     0.12em;
+  --font-tracking-body:        0;
+  --font-tracking-mono-cite:   0;
+
+  --font-lineheight-tight:   1.15;
+  --font-lineheight-snug:    1.30;
+  --font-lineheight-normal:  1.55;
+  --font-lineheight-relaxed: 1.65;
+
+  /* §3.4 spacing (8px base) */
+  --space-4:   0.25rem;
+  --space-8:   0.5rem;
+  --space-12:  0.75rem;
+  --space-16:  1rem;
+  --space-24:  1.5rem;
+  --space-32:  2rem;
+  --space-48:  3rem;
+  --space-64:  4rem;
+  --space-96:  6rem;
+  --space-128: 8rem;
+  --space-192: 12rem;
+
+  /* §3.5 grid + container */
+  --container-max:             1280px;
+  --container-padding-desktop: var(--space-32);
+  --container-padding-tablet:  var(--space-24);
+  --container-padding-mobile:  var(--space-16);
+
+  /* §3.6 border, radius, shadow */
+  --border-width-hairline: 1px;
+  --border-width-thick:    2px;
+  --radius-sharp:  0;
+  --radius-subtle: 2px;
+  --shadow-structural-inset-cream:    inset 0 1px 0 rgba(31, 34, 38, 0.18);
+  --shadow-structural-inset-charcoal: inset 0 1px 0 rgba(242, 237, 226, 0.10);
+
+  /* §3.7 motion */
+  --motion-duration-instant:    0ms;
+  --motion-duration-fast:       120ms;
+  --motion-duration-standard:   200ms;
+  --motion-duration-deliberate: 300ms;
+  --motion-easing-out:          cubic-bezier(0.0, 0.0, 0.2, 1);
+  --motion-easing-in-out:       cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* =============================================================================
+   §4 — Semantic color layer (light-canonical; mode declared once at root per R2)
+   ============================================================================= */
+:root[data-mode="light"] {
+  --color-bg-canvas:       var(--color-verdaca-cream);
+  --color-bg-elevated:     var(--color-verdaca-cream);
+  --color-bg-inset:        var(--color-verdaca-cream);
+  --color-text-primary:    var(--color-verdaca-charcoal);
+  --color-text-secondary:  var(--color-verdaca-graphite);
+  --color-text-caption:    var(--color-verdaca-graphite);
+  --color-text-accent:     var(--color-verdaca-oxblood);
+  --color-rule-default:    var(--color-verdaca-graphite);
+  --color-rule-accent:     var(--color-verdaca-oxblood);
+  --color-supplier-line:   var(--color-verdaca-charcoal);
+  --color-metric-headline: var(--color-verdaca-oxblood);
+  --color-caveat-footnote: var(--color-verdaca-graphite);
+}
+
+/* Phase 2 addition — §4 dark semantic layer.
+   Track 1 landing is light-canonical only (PD-X-CHARCOAL-BANDS). This block
+   is included so Track 2 docs pages can reference the same stylesheet.
+   NOTE: color.text.accent (oxblood) is RESTRICTED to non-text use on dark canvas per §4. */
+:root[data-mode="dark"] {
+  --color-bg-canvas:       var(--color-verdaca-charcoal);
+  --color-bg-elevated:     var(--color-verdaca-charcoal);
+  --color-bg-inset:        var(--color-verdaca-charcoal);
+  --color-text-primary:    var(--color-verdaca-cream);
+  --color-text-secondary:  var(--color-verdaca-cream);    /* 80% opacity at usage ≈8.57:1 AAA */
+  --color-text-caption:    var(--color-verdaca-cream);    /* 80% opacity at usage */
+  --color-text-accent:     var(--color-verdaca-oxblood);  /* NON-TEXT ONLY on dark per §4 */
+  --color-rule-default:    var(--color-verdaca-cream);    /* 20% opacity at usage */
+  --color-rule-accent:     var(--color-verdaca-oxblood);  /* border/rule: permitted */
+  --color-supplier-line:   var(--color-verdaca-cream);
+  --color-metric-headline: var(--color-verdaca-oxblood);
+  --color-caveat-footnote: var(--color-verdaca-cream);    /* 60% opacity at usage ≈5.54:1 AA */
+}
+
+/* =============================================================================
+   Base reset
+   ============================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html {
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-16);
+  line-height: var(--font-lineheight-normal);
+  color: var(--color-text-primary);
+}
+img, svg { display: block; max-width: 100%; }
+
+/* =============================================================================
+   §5.1 — Type roles (Phase 1 verbatim)
+   ============================================================================= */
+.type-marque-hero {
+  font-family:    var(--font-family-mono);
+  font-size:      var(--font-size-61);
+  font-weight:    var(--font-weight-semibold);
+  letter-spacing: var(--font-tracking-marque-hero);
+  line-height:    var(--font-lineheight-tight);
+  text-transform: uppercase;
+}
+.type-marque-header {
+  font-family:    var(--font-family-mono);
+  font-size:      var(--font-size-31);
+  font-weight:    var(--font-weight-semibold);
+  letter-spacing: var(--font-tracking-marque-body);
+  line-height:    var(--font-lineheight-snug);
+  text-transform: uppercase;
+}
+.type-display {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-49);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-lineheight-tight);
+}
+.type-headline {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-31);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--font-lineheight-snug);
+}
+.type-body {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-16);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-normal);
+}
+.type-body-editorial {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-16);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-relaxed);
+}
+.type-mono-cite {
+  font-family:    var(--font-family-mono);
+  font-size:      var(--font-size-16);
+  font-weight:    var(--font-weight-regular);
+  letter-spacing: var(--font-tracking-mono-cite);
+  line-height:    var(--font-lineheight-normal);
+}
+.type-narrative {
+  font-family: var(--font-family-serif);
+  font-size:   var(--font-size-31);
+  font-style:  italic;
+  line-height: var(--font-lineheight-snug);
+}
+.type-narrative-hero {
+  font-family: var(--font-family-serif);
+  font-size:   var(--font-size-39);
+  font-style:  italic;
+  line-height: var(--font-lineheight-snug);
+}
+.type-eyebrow {
+  font-family:    var(--font-family-sans);
+  font-size:      var(--font-size-12);
+  font-weight:    var(--font-weight-medium);
+  letter-spacing: var(--font-tracking-eyebrow);
+  line-height:    var(--font-lineheight-snug);
+  text-transform: uppercase;
+}
+.type-caption {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-12);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-normal);
+}
+.type-caveat {
+  font-family: var(--font-family-serif);
+  font-size:   var(--font-size-12);
+  font-style:  italic;
+  line-height: var(--font-lineheight-normal);
+}
+
+/* =============================================================================
+   Layout — container (§3.5)
+   ============================================================================= */
+.container {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left:  var(--container-padding-desktop);
+  padding-right: var(--container-padding-desktop);
+}
+
+/* =============================================================================
+   Phase 2 — NAV (new surface)
+   Composition: §6.1 wordmark slot + 5× §6.5 eyebrow nav items
+   Mobile: vertical-stack via media query per Q-#2-4 (no JS; R10 minimal-tech)
+   ============================================================================= */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-bg-canvas);
+  border-bottom: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top:    var(--space-16);
+  padding-bottom: var(--space-16);
+}
+/* §6.1 wordmark slot in nav context */
+.nav__wordmark {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+  display: block;
+}
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-32);
+}
+/* §6.5 eyebrow as nav item label.
+   OQ-1 amendment: inactive items use color.text.primary (not §6.5 standard oxblood).
+   Active state signal = hover reveals accent color. */
+.nav__item {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: color var(--motion-duration-fast) var(--motion-easing-out);
+}
+.nav__item:hover {
+  color: var(--color-text-accent);
+}
+.nav__item:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-rule-accent);
+  outline-offset: 2px;
+}
+/* CTA nav item: border-only per Q-1 / PD-T1-PRICING-CTA disposition */
+.nav__item--cta {
+  border: var(--border-width-hairline) solid var(--color-rule-accent);
+  color: var(--color-text-accent);
+  padding: var(--space-8) var(--space-16);
+}
+.nav__item--cta:hover {
+  filter: brightness(1.05);
+  color: var(--color-text-accent);
+}
+
+/* =============================================================================
+   Phase 1 — CTA (verbatim)
+   ============================================================================= */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-sharp);
+  border-style: solid;
+  border-width: var(--border-width-hairline);
+  background: transparent;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-16);
+  line-height: var(--font-lineheight-normal);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color var(--motion-duration-fast) var(--motion-easing-out),
+              color       var(--motion-duration-fast) var(--motion-easing-out),
+              filter      var(--motion-duration-fast) var(--motion-easing-out);
+}
+.cta--primary {
+  border-color: var(--color-rule-accent);
+  color: var(--color-text-accent);
+}
+.cta--primary:hover  { filter: brightness(1.05); }
+.cta--primary:active {
+  filter: brightness(0.95);
+  box-shadow: var(--shadow-structural-inset-cream);
+}
+.cta--secondary {
+  border-color: var(--color-rule-default);
+  color: var(--color-text-primary);
+}
+.cta--secondary:hover  { filter: brightness(1.05); }
+.cta--secondary:active {
+  filter: brightness(0.95);
+  box-shadow: var(--shadow-structural-inset-cream);
+}
+.cta:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-rule-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sharp);
+}
+.cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* =============================================================================
+   Phase 1 — S1 Hero (verbatim)
+   ============================================================================= */
+.hero {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+}
+.hero__wordmark {
+  margin: 0;
+  padding: var(--space-32);
+  padding-left: 0;
+  color: var(--color-text-primary);
+}
+.hero__headline {
+  margin: 0;
+  margin-top: var(--space-48);
+  color: var(--color-text-primary);
+  max-width: 18em;
+}
+.hero__subheadline {
+  margin: 0;
+  margin-top: var(--space-24);
+  color: var(--color-text-secondary);
+  max-width: 60ch;
+}
+.hero__cta-row {
+  margin-top: var(--space-32);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+
+/* =============================================================================
+   Phase 1 — §6.9 Metric + A4-caveat unit (verbatim; R5 indivisible)
+   ============================================================================= */
+.metric-strip {
+  margin-top: var(--space-64);
+  padding: var(--space-48);
+  background: var(--color-bg-canvas);
+}
+.metric-strip__metric   { margin: 0; color: var(--color-metric-headline); }
+.metric-strip__rule {
+  display: block;
+  width: var(--space-128);
+  height: 0;
+  border: 0;
+  border-top: var(--border-width-hairline) solid var(--color-rule-default);
+  opacity: 0.30;
+  margin: var(--space-12) 0;
+}
+.metric-strip__label       { margin: 0; color: var(--color-text-secondary); }
+.metric-strip__comparators { margin: 0; color: var(--color-text-primary); }
+.metric-strip__caveat {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-caveat-footnote);
+  opacity: 0.80;
+}
+
+/* =============================================================================
+   Phase 1 — S2 Capability tiles (verbatim; Phase 2 expands to 4 tiles, same grid)
+   ============================================================================= */
+.capabilities {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+  border-top-color: rgba(66, 69, 74, 0.30);
+  border-top-style: solid;
+  border-top-width: var(--border-width-hairline);
+}
+.capabilities__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-32);
+}
+.tile {
+  padding: var(--space-32);
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.tile__eyebrow  { margin: 0; color: var(--color-text-accent); }
+.tile__heading  { margin: 0; margin-top: var(--space-16); color: var(--color-text-primary); }
+.tile__body     { margin: 0; margin-top: var(--space-16); color: var(--color-text-primary); max-width: 60ch; }
+.tile__pullquote {
+  margin: 0;
+  margin-top: var(--space-32);
+  color: var(--color-text-primary);
+  max-width: 60ch;
+  position: relative;
+  padding-top: var(--space-32);
+}
+.tile__pullquote::before {
+  content: "";
+  display: block;
+  width: var(--space-48);
+  height: 0;
+  border-top: var(--border-width-hairline) solid var(--color-rule-accent);
+  margin-bottom: var(--space-16);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* =============================================================================
+   Phase 2 — Feature grid (new surface)
+   Composition: §6.5 eyebrow + type.body-editorial; no borders; lighter density
+   6 items in 3×2 grid per Q-#2-2 disposition
+   ============================================================================= */
+.features {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.features__header {
+  margin-bottom: var(--space-48);
+}
+.features__section-eyebrow {
+  margin: 0;
+  color: var(--color-text-accent);
+}
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-48) var(--space-32);
+}
+.feature-item__eyebrow {
+  margin: 0;
+  color: var(--color-text-accent);
+}
+.feature-item__body {
+  margin: 0;
+  margin-top: var(--space-8);
+  color: var(--color-text-secondary);
+}
+
+/* =============================================================================
+   Phase 1 — S3 Supplier-cite block (verbatim)
+   ============================================================================= */
+.suppliers {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.suppliers__eyebrow { margin: 0; color: var(--color-text-accent); }
+.suppliers__list    { margin: 0; margin-top: var(--space-16); padding: 0; list-style: none; }
+.suppliers__row     { margin: 0; padding: var(--space-8) 0; color: var(--color-supplier-line); }
+.suppliers__row > .field   { display: inline; }
+.suppliers__separator      { display: inline; color: var(--color-supplier-line); margin: 0 var(--space-8); }
+.suppliers__rule           { margin-top: var(--space-16); border: 0; border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30); }
+
+/* =============================================================================
+   Phase 2 — Pricing-CTA (new surface)
+   Composition: §6.6 accent-rule pattern above block (R4-clean; §6.6 ::before
+   applied to non-pull-quote element as composition — not a new primitive;
+   flagged per halt-point #2 §5 halt-acceptance note).
+   Q-1 border-only CTA; larger padding (space.24 × space.32) per advisor disposition.
+   ============================================================================= */
+.pricing-cta {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.pricing-cta__inner {
+  position: relative;
+  padding-top: var(--space-48);
+}
+/* §6.6-pattern accent rule: 1px oxblood, space.48 wide, space.16 gap below */
+.pricing-cta__inner::before {
+  content: "";
+  display: block;
+  width: var(--space-48);
+  height: 0;
+  border-top: var(--border-width-hairline) solid var(--color-rule-accent);
+  margin-bottom: var(--space-16);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.pricing-cta__eyebrow  { margin: 0; color: var(--color-text-accent); }
+.pricing-cta__headline {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-primary);
+  max-width: 20em;
+}
+.pricing-cta__body {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-secondary);
+  max-width: 60ch;
+}
+.pricing-cta__actions {
+  margin-top: var(--space-32);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+/* Larger padding per Q-1 / PD-T1-PRICING-CTA disposition */
+.pricing-cta__actions .cta {
+  padding: var(--space-24) var(--space-32);
+}
+
+/* =============================================================================
+   Phase 2 — Footer (new surface)
+   Composition: §6.1 wordmark + 4-column §6.5 eyebrow col-heads + type.caption links
+   ============================================================================= */
+.site-footer {
+  padding-top:    var(--space-64);
+  padding-bottom: var(--space-64);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.footer__inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: var(--space-32);
+  align-items: start;
+}
+.footer__wordmark {
+  margin: 0;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  display: block;
+}
+.footer__tagline {
+  margin: 0;
+  margin-top: var(--space-12);
+  color: var(--color-text-caption);
+  opacity: 0.80;
+  max-width: 32ch;
+}
+/* §6.5 eyebrow as column heading */
+.footer__col-heading {
+  margin: 0;
+  margin-bottom: var(--space-12);
+  color: var(--color-text-accent);
+}
+.footer__links    { list-style: none; margin: 0; padding: 0; }
+.footer__link-item { margin-bottom: var(--space-8); }
+.footer__link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--motion-duration-fast) var(--motion-easing-out);
+}
+.footer__link:hover { color: var(--color-text-primary); }
+.footer__link:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-rule-accent);
+  outline-offset: 2px;
+}
+.footer__small-print {
+  margin: 0;
+  margin-top: var(--space-48);
+  color: var(--color-text-caption);
+  opacity: 0.80;
+  grid-column: 1 / -1;
+}
+
+/* =============================================================================
+   Phase 2 — About page: Sophia pillar pull-quotes
+   §6.6 pull-quote primitive at type.narrative-hero 39px per Q-#2-7 disposition.
+   "§6.6 explicitly contemplates hero use; brand-narrative page is a hero-class moment."
+   ============================================================================= */
+.about-hero {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-64);
+}
+.about-hero__eyebrow  { margin: 0; color: var(--color-text-accent); }
+.about-hero__headline {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-primary);
+  max-width: 18em;
+}
+
+.about-pillars {
+  padding-top:    var(--space-64);
+  padding-bottom: var(--space-96);
+}
+
+.pillar {
+  padding-top:    var(--space-64);
+  padding-bottom: var(--space-64);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+
+/* §6.6 pull-quote primitive: accent rule + type.narrative-hero 39px */
+.pillar__quote {
+  margin: 0;
+  color: var(--color-text-primary);
+  max-width: 42ch;
+  position: relative;
+  padding-top: var(--space-32);
+}
+.pillar__quote::before {
+  content: "";
+  display: block;
+  width: var(--space-48);
+  height: 0;
+  border-top: var(--border-width-hairline) solid var(--color-rule-accent);
+  margin-bottom: var(--space-16);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.pillar__attribution {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-secondary);
+}
+
+/* =============================================================================
+   Phase 2 — Contact form (§6.10 form/input + §7 interaction states)
+   ============================================================================= */
+.contact {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+}
+.contact__eyebrow  { margin: 0; color: var(--color-text-accent); }
+.contact__headline {
+  margin: 0;
+  margin-top: var(--space-16);
+  color: var(--color-text-primary);
+  max-width: 18em;
+}
+.contact__form {
+  margin-top: var(--space-48);
+  max-width: 40rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+/* §6.10 field unit */
+.form-field { display: flex; flex-direction: column; gap: var(--space-8); }
+.form-field__label { color: var(--color-text-primary); }
+.form-field__input,
+.form-field__textarea {
+  background: transparent;
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+  border-radius: var(--radius-sharp);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-16);
+  line-height: var(--font-lineheight-normal);
+  padding: var(--space-12) var(--space-16);
+  width: 100%;
+  transition: border-color var(--motion-duration-fast) var(--motion-easing-out),
+              box-shadow   var(--motion-duration-fast) var(--motion-easing-out);
+}
+/* §7 focus state: 2px outline + 2px offset per §7. Forbidden: glow/halo/box-shadow rings. */
+.form-field__input:focus,
+.form-field__textarea:focus {
+  outline: var(--border-width-thick) solid var(--color-rule-accent);
+  outline-offset: 2px;
+  border-color: var(--color-rule-accent);
+}
+/* §7 error state */
+.form-field--error .form-field__input,
+.form-field--error .form-field__textarea { border-color: var(--color-rule-accent); }
+.form-field__error-msg  { margin: 0; color: var(--color-text-accent); display: none; }
+.form-field--error .form-field__error-msg { display: block; }
+/* §7 disabled state */
+.form-field__input:disabled,
+.form-field__textarea:disabled { opacity: 0.5; cursor: not-allowed; }
+.form-field__textarea { resize: vertical; min-height: 8rem; }
+.contact__submit { margin-top: var(--space-8); }
+
+/* =============================================================================
+   §5.2 — Mobile collapse rules (<768px) — Phase 1 verbatim + Phase 2 additions
+   ============================================================================= */
+@media (max-width: 767px) {
+  .container {
+    padding-left:  var(--container-padding-mobile);
+    padding-right: var(--container-padding-mobile);
+  }
+
+  /* Type scale compression */
+  .type-marque-hero    { font-size: var(--font-size-49); }
+  .type-marque-header  { font-size: var(--font-size-25); }
+  .type-display        { font-size: var(--font-size-39); }
+  .type-headline       { font-size: var(--font-size-25); }
+  .type-narrative-hero { font-size: var(--font-size-31); }
+  .type-narrative      { font-size: var(--font-size-25); }
+
+  /* Section padding compression */
+  .hero, .capabilities, .suppliers, .features, .pricing-cta,
+  .about-hero, .about-pillars, .contact {
+    padding-top:    var(--space-32);
+    padding-bottom: var(--space-32);
+  }
+  .site-footer { padding-top: var(--space-32); padding-bottom: var(--space-32); }
+
+  /* Grid collapses */
+  .capabilities__grid { grid-template-columns: 1fr; }
+  .features__grid     { grid-template-columns: 1fr; }
+  .footer__inner      { grid-template-columns: 1fr 1fr; }
+  .footer__wordmark-col { grid-column: 1 / -1; }
+
+  /* OQ-5 amendment: simplified mobile nav — wordmark + CTA only.
+     No hamburger collapse (Phase 3). Non-CTA menu items hidden at mobile breakpoint. */
+  .nav__item:not(.nav__item--cta) {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container {
+    padding-left:  var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
+  .hero, .capabilities, .suppliers, .features, .pricing-cta, .contact {
+    padding-top:    var(--space-48);
+    padding-bottom: var(--space-48);
+  }
+  .features__grid { grid-template-columns: repeat(2, 1fr); }
+  .footer__inner  { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* =============================================================================
+   §3.7 — prefers-reduced-motion (substrate-enforced)
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .cta, .nav__item, .footer__link, .form-field__input, .form-field__textarea {
+    transition: none;
+  }
+}

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca docs home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link type-caption">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">OVERVIEW</p>
+      <h1 class="docs-content__page-title type-display">Verdaca docs</h1>
+
+      <p class="type-body-editorial">This documentation covers Verdaca's deliberation platform &mdash; how it is architected, how to run your first session, and how to extend it with custom agents and adapter substrates. It is written for practitioners: consultants, engineers, and technical leads who need to understand the system well enough to configure and deploy it.</p>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">Start with the Conceptual model before touching configuration &mdash; the two-axis pluggability diagram is the key to understanding every other section.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">What's in these docs</h2>
+
+      <ul class="type-body-editorial">
+        <li><strong>Overview</strong> (this page) &mdash; What Verdaca is and how these docs are organized.</li>
+        <li><strong>Getting started</strong> &mdash; Installation, first session, and configuration essentials.</li>
+        <li><strong>Conceptual model</strong> &mdash; Two-axis architecture, deliberation loop, and kernel responsibilities.</li>
+        <li><strong>Agent catalog</strong> &mdash; Available personas, capabilities, and how to load them.</li>
+        <li><strong>Build your own agent</strong> &mdash; Define a custom persona and bind it to a session.</li>
+        <li><strong>Workflow recipes</strong> &mdash; Pre-built deliberation patterns ready to run or adapt.</li>
+        <li><strong>Output review</strong> &mdash; Scoring, audit trails, and custom rubrics.</li>
+      </ul>
+
+      <h2 class="docs-content__section-heading type-headline">Quick start</h2>
+
+      <p class="type-body-editorial">Three lines to run a deliberation session. Install the package, initialize a Studio, and pass a workflow name.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Code example">
+        <pre><code># Install Verdaca
+pip install verdaca
+
+# Initialise a session
+from verdaca import Studio
+session = Studio.create()
+result  = session.run("[workflow-placeholder]")</code></pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Architecture at a glance</h2>
+
+      <p class="type-body-editorial">Verdaca is organized on two independent axes: swap the agent personas horizontally, swap the substrate adapters vertically. Neither axis requires changing the other.</p>
+
+      <div class="docs-diagram" role="img" aria-label="Two-axis pluggability architecture diagram">
+        <pre>
+  HORIZONTAL AXIS — PLUG-IN PERSONAS
+  ┌─────────────┬─────────────┬─────────────┬─────────────┐
+  │   UX expert │  Data sci.  │ Legal csl.  │ Sec. arch.  │
+  └──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┘
+         │             │             │             │
+         ▼             ▼             ▼             ▼
+  ┌─────────────────────────────────────────────────────────┐
+  │                  VERDACA KERNEL                         │
+  └───────────────────────┬─────────────────────────────────┘
+                          │
+  VERTICAL AXIS — SUBSTRATE-NEUTRAL ADAPTERS
+  ┌──────────┬────────────┴──────────┬──────────────────────┐
+  │  Memory  │     LLM provider      │  Compaction / output │
+  │ Mem0│Letta│ Anthropic │ OpenAI   │  Forge  │  Caveman   │
+  └──────────┴───────────────────────┴──────────────────────┘
+        </pre>
+      </div>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

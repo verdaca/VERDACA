@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-mode="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workflow Recipes — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca docs home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link type-caption">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link type-caption">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">BUILD</p>
+      <h1 class="docs-content__page-title type-display">Workflow recipes</h1>
+
+      <p class="type-body-editorial">Workflow recipes are pre-configured deliberation sessions: persona selection, round count, gate thresholds, and output format are already set. Use them as production-ready templates for common advisory tasks, or as a reference scaffold when you need something they do not cover.</p>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">Adapt a recipe if the domain matches but the panel composition does not. Start from scratch only if the deliberation structure itself needs to change &mdash; different round logic, non-standard gate specs, or an output format the recipe cannot produce.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Available recipes</h2>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Recipe</th>
+            <th>Use case</th>
+            <th>Personas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>code-review</code></td>
+            <td>Multi-persona adversarial review of a code artifact or pull request</td>
+            <td>Winston, Amelia, Quinn</td>
+          </tr>
+          <tr>
+            <td><code>requirements-analysis</code></td>
+            <td>Structured decomposition of a brief or spec into testable acceptance criteria</td>
+            <td>John, Winston, Amelia</td>
+          </tr>
+          <tr>
+            <td><code>security-audit</code></td>
+            <td>Threat-surface analysis and control-gap identification against a defined scope</td>
+            <td>Winston, Quinn, custom security persona</td>
+          </tr>
+          <tr>
+            <td><code>ux-critique</code></td>
+            <td>Structured critique of a screen, flow, or component hierarchy against UX heuristics</td>
+            <td>Sally, Caravaggio, Quinn</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="docs-content__section-heading type-headline">Using a recipe</h2>
+
+      <p class="type-body-editorial">Load a recipe by name, create a Studio session from it, and pass the artifact or question you want deliberated. The recipe's persona panel and gate configuration load automatically.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Recipe usage example">
+        <pre><code>from verdaca.recipes import load_recipe
+
+recipe  = load_recipe("code-review")
+session = Studio.from_recipe(recipe)
+
+result = session.run(
+    input="path/to/pull_request_diff.patch",
+)</code></pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Adapting a recipe</h2>
+
+      <p class="type-body-editorial">Replace any persona in a loaded recipe with a custom one before creating the session. The replacement must satisfy the same port-category contracts as the persona it replaces.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Recipe adaptation example">
+        <pre><code>recipe = load_recipe("code-review")
+
+# Override a persona in the recipe
+recipe.replace_persona("reviewer", my_custom_reviewer)
+
+session = Studio.from_recipe(recipe)</code></pre>
+      </div>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">CAUTION</p>
+        <p class="docs-callout__body">When replacing a persona in a recipe, confirm that your replacement's output format matches the slot it fills &mdash; a mismatch in output schema will cause the synthesis step to fail at runtime, not at recipe load time.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Creating a recipe</h2>
+
+      <p class="type-body-editorial">Define a recipe from named personas, a round count, and a gate specification. Save it to a path and load it like any other recipe in future sessions.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Recipe creation example">
+        <pre><code>from verdaca.recipes import Recipe
+
+my_recipe = Recipe(
+    name="m-and-a-diligence",
+    personas=["sally", "winston"],
+    rounds=4,
+    gate="consensus-threshold-0.75",
+)
+
+my_recipe.save("./recipes/m-and-a-diligence.yaml")</code></pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Next steps</h2>
+
+      <ul class="type-body-editorial">
+        <li><a href="output-review.html">Output review</a> &mdash; evaluate recipe output quality</li>
+        <li><a href="build-your-own-agent.html">Build your own agent</a> &mdash; create custom personas for recipes</li>
+      </ul>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

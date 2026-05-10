@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conceptual Model — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca docs home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link type-caption">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">CONCEPTS</p>
+      <h1 class="docs-content__page-title type-display">Conceptual model</h1>
+
+      <p class="type-body-editorial">Verdaca's architecture is built around two independent axes of extensibility: the horizontal persona layer, where you compose who deliberates, and the vertical adapter layer, where you configure what infrastructure those personas use. Understanding how the kernel mediates between them is the key to extending the platform without breaking existing workflows.</p>
+
+      <h2 class="docs-content__section-heading type-headline">Two-axis pluggability</h2>
+
+      <p class="type-body-editorial">The horizontal axis controls deliberation composition &mdash; which personas are in the room and in what sequence they reason. The vertical axis controls substrate &mdash; which memory backend, model provider, and compaction engine the kernel routes through. A change on one axis has no effect on the other, because both axes talk only to the port contracts in between.</p>
+
+      <div class="docs-diagram" role="img" aria-label="Two-axis pluggability layered architecture">
+        <pre>
+╔════════════════════════════════════════════════════════════════════╗
+║  WORKFLOWS   "Strategy review" · "Code review" · "Hiring"          ║
+║              · "M&A diligence" · "Architecture review"             ║
+╠════════════════════════════════════════════════════════════════════╣
+║  AGENTS      Plug-in personas (the "who" in the room)              ║
+║  ┌────────┬────────┬────────┬────────┬────────┐                    ║
+║  │Strategy│  UX/   │Software│  Data  │  Your  │                    ║
+║  │  pack  │ Design │  Eng   │Science │ custom │                    ║
+║  │        │  pack  │  pack  │  pack  │  pack  │                    ║
+║  └────────┴────────┴────────┴────────┴────────┘                    ║
+╠════════════════════════════════════════════════════════════════════╣
+║  KERNEL      Orchestration · Routing · Provenance                  ║
+║              (knows nothing about domain — just protocol)          ║
+╠════════════════════════════════════════════════════════════════════╣
+║  PORTS       Memory · LLM Proxy · Compaction · QA · Coord          ║
+╠════════════════════════════════════════════════════════════════════╣
+║  ADAPTERS    Mem0/Letta · Anthropic/OpenAI · Forge/Caveman/...     ║
+╚════════════════════════════════════════════════════════════════════╝
+        </pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Deliberation loop</h2>
+
+      <p class="type-body-editorial">Each persona in a session passes through a fixed five-phase loop: receive the current context, reason against its role constraints, propose an output, pass through the quality gate, and emit to the synthesis layer. Proposals that fail the gate re-enter the reason phase rather than propagating downstream. The kernel coordinates sequencing and provenance; it does not interpret domain content.</p>
+
+      <div class="docs-diagram" role="img" aria-label="Deliberation loop diagram">
+        <pre>
+  INPUT
+    │
+    ▼
+  RECEIVE  →  REASON  →  PROPOSE  →  GATE  →  EMIT
+    │                                  │
+    │         (per persona)            │ reject: re-reason
+    └──────────────────────────────────┘
+        </pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Kernel responsibilities</h2>
+
+      <p class="type-body-editorial">The kernel handles three things and nothing else:</p>
+
+      <ul class="type-body-editorial">
+        <li>Route inputs and inter-agent messages according to the workflow graph, without applying domain logic</li>
+        <li>Track provenance &mdash; which persona produced which claim, in which round, and with what gate result</li>
+        <li>Enforce the port contracts at every adapter boundary and reject calls that violate the interface</li>
+      </ul>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">The kernel has no domain knowledge and applies no editorial judgment. If two personas reach contradictory conclusions, both are preserved in the output; resolution is the human practitioner's call, not the kernel's.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Adapter contract</h2>
+
+      <p class="type-body-editorial">Every adapter in Verdaca implements the same typed protocol for its port category. The memory adapter contract, for example, requires three methods. Any class that satisfies the protocol &mdash; including custom implementations &mdash; is a valid drop-in.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Memory adapter contract example">
+        <pre><code>class MemoryAdapter(Protocol):
+    def store(self, key: str, value: Any) -&gt; None: ...
+    def retrieve(self, key: str) -&gt; Optional[Any]: ...
+    def search(self, query: str, top_k: int) -&gt; list[Any]: ...</code></pre>
+      </div>
+
+      <hr>
+
+      <h2 class="docs-content__section-heading type-headline">Vendored components</h2>
+
+      <p class="type-body-editorial">These are the pinned components Verdaca vendors and validates at the adapter layer. Each pin is a specific version or commit SHA chosen for behavioral reproducibility &mdash; both Apache-2.0 and MIT entries are license-clean for commercial distribution, and "validates" means Verdaca's contract tests run against the pinned artifact on every build, not against the upstream tip.</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Purpose</th>
+            <th>Pinned version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>mem0</code></td>
+            <td>Memory adapter &mdash; hybrid vector + graph store</td>
+            <td><code>v1.0.11</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>letta</code></td>
+            <td>Memory adapter &mdash; stateful memory management</td>
+            <td><code>v1.10.3</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>tonl</code></td>
+            <td>Serialization &mdash; structured agent message format</td>
+            <td><code>pinned SHA</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>beads</code></td>
+            <td>Versioned-state &mdash; conversation state versioning</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>forge</code></td>
+            <td>Compaction &mdash; context window compaction</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>pi-mono</code></td>
+            <td>Cost-meter &mdash; per-session token cost tracking</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>rtk</code></td>
+            <td>LLM-proxy &mdash; model-provider routing adapter</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="type-body-editorial">Pinned versions are locked in pyproject.toml and verified against the no-waiver conformance suite on every release; a version bump requires a passing test run before the pin advances.</p>
+
+    </main>
+
+  </div>
+
+</body>
+</html>

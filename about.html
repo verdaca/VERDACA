@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — Verdaca</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <!-- NAV: shared composition — §6.1 wordmark + §6.5 nav items -->
+  <header class="site-nav" role="banner">
+    <div class="container nav__inner">
+      <a href="index.html" class="nav__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <nav class="nav__links" aria-label="Primary navigation">
+        <a href="index.html#product"              class="nav__item type-eyebrow">PRODUCT</a>
+        <a href="docs/index.html"    class="nav__item type-eyebrow">DOCS</a>
+        <a href="about.html"                  class="nav__item type-eyebrow" aria-current="page">ABOUT</a>
+        <a href="contact.html"                class="nav__item type-eyebrow">CONTACT</a>
+        <a href="index.html#pricing"          class="nav__item nav__item--cta type-eyebrow">GET STARTED</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       ABOUT HERO — §6.5 eyebrow + type.display headline
+       ===================================================================== -->
+  <section class="about-hero" aria-labelledby="about-headline">
+    <div class="container">
+      <p class="about-hero__eyebrow type-eyebrow">ABOUT VERDACA</p>
+      <h1 id="about-headline" class="about-hero__headline type-display">Built on commitments, not convenience.</h1>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       THREE SOPHIA PILLARS — §6.6 pull-quote primitive at type.narrative-hero
+       Q-#2-7 disposition: "39px narrative-hero; substrate §6.6 explicitly
+       contemplates hero use; brand-narrative page is a hero-class moment."
+       Pillar copy: Sophia 3 pillars verbatim from docs/18.04.2026.md:
+         1. "We own the box, not every bolt."
+         2. "Our supplier list is a quality signal."
+         3. "Replaceable by design, not by accident."
+       ===================================================================== -->
+  <div class="about-pillars" aria-label="Three pillars">
+    <div class="container">
+
+      <article class="pillar" aria-labelledby="pillar-1-quote">
+        <!-- §6.6 pull-quote: accent rule via .pillar__quote::before + type.narrative-hero -->
+        <blockquote class="pillar__quote type-narrative-hero" id="pillar-1-quote">
+          &ldquo;We own the box, not every bolt.&rdquo;
+        </blockquote>
+        <p class="pillar__attribution type-body-editorial">We architect the deliberation platform and own the port contracts that make it composable — not every component underneath. The substrate layer is openly licensed, pinned, and auditable. Our edge is in the orchestration, the quality gates, and the deliberation protocol — not in controlling infrastructure you could run yourself.</p>
+      </article>
+
+      <article class="pillar" aria-labelledby="pillar-2-quote">
+        <blockquote class="pillar__quote type-narrative-hero" id="pillar-2-quote">
+          &ldquo;Our supplier list is a quality signal.&rdquo;
+        </blockquote>
+        <p class="pillar__attribution type-body-editorial">Every component in the adapter layer was evaluated against production-grade alternatives before it was pinned. The version list is not decoration — it's evidence of a decision. When something better arrives, we re-evaluate, re-test, and re-pin. The list changes slowly and deliberately.</p>
+      </article>
+
+      <article class="pillar" aria-labelledby="pillar-3-quote">
+        <blockquote class="pillar__quote type-narrative-hero" id="pillar-3-quote">
+          &ldquo;Replaceable by design, not by accident.&rdquo;
+        </blockquote>
+        <p class="pillar__attribution type-body-editorial">The port contracts that govern memory, compaction, and model routing are the most durable thing we ship. Any adapter that passes the no-waiver conformance suite is a valid drop-in. We build for replaceability because our clients' requirements change and their infrastructure evolves — an architecture that requires our blessing to extend is a liability, not a feature.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <!-- S3 — Supplier-cite (§6.4 BOM; inherited from Phase 1; R6 in-flow) -->
+  <section class="suppliers" aria-labelledby="about-suppliers-eyebrow">
+    <div class="container">
+      <p id="about-suppliers-eyebrow" class="suppliers__eyebrow type-eyebrow">SOURCED, VETTED, PINNED</p>
+      <ul class="suppliers__list">
+        <li class="suppliers__row type-mono-cite">
+          <span class="field">MEM0</span><span class="suppliers__separator">&middot;</span><span class="field">memory</span><span class="suppliers__separator">&middot;</span><span class="field">v1.0.11</span><span class="suppliers__separator">&middot;</span><span class="field">Apache-2.0</span>
+        </li>
+        <li class="suppliers__row type-mono-cite">
+          <span class="field">LETTA</span><span class="suppliers__separator">&middot;</span><span class="field">memory</span><span class="suppliers__separator">&middot;</span><span class="field">v1.10.3</span><span class="suppliers__separator">&middot;</span><span class="field">Apache-2.0</span>
+        </li>
+      </ul>
+      <hr class="suppliers__rule">
+    </div>
+  </section>
+
+  <!-- FOOTER: shared composition -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__wordmark-col">
+          <a href="index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="index.html#product" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="index.html#pricing" class="footer__link type-caption">Get started</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">DOCS</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="docs/index.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

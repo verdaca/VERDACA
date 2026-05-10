@@ -1,0 +1,547 @@
+/* =============================================================================
+   Verdaca Phase 2 — docs/styles.css
+   Substrate: design-system-substrate-v0.1 (workshop-binding)
+   Inherits: Phase 1 §3 / §4 / §5 atomic tokens verbatim.
+   Extends: dark-mode semantic layer (PD-T2-MODE DARK pages) + docs-frame
+            composition (header · sidebar · content) + callout · code-block · diagram.
+   Light pages: index / getting-started / conceptual-model / agent-catalog
+   Dark pages:  build-your-own-agent / workflow-recipes / output-review
+   Mode declared once at <html data-mode="..."> per R2. No inline overrides.
+   Composition only per R4. Token reference only per R1.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Web font loading per R10 (font-display: swap)
+   ----------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@1,400&display=swap");
+
+/* =============================================================================
+   §3 — Atomic tokens (verbatim)
+   ============================================================================= */
+:root {
+  --color-verdaca-oxblood:  #6B1F25;
+  --color-verdaca-charcoal: #1F2226;
+  --color-verdaca-cream:    #F2EDE2;
+  --color-verdaca-graphite: #42454A;
+  --color-verdaca-bronze:   #967853;
+  --color-verdaca-steel:    #979CA3;
+
+  --font-family-sans:  "Inter Tight", "Söhne", ui-sans-serif, system-ui;
+  --font-family-mono:  "Söhne Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas;
+  --font-family-serif: "GT Sectra", "Source Serif 4", ui-serif, Georgia;
+
+  --font-size-12: 0.8rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-25: 1.563rem;
+  --font-size-31: 1.953rem;
+  --font-size-39: 2.441rem;
+  --font-size-49: 3.052rem;
+  --font-size-61: 3.815rem;
+
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+
+  --font-tracking-marque-body: 0.04em;
+  --font-tracking-eyebrow:     0.12em;
+  --font-tracking-body:        0;
+  --font-tracking-mono-cite:   0;
+
+  --font-lineheight-tight:   1.15;
+  --font-lineheight-snug:    1.30;
+  --font-lineheight-normal:  1.55;
+  --font-lineheight-relaxed: 1.65;
+
+  --space-4:   0.25rem;
+  --space-8:   0.5rem;
+  --space-12:  0.75rem;
+  --space-16:  1rem;
+  --space-24:  1.5rem;
+  --space-32:  2rem;
+  --space-48:  3rem;
+  --space-64:  4rem;
+  --space-96:  6rem;
+  --space-128: 8rem;
+
+  --container-max:             1280px;
+  --container-padding-desktop: var(--space-32);
+  --container-padding-tablet:  var(--space-24);
+  --container-padding-mobile:  var(--space-16);
+
+  --border-width-hairline: 1px;
+  --border-width-thick:    2px;
+  --radius-sharp:  0;
+
+  --motion-duration-fast:     120ms;
+  --motion-easing-out:        cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+/* =============================================================================
+   §4 — Semantic color layer: LIGHT canonical
+   ============================================================================= */
+:root[data-mode="light"] {
+  --color-bg-canvas:          var(--color-verdaca-cream);
+  --color-bg-elevated:        var(--color-verdaca-cream);
+  --color-bg-inset:           var(--color-verdaca-cream);
+  --color-text-primary:       var(--color-verdaca-charcoal);
+  --color-text-secondary:     var(--color-verdaca-graphite);
+  --color-text-caption:       var(--color-verdaca-graphite);
+  --color-text-accent:        var(--color-verdaca-oxblood);
+  --color-rule-default:       var(--color-verdaca-graphite);
+  --color-rule-accent:        var(--color-verdaca-oxblood);
+  --color-supplier-line:      var(--color-verdaca-charcoal);
+  --color-caveat-footnote:    var(--color-verdaca-graphite);
+  --color-sidebar-active:     var(--color-verdaca-oxblood);
+  --color-code-text:          var(--color-verdaca-charcoal);
+}
+
+/* =============================================================================
+   §4 — Semantic color layer: DARK (PD-T2-MODE: build-your-own-agent /
+   workflow-recipes / output-review)
+   WCAG note: --color-text-accent uses cream (not oxblood) in dark mode because
+   oxblood (#6B1F25) on charcoal (#1F2226) yields ~1.1:1 contrast — WCAG AA fail.
+   --color-rule-accent (decorative 1px rule, not text) retains oxblood; decorative
+   elements are not subject to the 4.5:1 text contrast requirement.
+   --color-metric-headline uses oxblood at large display sizes (49px semibold);
+   at 49px+ the 3:1 WCAG AA large-text threshold is met. See Probe 5 table.
+   ============================================================================= */
+:root[data-mode="dark"] {
+  --color-bg-canvas:          var(--color-verdaca-charcoal);
+  --color-bg-elevated:        var(--color-verdaca-charcoal);
+  --color-bg-inset:           var(--color-verdaca-charcoal);
+  --color-text-primary:       var(--color-verdaca-cream);
+  --color-text-secondary:     var(--color-verdaca-steel);
+  --color-text-caption:       var(--color-verdaca-steel);
+  --color-text-accent:        var(--color-verdaca-cream);   /* cream on charcoal = 14.5:1 ✓ */
+  --color-rule-default:       var(--color-verdaca-steel);
+  --color-rule-accent:        var(--color-verdaca-oxblood); /* decorative only */
+  --color-supplier-line:      var(--color-verdaca-cream);
+  --color-caveat-footnote:    var(--color-verdaca-steel);
+  --color-sidebar-active:     var(--color-verdaca-cream);
+  --color-code-text:          var(--color-verdaca-cream);
+}
+
+/* =============================================================================
+   Base reset
+   ============================================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html {
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-16);
+  line-height: var(--font-lineheight-normal);
+  color: var(--color-text-primary);
+  min-height: 100dvh;
+}
+img, svg { display: block; max-width: 100%; }
+
+/* =============================================================================
+   §5.1 — Type roles (verbatim)
+   ============================================================================= */
+.type-marque-header {
+  font-family:    var(--font-family-mono);
+  font-size:      var(--font-size-31);
+  font-weight:    var(--font-weight-semibold);
+  letter-spacing: var(--font-tracking-marque-body);
+  line-height:    var(--font-lineheight-snug);
+  text-transform: uppercase;
+}
+.type-display {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-49);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-lineheight-tight);
+}
+.type-headline {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-31);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--font-lineheight-snug);
+}
+.type-subheading {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-20);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--font-lineheight-snug);
+}
+.type-body {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-16);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-normal);
+}
+.type-body-editorial {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-16);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-relaxed);
+}
+/* type.mono-cite — §6 code-block + §6.4 BOM rows */
+.type-mono-cite {
+  font-family:    var(--font-family-mono);
+  font-size:      var(--font-size-16);
+  font-weight:    var(--font-weight-regular);
+  letter-spacing: var(--font-tracking-mono-cite);
+  line-height:    var(--font-lineheight-normal);
+}
+.type-eyebrow {
+  font-family:    var(--font-family-sans);
+  font-size:      var(--font-size-12);
+  font-weight:    var(--font-weight-medium);
+  letter-spacing: var(--font-tracking-eyebrow);
+  line-height:    var(--font-lineheight-snug);
+  text-transform: uppercase;
+}
+.type-caption {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-12);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-lineheight-normal);
+}
+.type-label {
+  font-family: var(--font-family-sans);
+  font-size:   var(--font-size-12);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--font-lineheight-snug);
+}
+
+/* =============================================================================
+   Layout — container
+   ============================================================================= */
+.container {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left:  var(--container-padding-desktop);
+  padding-right: var(--container-padding-desktop);
+}
+
+/* =============================================================================
+   Docs frame — header
+   §6.1 wordmark slot only (not §6.2 product-shell badge per Q-#2-6 disposition:
+   "Docs is not a product shell; plain §6.1 wordmark is correct.")
+   ============================================================================= */
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-bg-canvas);
+  border-bottom: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  /* steel at 30% in both modes — sufficient rule visibility */
+}
+.docs-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top:    var(--space-16);
+  padding-bottom: var(--space-16);
+}
+/* §6.1 wordmark in docs header */
+.docs-header__wordmark {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  display: block;
+}
+.docs-header__home-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--motion-duration-fast) var(--motion-easing-out);
+}
+.docs-header__home-link:hover { color: var(--color-text-primary); }
+
+/* =============================================================================
+   Docs frame — layout (sidebar + content)
+   ============================================================================= */
+.docs-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100dvh - 56px);   /* fill below header */
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+/* =============================================================================
+   Docs frame — sidebar (§6.5 eyebrow + caption nav; <details> mobile collapse)
+   Q-#2-5 disposition: <details>/<summary>; native HTML; no JS; R10 minimal-tech.
+   <summary> styled with type.eyebrow; expanded state shows full sidebar tree.
+   Active item: .docs-sidebar__link--active uses --color-sidebar-active accent.
+   ============================================================================= */
+.docs-sidebar {
+  /* Sidebar shares canvas background; visual separation via 1px hairline composition.
+     Phase 1 .tile border precedent: rgba(66, 69, 74, 0.30) = graphite 30% per §4 rule.default.
+     R1+R4 CLEAN: no new color value; opacity-applied derivative of substrate §3.1 atomic. */
+  background: var(--color-bg-canvas);
+  border-right: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+  padding: var(--space-32) var(--space-24);
+  position: sticky;
+  top: 56px;           /* below docs-header */
+  height: calc(100dvh - 56px);
+  overflow-y: auto;
+}
+.docs-sidebar__mobile-toggle { border: none; }
+/* <summary>: §6.5 eyebrow styling for collapsed label */
+.docs-sidebar__toggle-label {
+  display: block;
+  cursor: pointer;
+  color: var(--color-text-accent);
+  margin-bottom: var(--space-16);
+  list-style: none;    /* remove default marker */
+}
+.docs-sidebar__toggle-label::-webkit-details-marker { display: none; }
+
+/* Sidebar section group */
+.docs-sidebar__section {
+  margin-bottom: var(--space-32);
+}
+/* §6.5 eyebrow as section heading in sidebar */
+.docs-sidebar__section-heading {
+  margin: 0 0 var(--space-8) 0;
+  color: var(--color-text-accent);
+}
+.docs-sidebar__nav { list-style: none; margin: 0; padding: 0; }
+.docs-sidebar__nav-item { margin: 0; }
+.docs-sidebar__link {
+  display: block;
+  padding: var(--space-4) 0;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--motion-duration-fast) var(--motion-easing-out);
+}
+.docs-sidebar__link:hover { color: var(--color-text-primary); }
+/* Active item: §6.5 eyebrow accent via --color-sidebar-active */
+.docs-sidebar__link--active {
+  color: var(--color-sidebar-active);
+  font-weight: var(--font-weight-medium);
+}
+.docs-sidebar__link:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-rule-accent);
+  outline-offset: 2px;
+}
+/* Dark mode: sidebar border-right = steel 30% (--color-rule-default in dark = steel #979CA3).
+   Opacity-applied derivative of substrate §3.1 atomic; R1+R4 CLEAN. */
+:root[data-mode="dark"] .docs-sidebar {
+  border-right-color: rgba(151, 156, 163, 0.30);   /* steel 30% per §4 dark rule.default */
+}
+/* Dark mode: code-block / diagram / inline-code border = cream 20% on charcoal.
+   Opacity-applied derivative of substrate §3.1 --color-verdaca-cream; R1+R4 CLEAN. */
+:root[data-mode="dark"] .docs-code-block,
+:root[data-mode="dark"] .docs-diagram {
+  border-color: rgba(242, 237, 226, 0.20);   /* cream 20% on charcoal */
+}
+:root[data-mode="dark"] .docs-content :not(pre) > code,
+:root[data-mode="dark"] .docs-table td code {
+  border-color: rgba(242, 237, 226, 0.20);
+}
+
+/* =============================================================================
+   Docs frame — main content
+   ============================================================================= */
+.docs-content {
+  padding: var(--space-48) var(--space-64);
+  max-width: 72ch;   /* prose width discipline per substrate §6.6 60ch + headings */
+}
+.docs-content__page-eyebrow {
+  margin: 0 0 var(--space-8) 0;
+  color: var(--color-text-accent);
+}
+.docs-content__page-title {
+  margin: 0 0 var(--space-48) 0;
+  color: var(--color-text-primary);
+}
+.docs-content__section-heading {
+  margin: var(--space-48) 0 var(--space-16) 0;
+  color: var(--color-text-primary);
+}
+.docs-content__section-subheading {
+  margin: var(--space-32) 0 var(--space-12) 0;
+  color: var(--color-text-primary);
+}
+.docs-content p {
+  margin: 0 0 var(--space-16) 0;
+  color: var(--color-text-primary);
+  max-width: 66ch;
+}
+.docs-content ul, .docs-content ol {
+  margin: 0 0 var(--space-16) var(--space-24);
+  color: var(--color-text-primary);
+}
+.docs-content li { margin-bottom: var(--space-8); }
+.docs-content a {
+  color: var(--color-text-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.docs-content a:hover { opacity: 0.80; }
+.docs-content hr {
+  border: 0;
+  border-top: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  margin: var(--space-48) 0;
+}
+
+/* =============================================================================
+   Docs — code block (PD-T2-CODE-BLOCK)
+   type.mono-cite; monochrome (no syntax highlighting); <pre>+<code> wrapper.
+   Visual demarcation via 1px hairline border; no background tint (--color-code-bg removed
+   per advisor #4 revision; R1+R4 discipline: composition via border, not bg-color invention).
+   ============================================================================= */
+.docs-code-block {
+  margin: var(--space-24) 0;
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);   /* graphite 30%; Phase 1 .tile precedent */
+  border-radius: var(--radius-sharp);
+  overflow-x: auto;
+}
+.docs-code-block pre {
+  margin: 0;
+  padding: var(--space-24);
+}
+.docs-code-block code,
+.docs-content code {
+  font-family:    var(--font-family-mono);
+  font-size:      0.875rem;           /* 14px; smaller for code density */
+  font-weight:    var(--font-weight-regular);
+  letter-spacing: var(--font-tracking-mono-cite);
+  line-height:    var(--font-lineheight-relaxed);
+  color:          var(--color-code-text);
+}
+/* Inline code */
+.docs-content :not(pre) > code {
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+  padding: 0.125em 0.375em;
+  border-radius: var(--radius-subtle);
+}
+
+/* =============================================================================
+   Docs — callout (PD-T2-CALLOUT)
+   Composition: §6.5 eyebrow severity label + §6.6-pattern accent rule above
+   (same R4-clean composition reuse as landing pricing-cta; flagged per #2 §5).
+   Vocabulary: ADVISORY / CAUTION / IMPORTANT per advisor Q-#2 commentary.
+   Monochrome: no per-severity fill color; severity differentiated via eyebrow only.
+   ============================================================================= */
+.docs-callout {
+  margin: var(--space-24) 0;
+  border-top: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  border-left: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  border-right: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  border-bottom: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+  padding: var(--space-16) var(--space-24);
+  position: relative;
+  padding-top: var(--space-32);
+}
+/* §6.6-pattern accent rule above callout block (composition; not new primitive) */
+.docs-callout::before {
+  content: "";
+  display: block;
+  width: var(--space-48);
+  height: 0;
+  border-top: var(--border-width-hairline) solid var(--color-rule-accent);
+  position: absolute;
+  top: -1px;   /* aligns flush with top border */
+  left: 0;
+}
+/* §6.5 eyebrow as severity label */
+.docs-callout__severity {
+  margin: 0 0 var(--space-8) 0;
+  color: var(--color-text-accent);
+}
+.docs-callout__body {
+  margin: 0;
+  color: var(--color-text-primary);
+  max-width: 66ch;
+}
+
+/* =============================================================================
+   Docs — diagram block (PD-T2-DIAGRAM)
+   ASCII art in <pre>; no external image; type.mono-cite; monochrome.
+   Parent §3.3 two-axis ASCII verbatim is the prototype; same treatment.
+   ============================================================================= */
+.docs-diagram {
+  margin: var(--space-24) 0;
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);   /* graphite 30%; Phase 1 .tile precedent */
+  overflow-x: auto;
+}
+.docs-diagram pre {
+  margin: 0;
+  padding: var(--space-24);
+  font-family:    var(--font-family-mono);
+  font-size:      0.875rem;
+  font-weight:    var(--font-weight-regular);
+  line-height:    var(--font-lineheight-relaxed);
+  color:          var(--color-code-text);
+  white-space:    pre;
+}
+
+/* =============================================================================
+   Docs — table (vendored-components composition-level table on conceptual-model.md)
+   3-column layout per PD-X-SUPPLIER-SCOPE Reading A.
+   ============================================================================= */
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-24) 0;
+}
+.docs-table thead tr {
+  border-bottom: var(--border-width-thick) solid rgba(151, 156, 163, 0.30);
+}
+.docs-table th {
+  text-align: left;
+  padding: var(--space-8) var(--space-16) var(--space-8) 0;
+  color: var(--color-text-accent);
+  font-family:    var(--font-family-sans);
+  font-size:      var(--font-size-12);
+  font-weight:    var(--font-weight-medium);
+  letter-spacing: var(--font-tracking-eyebrow);
+  text-transform: uppercase;
+}
+.docs-table td {
+  padding: var(--space-12) var(--space-16) var(--space-12) 0;
+  color: var(--color-text-secondary);
+  border-bottom: var(--border-width-hairline) solid rgba(151, 156, 163, 0.20);
+  vertical-align: top;
+}
+.docs-table td code {
+  font-family:    var(--font-family-mono);
+  font-size:      0.875rem;
+  color:          var(--color-code-text);
+  border: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+  padding:        0.125em 0.375em;
+}
+
+/* =============================================================================
+   Mobile collapse (<768px)
+   ============================================================================= */
+@media (max-width: 767px) {
+  .docs-layout {
+    grid-template-columns: 1fr;
+  }
+  .docs-sidebar {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: var(--border-width-hairline) solid rgba(151, 156, 163, 0.30);
+    padding: var(--space-16);
+  }
+  .docs-content {
+    padding: var(--space-32) var(--space-16);
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .docs-layout { grid-template-columns: 200px 1fr; }
+  .docs-content { padding: var(--space-48) var(--space-32); }
+}
+
+/* =============================================================================
+   §3.7 — prefers-reduced-motion
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .docs-header__home-link,
+  .docs-sidebar__link { transition: none; }
+}
