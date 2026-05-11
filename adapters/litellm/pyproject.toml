@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-adapter-litellm"
+version = "0.1.0"
+description = "Verdaca LLM Proxy port adapter — PyPI-pinned wrap of litellm SDK (ADR-9.2-V5 v0.6; sole LLMProxyPort substrate post-H2-falsification)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "pydantic>=2.0",
+    "litellm>=1.83.14,<2.0",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+# litellm resolves from PyPI registry; sha256 lock recorded in workspace-root
+# uv.lock at Cleo 9.6 supply-chain review.
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
