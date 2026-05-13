@@ -227,25 +227,25 @@ flowchart LR
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '16px'}}}%%
-flowchart TB
-    subgraph CORE["The Box — universal kernel (same code for every client)"]
-        direction LR
+flowchart LR
+    subgraph CORE["The Box"]
+        direction TB
         K1["MAC 3-cycle engine"]:::core
         K2["12 quality gates"]:::core
         K3["Memory facade"]:::core
         K4["Compression + cost tracking"]:::core
     end
 
-    subgraph TUNING["Per-client configuration (no engineering)"]
-        direction LR
+    subgraph TUNING["Per-client config"]
+        direction TB
         C1["Agent roster<br/>which voices to convene"]:::tune
         C2["Gate weights<br/>what 'good' means here"]:::tune
         C3["Memory schema<br/>client vocabulary"]:::tune
         C4["Workflow template<br/>session shape"]:::tune
     end
 
-    subgraph VERTICALS["Same box, different clients"]
-        direction LR
+    subgraph VERTICALS["Client verticals"]
+        direction TB
         V1["M&A / corp dev<br/>(PE firms)"]:::vert
         V2["Exec hiring panels<br/>(search firms)"]:::vert
         V3["Product launches<br/>(go-to-market)"]:::vert
