@@ -8,11 +8,11 @@
 
 | You are… | Read in this order |
 |---|---|
-| 👔 **CTO / strategic buyer** | §1 Why This Matters → Diagram 2 (Buyer's Journey) → Diagram 4 (Trust Stack) |
-| 💼 **Investor / strategic skeptic** | §1 Why This Matters → Diagram 1 (Category Map) → Diagram 3 (Signal vs Proxy) |
-| 🛠️ **Engineer evaluating to build** | §2 How It's Built → Diagram 6 (Top-level arch) → Diagram 10 (Memory dual-adapter) |
-| 🤝 **AI engineer being recruited** | §1 first to engage, §2 second to convince. Pay attention to Diagram 5 (Contract-Test Gate) |
-| 📋 **Engineer tracking build progress** | §2 How It's Built → Diagram 7 (Stage 9 sequence) — colors track status |
+| 👔 **CTO / strategic buyer** | §1 → Diagram 2 (Buyer's Journey) → Diagram 7 (Universal Box) → Diagram 4 (Trust Stack) |
+| 💼 **Investor / strategic skeptic** | §1 → Diagram 1 (Category Map) → Diagram 3 (Signal vs Proxy) → Diagram 7 (Universal Box) |
+| 🛠️ **Engineer evaluating to build** | §2 → Diagram 8 (Top-level arch) → Diagram 12 (Memory dual-adapter) → Diagram 6 (LLM orchestration) |
+| 🤝 **AI engineer being recruited** | §1 first to engage, §2 second to convince. Pay attention to Diagrams 5 + 6 (substitutability proofs) |
+| 📋 **Engineer tracking build progress** | §2 → Diagram 9 (Stage 9 sequence) — colors track status |
 
 ---
 
@@ -40,19 +40,20 @@ To update progress: find the node in the mermaid block and change the `:::status
 **Question this answers:** "Is Verdaca just another agent framework?"
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px', 'quadrant1Fill': '#86efac', 'quadrant2Fill': '#fef3c7', 'quadrant3Fill': '#e0e7ff', 'quadrant4Fill': '#fecaca'}}}%%
 quadrantChart
-    title Where Verdaca lives — the empty quadrant no one else is filling
-    x-axis "Low cost per outcome" --> "High cost per outcome"
-    y-axis "Outcome resets every session" --> "Outcome compounds across sessions"
-    quadrant-1 "Compounding & cheap — VERDACA"
-    quadrant-2 "Compounding but expensive — McKinsey · BCG · Bain"
-    quadrant-3 "Cheap but disposable — ChatGPT · Claude direct"
-    quadrant-4 "Expensive AND disposable — most agent frameworks"
-    "ChatGPT / Claude direct": [0.15, 0.10]
-    "LangChain / AutoGen / CrewAI": [0.55, 0.20]
-    "Hermes Agent (NousResearch)": [0.35, 0.45]
-    "McKinsey strategy engagement": [0.95, 0.85]
-    "Verdaca": [0.25, 0.90]
+    title Where Verdaca lives
+    x-axis Cheap --> Expensive
+    y-axis Resets --> Compounds
+    quadrant-1 ⭐ Verdaca
+    quadrant-2 Consulting
+    quadrant-3 Direct LLMs
+    quadrant-4 Agent frameworks
+    ChatGPT: [0.15, 0.10]
+    LangChain: [0.55, 0.20]
+    Hermes: [0.35, 0.45]
+    McKinsey: [0.95, 0.85]
+    Verdaca: [0.20, 0.90]
 ```
 
 **Caption:** *The empty quadrant is the bet. The question is no longer "why Verdaca?" — it's "why isn't anyone else here yet?" The answer is in Diagram 3.*
@@ -64,6 +65,7 @@ quadrantChart
 **Question this answers:** "What do I actually get?"
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart LR
     Q["Strategic Question<br/>e.g. 'Should we acquire X?'"]:::input
     S["Session Start<br/>~30 sec config"]:::process
@@ -88,6 +90,7 @@ flowchart LR
 **Question this answers:** "Why can't a competitor just copy this?"
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart LR
     subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
         H1["Skill used"] --> H2["use_count++"]
@@ -116,6 +119,7 @@ flowchart LR
 **Question this answers:** "If I take this memo to my board, can I defend it?"
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart TB
     O["Verdaca Output<br/>(decision memo)"]:::output
 
@@ -139,6 +143,7 @@ flowchart TB
 **Question this answers:** "How do you avoid provider lock-in structurally, not aspirationally?"
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart LR
     K["kernel/memory facade<br/>calls MemoryPort"]:::done
     P["MemoryPort Protocol<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
@@ -160,13 +165,108 @@ flowchart LR
 
 ---
 
+---
+
+## Diagram 6 — LLM Provider Substitutability + Model Orchestration
+
+**Question this answers:** "Are we locked into one AI provider? How do you control cost?"
+
+```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+flowchart LR
+    subgraph TASKS["MAC routes by task type — match cost to need"]
+        direction TB
+        T1["🧠 Strategic decisions<br/>frontier max thinking"]:::task
+        T2["🛠️ Implementation work<br/>frontier high thinking"]:::task
+        T3["📖 File reads × 30 parallel<br/>cheapest tier"]:::task
+        T4["✍️ Mechanical drafting<br/>mid-tier"]:::task
+        T5["🔁 MAC inner loops<br/>local inference"]:::task
+    end
+
+    PORT[("LLMProxyPort<br/>planned 9.4.5")]:::port
+
+    subgraph PROVIDERS["Any provider plugs in via adapter"]
+        direction TB
+        P1["Anthropic Claude<br/>Opus 4.7 · Sonnet 4.6 · Haiku 4.5"]:::done
+        P2["OpenAI / Azure OpenAI"]:::planned
+        P3["OpenRouter — 200+ models"]:::planned
+        P4["Hermes-3 local llama<br/>~$5/mo VPS"]:::planned
+        P5["NVIDIA NIM self-hosted"]:::planned
+    end
+
+    T1 --> PORT
+    T2 --> PORT
+    T3 --> PORT
+    T4 --> PORT
+    T5 --> PORT
+
+    PORT -.adapter.-> P1
+    PORT -.adapter.-> P2
+    PORT -.adapter.-> P3
+    PORT -.adapter.-> P4
+    PORT -.adapter.-> P5
+
+    classDef task fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000
+    classDef port fill:#fbbf24,stroke:#92400e,stroke-width:3px,color:#000
+    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
+    classDef planned fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5
+```
+
+**Caption:** *Two claims in one diagram. **Left:** MAC orchestrates by task type — decisions hit the frontier model, mechanical work hits cheaper tiers, parallel reads use the cheapest model 30 at a time. This is how `~$2.50 / session` is structurally achievable. **Right:** every provider sits behind one port — swap Anthropic for OpenAI for local Hermes-3 with a config change. The same contract-test pattern from Diagram 5 enforces the swap. Provider lock-in is solved structurally, not aspirationally.*
+
+---
+
+## Diagram 7 — Universal Box: One Kernel, Tunable Per Client
+
+**Question this answers:** "Do you build a new product for each vertical, or is this configurable?"
+
+```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+flowchart LR
+    subgraph CORE["The Box — universal kernel (same code for every client)"]
+        direction TB
+        K1["MAC 3-cycle engine"]:::core
+        K2["12 quality gates"]:::core
+        K3["Memory facade"]:::core
+        K4["Compression + cost tracking"]:::core
+    end
+
+    subgraph TUNING["Per-client configuration (no engineering)"]
+        direction TB
+        C1["Agent roster<br/>which voices to convene"]:::tune
+        C2["Gate weights<br/>what 'good' means here"]:::tune
+        C3["Memory schema<br/>client vocabulary"]:::tune
+        C4["Workflow template<br/>session shape"]:::tune
+    end
+
+    subgraph VERTICALS["Same box, different clients"]
+        direction TB
+        V1["M&A / corp dev<br/>(PE firms)"]:::vert
+        V2["Exec hiring panels<br/>(search firms)"]:::vert
+        V3["Product launches<br/>(go-to-market)"]:::vert
+        V4["Vendor selection<br/>(enterprise IT)"]:::vert
+        V5["Strategy retreats<br/>(Fortune 500)"]:::vert
+    end
+
+    CORE -.tuned by.-> TUNING
+    TUNING -.configures.-> VERTICALS
+
+    classDef core fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
+    classDef tune fill:#fbbf24,stroke:#92400e,stroke-width:2px,color:#000
+    classDef vert fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000
+```
+
+**Caption:** *Verdaca's kernel doesn't change per client. What changes is the agent roster, gate weights, memory schema, and workflow template — all YAML, no engineering. The same code that runs an M&A deliberation runs a hiring panel. **This is what "productized BMAD" actually means: the framework is the product, the tuning is the consulting.** A new vertical = configuration, not a new build.*
+
+---
+
 # §2 How It's Built
 
 *Engineering progress tracker — port wiring, adapter status, supply-chain CI. Status colors track build state.*
 
 ---
 
-## Diagram 6 — Top-Level Architecture (everything in one view)
+## Diagram 8 — Top-Level Architecture (everything in one view)
 
 ```mermaid
 flowchart LR
@@ -183,6 +283,11 @@ flowchart LR
         COMP["compression — Caveman"]:::done
         RUN["runtime — 16 agents"]:::done
         PIM["pi-mono — cost"]:::done
+        MAC ~~~ STU
+        STU ~~~ MEM
+        MEM ~~~ COMP
+        COMP ~~~ RUN
+        RUN ~~~ PIM
     end
 
     subgraph PORTS["Ports"]
@@ -217,6 +322,8 @@ flowchart LR
         T1["M-T-VS · SER · MEM (40)"]:::done
         T2["M-T-COST (8)"]:::inflight
         T3["M-T-SKILL (5)"]:::planned
+        T1 ~~~ T2
+        T2 ~~~ T3
     end
 
     SHELL --> KERNEL
@@ -242,7 +349,7 @@ flowchart LR
 
 ---
 
-## Diagram 7 — Stage 9 Sequence (Sub-Stage Progress)
+## Diagram 9 — Stage 9 Sequence (Sub-Stage Progress)
 
 ```mermaid
 flowchart LR
@@ -277,7 +384,7 @@ flowchart LR
 
 ---
 
-## Diagram 8 — Stage 10 Self-Learning Pipeline (4-Phase Roadmap)
+## Diagram 10 — Stage 10 Self-Learning Pipeline (4-Phase Roadmap)
 
 ```mermaid
 flowchart TB
@@ -322,7 +429,7 @@ flowchart TB
 
 ---
 
-## Diagram 9 — MAC Outcome-Signal Flow (engineering view)
+## Diagram 11 — MAC Outcome-Signal Flow (engineering view)
 
 Engineering-internal view of the same moat shown in §1 Diagram 3 — but here the focus is on the signal pipeline (where data flows today vs Stage 10) rather than the competitive contrast.
 
@@ -347,11 +454,12 @@ flowchart LR
 
 ---
 
-## Diagram 10 — Memory Port: Dual-Adapter Reference Pattern
+## Diagram 12 — Memory Port: Dual-Adapter Reference Pattern
 
 Engineering-internal worked example of the substitutability shown in §1 Diagram 5. Reference pattern for how new ports get their adapters (curator, Honcho at Stage 10).
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart TB
     KMEM["kernel/memory<br/>MemoryProtocol facade<br/>(10-method Draft/Record)"]:::done
     PORT["MemoryPort<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
@@ -369,11 +477,12 @@ flowchart TB
 
 ---
 
-## Diagram 11 — Stage 9.6 Cleo Supply-Chain (Dependency Automation)
+## Diagram 13 — Stage 9.6 Cleo Supply-Chain (Dependency Automation)
 
 What lands when 9.6 ratifies. Documents the future CI/CD pipeline for keeping provider versions current.
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
 flowchart LR
     UPSTREAM["mem0ai / letta-client<br/>upstream releases"]:::done
 
