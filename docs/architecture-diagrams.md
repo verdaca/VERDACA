@@ -90,7 +90,7 @@ flowchart LR
 **Question this answers:** "Why can't a competitor just copy this?"
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '22px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000', 'clusterBkg': '#1f2937', 'clusterBorder': '#475569'}}}%%
 flowchart LR
     subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
         H1["Skill used"] --> H2["use_count++"]
@@ -106,8 +106,8 @@ flowchart LR
         V4 -.-> V5["Patch proposal<br/>against measured outcome"]:::strong
     end
 
-    classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000
-    classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
+    classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000,font-size:22px
+    classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000,font-size:22px
 ```
 
 **Caption:** *Both produce skill patches. Only one knows whether the skill actually worked. To replicate Verdaca, a competitor must first build the MAC quality-gate methodology — but they're optimizing for individual-developer breadth, not enterprise deliberation depth. They're not going to.*
@@ -172,7 +172,7 @@ flowchart LR
 **Question this answers:** "Are we locked into one AI provider? How do you control cost?"
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '22px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000', 'clusterBkg': '#1f2937', 'clusterBorder': '#475569'}}}%%
 flowchart LR
     subgraph TASKS["MAC routes by task type — match cost to need"]
         direction TB
@@ -206,10 +206,10 @@ flowchart LR
     PORT -.adapter.-> P4
     PORT -.adapter.-> P5
 
-    classDef task fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000
-    classDef port fill:#fbbf24,stroke:#92400e,stroke-width:3px,color:#000
-    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
-    classDef planned fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5
+    classDef task fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000,font-size:22px
+    classDef port fill:#fbbf24,stroke:#92400e,stroke-width:3px,color:#000,font-size:22px
+    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000,font-size:22px
+    classDef planned fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5,font-size:22px
 ```
 
 **Caption:** *Two claims in one diagram. **Left:** MAC orchestrates by task type — decisions hit the frontier model, mechanical work hits cheaper tiers, parallel reads use the cheapest model 30 at a time. This is how `~$2.50 / session` is structurally achievable. **Right:** every provider sits behind one port — swap Anthropic for OpenAI for local Hermes-3 with a config change. The same contract-test pattern from Diagram 5 enforces the swap. Provider lock-in is solved structurally, not aspirationally.*
@@ -484,7 +484,7 @@ flowchart LR
 Engineering-internal worked example of the substitutability shown in §1 Diagram 5. Reference pattern for how new ports get their adapters (curator, Honcho at Stage 10).
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '22px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000', 'clusterBkg': '#1f2937', 'clusterBorder': '#475569'}}}%%
 flowchart TB
     KMEM["kernel/memory<br/>MemoryProtocol facade<br/>(10-method Draft/Record)"]:::done
     PORT["MemoryPort<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
@@ -497,7 +497,7 @@ flowchart TB
     MEM0 -.verified by.-> CT["18 M-T-MEM-* contract tests<br/>4 PROMO tests dual-adapter parametric"]:::done
     LETTA -.verified by.-> CT
 
-    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
+    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000,font-size:22px
 ```
 
 ---
