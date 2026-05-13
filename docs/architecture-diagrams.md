@@ -221,10 +221,10 @@ flowchart LR
 **Question this answers:** "Do you build a new product for each vertical, or is this configurable?"
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
-flowchart LR
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
+flowchart TB
     subgraph CORE["The Box — universal kernel (same code for every client)"]
-        direction TB
+        direction LR
         K1["MAC 3-cycle engine"]:::core
         K2["12 quality gates"]:::core
         K3["Memory facade"]:::core
@@ -232,7 +232,7 @@ flowchart LR
     end
 
     subgraph TUNING["Per-client configuration (no engineering)"]
-        direction TB
+        direction LR
         C1["Agent roster<br/>which voices to convene"]:::tune
         C2["Gate weights<br/>what 'good' means here"]:::tune
         C3["Memory schema<br/>client vocabulary"]:::tune
@@ -240,7 +240,7 @@ flowchart LR
     end
 
     subgraph VERTICALS["Same box, different clients"]
-        direction TB
+        direction LR
         V1["M&A / corp dev<br/>(PE firms)"]:::vert
         V2["Exec hiring panels<br/>(search firms)"]:::vert
         V3["Product launches<br/>(go-to-market)"]:::vert
@@ -272,7 +272,19 @@ flowchart LR
 flowchart LR
     subgraph SHELL["Shell"]
         direction TB
+        SS1[" "]:::invisible
+        SS2[" "]:::invisible
+        SS3[" "]:::invisible
         UI["Next.js POV harness<br/>Clerk · Stripe"]:::done
+        SS4[" "]:::invisible
+        SS5[" "]:::invisible
+        SS6[" "]:::invisible
+        SS1 ~~~ SS2
+        SS2 ~~~ SS3
+        SS3 ~~~ UI
+        UI ~~~ SS4
+        SS4 ~~~ SS5
+        SS5 ~~~ SS6
     end
 
     subgraph KERNEL["Kernel"]
@@ -319,11 +331,23 @@ flowchart LR
 
     subgraph TESTS["Tests"]
         direction TB
+        TS1[" "]:::invisible
+        TS2[" "]:::invisible
+        TS3[" "]:::invisible
         T1["M-T-VS · SER · MEM (40)"]:::done
         T2["M-T-COST (8)"]:::inflight
         T3["M-T-SKILL (5)"]:::planned
+        TS4[" "]:::invisible
+        TS5[" "]:::invisible
+        TS6[" "]:::invisible
+        TS1 ~~~ TS2
+        TS2 ~~~ TS3
+        TS3 ~~~ T1
         T1 ~~~ T2
         T2 ~~~ T3
+        T3 ~~~ TS4
+        TS4 ~~~ TS5
+        TS5 ~~~ TS6
     end
 
     SHELL --> KERNEL
@@ -345,6 +369,7 @@ flowchart LR
     classDef inflight fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#000
     classDef planned fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5
     classDef deferred fill:#bfdbfe,stroke:#2563eb,stroke-width:2px,color:#000
+    classDef invisible fill:none,stroke:none,color:transparent
 ```
 
 ---
