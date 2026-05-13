@@ -40,13 +40,13 @@ To update progress: find the node in the mermaid block and change the `:::status
 **Question this answers:** "Is Verdaca just another agent framework?"
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px', 'quadrant1Fill': '#86efac', 'quadrant2Fill': '#fef3c7', 'quadrant3Fill': '#e0e7ff', 'quadrant4Fill': '#fecaca'}}}%%
+%%{init: {'themeVariables': {'fontSize': '20px', 'quadrant1Fill': '#fef3c7', 'quadrant2Fill': '#86efac', 'quadrant3Fill': '#e0e7ff', 'quadrant4Fill': '#fecaca', 'quadrant1TextFill': '#000', 'quadrant2TextFill': '#000', 'quadrant3TextFill': '#000', 'quadrant4TextFill': '#000', 'quadrantPointTextFill': '#000', 'quadrantPointFill': '#000', 'quadrantTitleFill': '#fff', 'quadrantXAxisTextFill': '#fff', 'quadrantYAxisTextFill': '#fff'}}}%%
 quadrantChart
     title Where Verdaca lives
     x-axis Cheap --> Expensive
     y-axis Resets --> Compounds
-    quadrant-1 Verdaca zone
-    quadrant-2 Consulting
+    quadrant-1 Consulting
+    quadrant-2 Verdaca zone
     quadrant-3 Direct LLMs
     quadrant-4 Agent frameworks
     "ChatGPT": [0.15, 0.10]
