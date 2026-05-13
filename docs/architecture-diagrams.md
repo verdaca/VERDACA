@@ -45,15 +45,15 @@ quadrantChart
     title Where Verdaca lives
     x-axis Cheap --> Expensive
     y-axis Resets --> Compounds
-    quadrant-1 ⭐ Verdaca
+    quadrant-1 Verdaca zone
     quadrant-2 Consulting
     quadrant-3 Direct LLMs
     quadrant-4 Agent frameworks
-    ChatGPT: [0.15, 0.10]
-    LangChain: [0.55, 0.20]
-    Hermes: [0.35, 0.45]
-    McKinsey: [0.95, 0.85]
-    Verdaca: [0.20, 0.90]
+    "ChatGPT": [0.15, 0.10]
+    "LangChain": [0.55, 0.20]
+    "Hermes": [0.35, 0.45]
+    "McKinsey": [0.95, 0.85]
+    "Verdaca": [0.20, 0.90]
 ```
 
 **Caption:** *The empty quadrant is the bet. The question is no longer "why Verdaca?" — it's "why isn't anyone else here yet?" The answer is in Diagram 3.*
@@ -90,7 +90,7 @@ flowchart LR
 **Question this answers:** "Why can't a competitor just copy this?"
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
 flowchart LR
     subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
         H1["Skill used"] --> H2["use_count++"]
@@ -172,7 +172,7 @@ flowchart LR
 **Question this answers:** "Are we locked into one AI provider? How do you control cost?"
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
 flowchart LR
     subgraph TASKS["MAC routes by task type — match cost to need"]
         direction TB
@@ -459,7 +459,7 @@ flowchart LR
 Engineering-internal worked example of the substitutability shown in §1 Diagram 5. Reference pattern for how new ports get their adapters (curator, Honcho at Stage 10).
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
 flowchart TB
     KMEM["kernel/memory<br/>MemoryProtocol facade<br/>(10-method Draft/Record)"]:::done
     PORT["MemoryPort<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
