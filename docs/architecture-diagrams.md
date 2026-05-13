@@ -22,21 +22,24 @@ To update progress: find the node in the mermaid block and change the `:::status
 ## 1. Top-Level Architecture (everything in one view)
 
 ```mermaid
-flowchart TB
-    subgraph SHELL["Shell — User-Facing"]
-        UI["Next.js 15 POV harness<br/>Clerk · Stripe · Webhooks"]:::done
+flowchart LR
+    subgraph SHELL["Shell"]
+        direction TB
+        UI["Next.js POV harness<br/>Clerk · Stripe"]:::done
     end
 
-    subgraph KERNEL["Kernel — Domain Logic"]
-        MAC["kernel/mac<br/>3-cycle · 12 quality gates"]:::done
-        STU["kernel/studio<br/>Strategic session workflow"]:::done
-        MEM["kernel/memory<br/>MemoryProtocol facade"]:::done
-        COMP["kernel/compression<br/>Caveman dialects"]:::done
-        RUN["kernel/runtime<br/>16 BMAD agents · MCP"]:::done
-        PIM["kernel/pi-mono<br/>Decimal cost tracker"]:::done
+    subgraph KERNEL["Kernel"]
+        direction TB
+        MAC["mac — 3-cycle · 12 gates"]:::done
+        STU["studio — workflow"]:::done
+        MEM["memory — facade"]:::done
+        COMP["compression — Caveman"]:::done
+        RUN["runtime — 16 agents"]:::done
+        PIM["pi-mono — cost"]:::done
     end
 
-    subgraph PORTS["Ports — Protocol Contracts"]
+    subgraph PORTS["Ports"]
+        direction TB
         PM["MemoryPort"]:::done
         PS["SerializationPort"]:::done
         PV["VersionedStatePort"]:::done
@@ -48,7 +51,8 @@ flowchart TB
         PUM["UserModelPort"]:::planned
     end
 
-    subgraph ADAPTERS["Adapters — Concrete Implementations"]
+    subgraph ADAPTERS["Adapters"]
+        direction TB
         AB["beads/"]:::done
         AT["tonl/"]:::done
         AM0["mem0/"]:::done
@@ -61,26 +65,27 @@ flowchart TB
         AHC["honcho/"]:::planned
     end
 
-    subgraph TESTS["Contract Tests — tests/"]
-        T1["M-T-VS-* (10)<br/>M-T-SER-* (12)<br/>M-T-MEM-* (18)"]:::done
-        T2["M-T-COST-* (8)"]:::inflight
-        T3["M-T-SKILL-* (5)"]:::planned
+    subgraph TESTS["Tests"]
+        direction TB
+        T1["M-T-VS · SER · MEM (40)"]:::done
+        T2["M-T-COST (8)"]:::inflight
+        T3["M-T-SKILL (5)"]:::planned
     end
 
     SHELL --> KERNEL
     KERNEL --> PORTS
     PORTS --> ADAPTERS
-    ADAPTERS -.contract verified by.-> TESTS
+    ADAPTERS -.verified.-> TESTS
 
-    PM -.implemented by.-> AM0
-    PM -.implemented by.-> AL
-    PS -.implemented by.-> AT
-    PV -.implemented by.-> AB
-    PC -.implemented by.-> APM
-    PL -.implemented by.-> ARTK
-    PL -.implemented by.-> AH3
-    PSK -.implemented by.-> ASC
-    PUM -.implemented by.-> AHC
+    PM -.impl.-> AM0
+    PM -.impl.-> AL
+    PS -.impl.-> AT
+    PV -.impl.-> AB
+    PC -.impl.-> APM
+    PL -.impl.-> ARTK
+    PL -.impl.-> AH3
+    PSK -.impl.-> ASC
+    PUM -.impl.-> AHC
 
     classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
     classDef inflight fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#000
@@ -129,32 +134,39 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph P0["Phase 0 — Do Now (zero LLM cost)"]
-        P0A["Provenance frontmatter<br/>on all .claude/skills/*.md"]:::planned
-        P0B["scripts/track-skill-usage.py<br/>.usage.json sidecars"]:::planned
-        P0C["MAC telemetry capture<br/>knowledge/raw/skill-telemetry/"]:::planned
+    subgraph P0["Phase 0 — Do Now"]
+        direction TB
+        P0A["Provenance frontmatter tags"]:::planned
+        P0B["track-skill-usage.py"]:::planned
+        P0C["MAC telemetry JSON"]:::planned
     end
 
-    subgraph P1["Phase 1 — at Stage 9.4.8"]
-        P1A["scripts/index-sessions.py<br/>SQLite FTS5 over handoffs<br/>knowledge/sessions.db"]:::planned
-        P1B["/verdaca-wiki-update --index<br/>flag added"]:::planned
+    subgraph P1["Phase 1 — Stage 9.4.8"]
+        direction TB
+        P1A["index-sessions.py FTS5"]:::planned
+        P1B["wiki-update --index"]:::planned
     end
 
-    subgraph P2["Phase 2 — Post-9.6 (port stubs)"]
-        P2A["SessionIndexPort<br/>ports/session_index.py"]:::planned
-        P2B["SkillObserverPort<br/>ports/skill_observer.py"]:::planned
-        P2C["SkillPort<br/>ports/skill.py<br/>+ 5 M-T-SKILL-* tests"]:::planned
-        P2D["⚠️ OPEN: stub SkillEvolutionPort now?<br/>Victor vs Winston debate<br/>Resolve at 9.4.5 preload"]:::planned
+    subgraph P2["Phase 2 — Post-9.6 ports"]
+        direction TB
+        P2A["SessionIndexPort"]:::planned
+        P2B["SkillObserverPort"]:::planned
+        P2C["SkillPort + 5 tests"]:::planned
     end
 
-    subgraph P3["Phase 3 — Stage 10 (adapters)"]
-        P3A["adapters/skill_curator/<br/>uses LLMProxyPort + MAC signal<br/>apply_patch requires authorized_by"]:::planned
-        P3B["adapters/honcho/<br/>UserModelPort behavioral profile"]:::planned
-        P3C["Trajectory RL via Atropos<br/>after 500+ rated MAC sessions"]:::planned
+    subgraph P3["Phase 3 — Stage 10 adapters"]
+        direction TB
+        P3A["skill_curator adapter"]:::planned
+        P3B["honcho adapter"]:::planned
+        P3C["Trajectory RL Atropos"]:::planned
     end
+
+    LP["LLMProxyPort 9.4.5"]:::planned
+    OPEN["OPEN: stub SkillEvolutionPort?<br/>resolve at 9.4.5 preload"]:::planned
 
     P0 --> P1 --> P2 --> P3
-    P3A -.depends on.-> LP["LLMProxyPort 9.4.5"]:::planned
+    LP -.prereq.-> P3A
+    P2 -.gate.-> OPEN
 
     classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
     classDef inflight fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#000
