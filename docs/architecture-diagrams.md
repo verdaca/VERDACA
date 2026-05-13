@@ -1,8 +1,18 @@
-# Verdaca — Architecture Diagrams
+# Verdaca — Architecture & Strategy Diagrams
 
-**Purpose:** Visual progress tracker for the Verdaca build. Update the status class on a node when it moves between states. Renders in GitHub, GitLab, VS Code preview, Obsidian, and most markdown viewers with mermaid support.
+**Last refreshed:** 2026-05-13 | **HEAD at refresh:** `e7c6f1d`
 
-**Last refreshed:** 2026-05-13 | **HEAD at refresh:** `97ceb6d`
+> **Verdaca is not an agent framework.** Agent frameworks are the substrate Verdaca runs on top of. Verdaca is **deliberation infrastructure** for organizations that need to make repeatable, auditable, compounding decisions. The closest analogue is *not* ChatGPT or LangChain — it's a structured strategy engagement with a consulting firm, except the engagement compounds and costs $2.50 instead of $250,000.
+
+## Audience Router — start here
+
+| You are… | Read in this order |
+|---|---|
+| 👔 **CTO / strategic buyer** | §1 Why This Matters → Diagram 2 (Buyer's Journey) → Diagram 4 (Trust Stack) |
+| 💼 **Investor / strategic skeptic** | §1 Why This Matters → Diagram 1 (Category Map) → Diagram 3 (Signal vs Proxy) |
+| 🛠️ **Engineer evaluating to build** | §2 How It's Built → Diagram 6 (Top-level arch) → Diagram 10 (Memory dual-adapter) |
+| 🤝 **AI engineer being recruited** | §1 first to engage, §2 second to convince. Pay attention to Diagram 5 (Contract-Test Gate) |
+| 📋 **Engineer tracking build progress** | §2 How It's Built → Diagram 7 (Stage 9 sequence) — colors track status |
 
 ---
 
@@ -19,7 +29,144 @@ To update progress: find the node in the mermaid block and change the `:::status
 
 ---
 
-## 1. Top-Level Architecture (everything in one view)
+# §1 Why This Matters
+
+*The bet, the moat, the buyer's perspective. Read these five before the architecture.*
+
+---
+
+## Diagram 1 — Category Map: The Empty Quadrant
+
+**Question this answers:** "Is Verdaca just another agent framework?"
+
+```mermaid
+quadrantChart
+    title Where Verdaca lives — the empty quadrant no one else is filling
+    x-axis "Low cost per outcome" --> "High cost per outcome"
+    y-axis "Outcome resets every session" --> "Outcome compounds across sessions"
+    quadrant-1 "Compounding & cheap — VERDACA"
+    quadrant-2 "Compounding but expensive — McKinsey · BCG · Bain"
+    quadrant-3 "Cheap but disposable — ChatGPT · Claude direct"
+    quadrant-4 "Expensive AND disposable — most agent frameworks"
+    "ChatGPT / Claude direct": [0.15, 0.10]
+    "LangChain / AutoGen / CrewAI": [0.55, 0.20]
+    "Hermes Agent (NousResearch)": [0.35, 0.45]
+    "McKinsey strategy engagement": [0.95, 0.85]
+    "Verdaca": [0.25, 0.90]
+```
+
+**Caption:** *The empty quadrant is the bet. The question is no longer "why Verdaca?" — it's "why isn't anyone else here yet?" The answer is in Diagram 3.*
+
+---
+
+## Diagram 2 — Buyer's Journey: What $2.50 and 12 Minutes Buys
+
+**Question this answers:** "What do I actually get?"
+
+```mermaid
+flowchart LR
+    Q["Strategic Question<br/>e.g. 'Should we acquire X?'"]:::input
+    S["Session Start<br/>~30 sec config"]:::process
+    M["12-min deliberation<br/>8 agent perspectives<br/>3 critique cycles"]:::process
+    D["Structured Deliverable<br/>Decision memo<br/>+ 12 quality scores<br/>+ minority report<br/>+ provenance"]:::output
+    T["Trust Artifacts<br/>Gate scores · Beat counts<br/>Replay traceability"]:::trust
+
+    Q --> S --> M --> D --> T
+
+    classDef input fill:#fef3c7,stroke:#92400e,stroke-width:2px,color:#000
+    classDef process fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#000
+    classDef output fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
+    classDef trust fill:#bfdbfe,stroke:#2563eb,stroke-width:2px,color:#000
+```
+
+**Caption:** *Most AI products end at "Structured Deliverable." Verdaca delivers the trust artifacts too — every decision is replayable, every score auditable, every dissent captured. That's the difference between an answer you take to a meeting and an answer you take to a board.*
+
+---
+
+## Diagram 3 — Signal vs Proxy: The Moat Competitors Can't Replicate
+
+**Question this answers:** "Why can't a competitor just copy this?"
+
+```mermaid
+flowchart LR
+    subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
+        H1["Skill used"] --> H2["use_count++"]
+        H2 --> H3["Curator infers quality<br/>from usage frequency"]
+        H3 --> H4["Proxy signal — weak"]:::weak
+        H4 -.-> H5["Patch proposal<br/>maybe right, maybe not"]:::weak
+    end
+
+    subgraph VERDACA["Verdaca"]
+        V1["MAC 3 cycles"] --> V2["12 quality gates<br/>scored 0–10"]
+        V2 --> V3["Beat counts<br/>+ halt dispositions"]
+        V3 --> V4["Direct ground truth — strong"]:::strong
+        V4 -.-> V5["Patch proposal<br/>against measured outcome"]:::strong
+    end
+
+    classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000
+    classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
+```
+
+**Caption:** *Both produce skill patches. Only one knows whether the skill actually worked. To replicate Verdaca, a competitor must first build the MAC quality-gate methodology — but they're optimizing for individual-developer breadth, not enterprise deliberation depth. They're not going to.*
+
+---
+
+## Diagram 4 — Trust Stack: Why Outputs Are Defensible
+
+**Question this answers:** "If I take this memo to my board, can I defend it?"
+
+```mermaid
+flowchart TB
+    O["Verdaca Output<br/>(decision memo)"]:::output
+
+    O --> L1["Layer 1 — 12 gate scores<br/>quantitative confidence"]:::layer
+    O --> L2["Layer 2 — 8-agent provenance<br/>which voice said what"]:::layer
+    O --> L3["Layer 3 — Minority report<br/>dissenting positions captured"]:::layer
+    O --> L4["Layer 4 — Replay traceability<br/>session reproducible byte-for-byte"]:::layer
+    O --> L5["Layer 5 — Human validation<br/>A4 Spearman ρ ≥ 0.6<br/>(currently deferred — caveat applied)"]:::deferred
+
+    classDef output fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
+    classDef layer fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000
+    classDef deferred fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5
+```
+
+**Caption:** *Layer 5 is dashed because A4 human validation is deferred to Stage 7 debt clearance — every Verdaca metric citation today carries the caveat "(internal scoring; A4 deferred)" verbatim. Honesty here is the sales lever. Buyers trust roadmaps they can verify.*
+
+---
+
+## Diagram 5 — Contract-Test Gate: The Substitutability Proof
+
+**Question this answers:** "How do you avoid provider lock-in structurally, not aspirationally?"
+
+```mermaid
+flowchart LR
+    K["kernel/memory facade<br/>calls MemoryPort"]:::done
+    P["MemoryPort Protocol<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
+    G{"Contract-Test Gate<br/>18 MAC-T<br/>4 PROMO tests parametric<br/>across both adapters"}:::gate
+    M["adapters/mem0/<br/>Mem0 SDK 1.0.11"]:::done
+    L["adapters/letta/<br/>letta-client ≥1.10"]:::done
+
+    K --> P
+    P --> G
+    G -.proves.-> M
+    G -.proves.-> L
+    M -.runtime swap.-> L
+
+    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
+    classDef gate fill:#fbbf24,stroke:#92400e,stroke-width:3px,color:#000
+```
+
+**Caption:** *Swapping Mem0 for Letta is a config change. The 18 contract tests are the only thing that authorizes the swap. Hermes Agent, LangChain, AutoGen — none enforce this at the type-system layer. This is what "ports-and-adapters" actually buys: provider lock-in resistance proven by CI.*
+
+---
+
+# §2 How It's Built
+
+*Engineering progress tracker — port wiring, adapter status, supply-chain CI. Status colors track build state.*
+
+---
+
+## Diagram 6 — Top-Level Architecture (everything in one view)
 
 ```mermaid
 flowchart LR
@@ -95,7 +242,7 @@ flowchart LR
 
 ---
 
-## 2. Stage 9 Sequence — Sub-Stage Progress
+## Diagram 7 — Stage 9 Sequence (Sub-Stage Progress)
 
 ```mermaid
 flowchart LR
@@ -130,7 +277,7 @@ flowchart LR
 
 ---
 
-## 3. Stage 10 Self-Learning Pipeline (4-Phase Roadmap)
+## Diagram 8 — Stage 10 Self-Learning Pipeline (4-Phase Roadmap)
 
 ```mermaid
 flowchart TB
@@ -175,9 +322,9 @@ flowchart TB
 
 ---
 
-## 4. MAC Outcome-Signal Flow (the moat, today vs planned)
+## Diagram 9 — MAC Outcome-Signal Flow (engineering view)
 
-This diagram shows Verdaca's structural advantage over competitor agent frameworks: MAC produces **direct quality signals** that today flow to handoff prose and get discarded. Stage 10 captures them and feeds a curator.
+Engineering-internal view of the same moat shown in §1 Diagram 3 — but here the focus is on the signal pipeline (where data flows today vs Stage 10) rather than the competitive contrast.
 
 ```mermaid
 flowchart LR
@@ -200,9 +347,9 @@ flowchart LR
 
 ---
 
-## 5. Memory Port — Adapter Strategy (worked example of dual-adapter pattern)
+## Diagram 10 — Memory Port: Dual-Adapter Reference Pattern
 
-Reference pattern for how new ports get adapters. Useful for understanding how Stage 10 curator + Honcho adapters will land.
+Engineering-internal worked example of the substitutability shown in §1 Diagram 5. Reference pattern for how new ports get their adapters (curator, Honcho at Stage 10).
 
 ```mermaid
 flowchart TB
@@ -222,7 +369,7 @@ flowchart TB
 
 ---
 
-## 6. Stage 9.6 Cleo Supply-Chain — Dependency Automation
+## Diagram 11 — Stage 9.6 Cleo Supply-Chain (Dependency Automation)
 
 What lands when 9.6 ratifies. Documents the future CI/CD pipeline for keeping provider versions current.
 
