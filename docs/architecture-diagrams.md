@@ -93,6 +93,7 @@ flowchart LR
 %%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart LR
     subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
+        direction TB
         H1["Skill used"] --> H2["use_count++"]
         H2 --> H3["Curator infers quality<br/>from usage frequency"]
         H3 --> H4["Proxy signal — weak"]:::weak
@@ -100,11 +101,15 @@ flowchart LR
     end
 
     subgraph VERDACA["Verdaca"]
+        direction TB
         V1["MAC 3 cycles"] --> V2["12 quality gates<br/>scored 0–10"]
         V2 --> V3["Beat counts<br/>+ halt dispositions"]
         V3 --> V4["Direct ground truth — strong"]:::strong
         V4 -.-> V5["Patch proposal<br/>against measured outcome"]:::strong
     end
+
+    H1 ~~~ V1
+    H5 ~~~ V5
 
     classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000
     classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
