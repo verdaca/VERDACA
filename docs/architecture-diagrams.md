@@ -40,7 +40,7 @@ To update progress: find the node in the mermaid block and change the `:::status
 **Question this answers:** "Is Verdaca just another agent framework?"
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '20px', 'quadrant1Fill': '#fef3c7', 'quadrant2Fill': '#86efac', 'quadrant3Fill': '#e0e7ff', 'quadrant4Fill': '#fecaca', 'quadrant1TextFill': '#000', 'quadrant2TextFill': '#000', 'quadrant3TextFill': '#000', 'quadrant4TextFill': '#000', 'quadrantPointTextFill': '#000', 'quadrantPointFill': '#000', 'quadrantTitleFill': '#fff', 'quadrantXAxisTextFill': '#fff', 'quadrantYAxisTextFill': '#fff'}}}%%
+%%{init: {'themeVariables': {'fontSize': '16px', 'quadrant1Fill': '#fef3c7', 'quadrant2Fill': '#86efac', 'quadrant3Fill': '#e0e7ff', 'quadrant4Fill': '#fecaca', 'quadrant1TextFill': '#000', 'quadrant2TextFill': '#000', 'quadrant3TextFill': '#000', 'quadrant4TextFill': '#000', 'quadrantPointTextFill': '#000', 'quadrantPointFill': '#000', 'quadrantTitleFill': '#fff', 'quadrantXAxisTextFill': '#fff', 'quadrantYAxisTextFill': '#fff'}}}%%
 quadrantChart
     title Where Verdaca lives
     x-axis Cheap --> Expensive
@@ -90,7 +90,7 @@ flowchart LR
 **Question this answers:** "Why can't a competitor just copy this?"
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '22px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000', 'clusterBkg': '#1f2937', 'clusterBorder': '#475569'}}}%%
+%%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart LR
     subgraph COMPETITORS["Hermes · LangChain · AutoGen · CrewAI"]
         H1["Skill used"] --> H2["use_count++"]
@@ -106,8 +106,8 @@ flowchart LR
         V4 -.-> V5["Patch proposal<br/>against measured outcome"]:::strong
     end
 
-    classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000,font-size:22px
-    classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000,font-size:22px
+    classDef weak fill:#fecaca,stroke:#dc2626,stroke-width:1px,color:#000
+    classDef strong fill:#86efac,stroke:#16a34a,stroke-width:3px,color:#000
 ```
 
 **Caption:** *Both produce skill patches. Only one knows whether the skill actually worked. To replicate Verdaca, a competitor must first build the MAC quality-gate methodology — but they're optimizing for individual-developer breadth, not enterprise deliberation depth. They're not going to.*
@@ -221,7 +221,7 @@ flowchart LR
 **Question this answers:** "Do you build a new product for each vertical, or is this configurable?"
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '20px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000'}}}%%
+%%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart TB
     subgraph CORE["The Box — universal kernel (same code for every client)"]
         direction LR
@@ -272,19 +272,7 @@ flowchart TB
 flowchart LR
     subgraph SHELL["Shell"]
         direction TB
-        SS1[" "]:::invisible
-        SS2[" "]:::invisible
-        SS3[" "]:::invisible
         UI["Next.js POV harness<br/>Clerk · Stripe"]:::done
-        SS4[" "]:::invisible
-        SS5[" "]:::invisible
-        SS6[" "]:::invisible
-        SS1 ~~~ SS2
-        SS2 ~~~ SS3
-        SS3 ~~~ UI
-        UI ~~~ SS4
-        SS4 ~~~ SS5
-        SS5 ~~~ SS6
     end
 
     subgraph KERNEL["Kernel"]
@@ -331,23 +319,11 @@ flowchart LR
 
     subgraph TESTS["Tests"]
         direction TB
-        TS1[" "]:::invisible
-        TS2[" "]:::invisible
-        TS3[" "]:::invisible
         T1["M-T-VS · SER · MEM (40)"]:::done
         T2["M-T-COST (8)"]:::inflight
         T3["M-T-SKILL (5)"]:::planned
-        TS4[" "]:::invisible
-        TS5[" "]:::invisible
-        TS6[" "]:::invisible
-        TS1 ~~~ TS2
-        TS2 ~~~ TS3
-        TS3 ~~~ T1
         T1 ~~~ T2
         T2 ~~~ T3
-        T3 ~~~ TS4
-        TS4 ~~~ TS5
-        TS5 ~~~ TS6
     end
 
     SHELL --> KERNEL
@@ -369,7 +345,6 @@ flowchart LR
     classDef inflight fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#000
     classDef planned fill:#e2e8f0,stroke:#64748b,stroke-width:1px,color:#000,stroke-dasharray: 5 5
     classDef deferred fill:#bfdbfe,stroke:#2563eb,stroke-width:2px,color:#000
-    classDef invisible fill:none,stroke:none,color:transparent
 ```
 
 ---
@@ -412,6 +387,7 @@ flowchart LR
 ## Diagram 10 — Stage 10 Self-Learning Pipeline (4-Phase Roadmap)
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart TB
     subgraph P0["Phase 0 — Do Now"]
         direction TB
@@ -484,7 +460,7 @@ flowchart LR
 Engineering-internal worked example of the substitutability shown in §1 Diagram 5. Reference pattern for how new ports get their adapters (curator, Honcho at Stage 10).
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '22px', 'primaryColor': '#fff', 'primaryTextColor': '#000', 'lineColor': '#64748b', 'nodeBorder': '#000', 'clusterBkg': '#1f2937', 'clusterBorder': '#475569'}}}%%
+%%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart TB
     KMEM["kernel/memory<br/>MemoryProtocol facade<br/>(10-method Draft/Record)"]:::done
     PORT["MemoryPort<br/>5 methods: store · query<br/>promote · revoke_promotion · migrate"]:::done
@@ -497,7 +473,7 @@ flowchart TB
     MEM0 -.verified by.-> CT["18 M-T-MEM-* contract tests<br/>4 PROMO tests dual-adapter parametric"]:::done
     LETTA -.verified by.-> CT
 
-    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000,font-size:22px
+    classDef done fill:#86efac,stroke:#16a34a,stroke-width:2px,color:#000
 ```
 
 ---
@@ -507,7 +483,7 @@ flowchart TB
 What lands when 9.6 ratifies. Documents the future CI/CD pipeline for keeping provider versions current.
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '18px'}}}%%
+%%{init: {'themeVariables': {'fontSize': '16px'}}}%%
 flowchart LR
     UPSTREAM["mem0ai / letta-client<br/>upstream releases"]:::done
 
