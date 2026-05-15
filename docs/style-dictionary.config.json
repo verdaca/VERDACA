@@ -1,6 +1,0 @@
-{
-  "$schema": "https://raw.githubusercontent.com/amzn/style-dictionary/main/types/config.schema.json",
-  "_comment": "Verdaca substrate v1.0 token export hook. STUB — full build pipeline deferred to dedicated engineering cycle. Sources/platforms intentionally empty until that cycle ratifies token-export scope.",
-  "source": [],
-  "platforms": {}
-}
