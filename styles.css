@@ -606,12 +606,15 @@ img, svg { display: block; max-width: 100%; }
   grid-column: 1 / -1;
 }
 /* Social row — between footer columns and copyright; horizontal, monochrome icons + labels.
-   Substrate §6.8 patent-drawing register: line-art / single-color SVG, never multi-color logos. */
+   Substrate §6.8 patent-drawing register: line-art / single-color SVG, never multi-color logos.
+   fill is set EXPLICITLY (not via SVG currentColor) so the graphite color resolves consistently
+   across browsers; flex-direction pinned to row so the 3 links stay horizontal at all breakpoints. */
 .footer__social-row {
   grid-column: 1 / -1;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: var(--space-32);
+  gap: var(--space-24);
   align-items: center;
   margin-top: var(--space-48);
   padding-top: var(--space-24);
@@ -619,6 +622,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .footer__social-link {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   gap: var(--space-8);
   color: var(--color-text-secondary);
@@ -633,9 +637,21 @@ img, svg { display: block; max-width: 100%; }
 .footer__social-icon {
   display: block;
   flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  fill: var(--color-verdaca-graphite);
+  transition: fill var(--motion-duration-fast) var(--motion-easing-out);
+}
+.footer__social-link:hover .footer__social-icon {
+  fill: var(--color-text-primary);
 }
 .footer__social-label {
   color: inherit;
+}
+/* Mobile: keep all three links on one row by tightening gap + icon size */
+@media (max-width: 767px) {
+  .footer__social-row { gap: var(--space-16); }
+  .footer__social-icon { width: 18px; height: 18px; }
 }
 
 /* =============================================================================
