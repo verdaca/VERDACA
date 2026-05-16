@@ -206,6 +206,23 @@ class TestCompressOutputProviderError:
 
 
 # ---------------------------------------------------------------------------
+# Provider unconfigured
+# ---------------------------------------------------------------------------
+
+class TestCompressOutputProviderUnconfigured:
+    @pytest.mark.asyncio
+    async def test_gate_passing_no_provider_returns_fallback(self):
+        """Gate passes but neither provider nor llm_proxy is wired → graceful fallback."""
+        req = _make_request()
+        result = await compress_output(req, gate_config=GateConfig(min_tokens=1))
+
+        assert result.compressed is False
+        assert result.fallback_reason == "provider_unconfigured"
+        assert result.text_out == req.text
+        assert result.caveman_tags["compression.caveman.fallback"] == "provider_unconfigured"
+
+
+# ---------------------------------------------------------------------------
 # Expansion guard
 # ---------------------------------------------------------------------------
 

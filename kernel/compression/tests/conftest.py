@@ -18,6 +18,11 @@ _PI_MONO_SRC = (
 if _PI_MONO_SRC.exists() and str(_PI_MONO_SRC) not in sys.path:
     sys.path.insert(0, str(_PI_MONO_SRC))
 
+# Add ports src to path so praxis.ports.* is importable
+_PORTS_SRC = Path(__file__).resolve().parents[3] / "ports" / "src"
+if _PORTS_SRC.exists() and str(_PORTS_SRC) not in sys.path:
+    sys.path.insert(0, str(_PORTS_SRC))
+
 
 @pytest.fixture
 def simple_dict_payload() -> dict:

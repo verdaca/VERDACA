@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import logging
 
+from praxis.ports.llm_proxy import LLMProxyPort
+
 from .dialects.caveman_english import CavemanEnglishDialect
 from .dialects.wenyan import WenyanDialect
 from .errors import CavemanGateDenied, CavemanProviderError, CavemanValidationError
@@ -33,6 +35,7 @@ async def compress_output(
     max_retries: int = 2,
     gate_config: GateConfig | None = None,
     provider: HaikuProvider | None = None,
+    llm_proxy: LLMProxyPort | None = None,
 ) -> CompressionResult:
     """Compress *request.text* via Haiku, with validation and retry.
 
@@ -42,7 +45,6 @@ async def compress_output(
     - Validation exhausted → return original, tag fallback_reason=structural|semantic
     - Pathological expansion → return original, tag fallback_reason=expansion
     """
-    prov = provider or HaikuProvider()
     cfg = gate_config or GateConfig()
 
     # Gate check
@@ -65,6 +67,22 @@ async def compress_output(
 
     dialect_impl = _DIALECT_MAP.get(request.dialect, _DIALECT_MAP[Dialect.CAVEMAN_ENGLISH])
     system_prompt = dialect_impl.system_prompt(request.intensity.value)
+
+    # Provider resolution (after the gate — gate-denied requests never need one).
+    # No provider and no port wired → graceful fallback, consistent with §3.4.6/§3.4.7.
+    if provider is not None:
+        prov = provider
+    elif llm_proxy is not None:
+        prov = HaikuProvider(llm_proxy=llm_proxy)
+    else:
+        logger.debug("caveman: no provider or llm_proxy configured")
+        return CompressionResult(
+            text_in=request.text,
+            text_out=request.text,
+            compressed=False,
+            fallback_reason="provider_unconfigured",
+            caveman_tags={"compression.caveman.fallback": "provider_unconfigured"},
+        )
 
     # Compression + retry loop (architecture §3.4.6)
     current_text = request.text
