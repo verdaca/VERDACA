@@ -17,6 +17,7 @@
 !shell/
 !docs/
 !knowledge/
+!assets/
 !pyproject.toml
 !.python-version
 !uv.lock
