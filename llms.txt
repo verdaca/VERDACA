@@ -11,7 +11,7 @@ Two axes of pluggability:
 
 Audience: consultants, analysts, strategists, technical leaders, founders — decision-makers whose work is too consequential to outsource to one AI's first answer, but who can't always pull a real human team into the room.
 
-Verdaca Studio runs at ~$2.50 / ~12 min per session (internal scoring; A4 deferred). The Studio output is a scored, auditable deliberation trail showing each agent's reasoning, what was challenged, and how the final synthesis was reached — with dissenting positions preserved rather than averaged away.
+Verdaca Studio delivers a scored, auditable deliberation trail per session — showing each agent's reasoning, what was challenged, and how the final synthesis was reached, with dissenting positions preserved rather than averaged away. Headline quality lift: +47% vs vanilla / +21% vs enhanced single-agent baselines (internal scoring; A4 deferred).
 
 ## Product
 
