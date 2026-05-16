@@ -474,7 +474,10 @@ img, svg { display: block; max-width: 100%; }
   font-family:    var(--font-family-mono);
   font-size:      0.875rem;
   font-weight:    var(--font-weight-regular);
-  line-height:    var(--font-lineheight-relaxed);
+  /* ASCII box-drawing requires line-height: 1 so vertical bars (│) connect
+     across rows cleanly. Substrate's relaxed (1.65) is for prose, not diagrams. */
+  line-height:    1;
+  letter-spacing: 0;
   color:          var(--color-code-text);
   white-space:    pre;
 }
