@@ -605,31 +605,37 @@ img, svg { display: block; max-width: 100%; }
   opacity: 0.80;
   grid-column: 1 / -1;
 }
-/* Social row — between footer columns and copyright; horizontal, monochrome icons + labels.
+/* Social row — full-width row below the 5-column grid, RIGHT-aligned to match the user-requested
+   "located on the right" disposition; horizontal flex; charcoal mark matches the VERDACA wordmark.
    Substrate §6.8 patent-drawing register: line-art / single-color SVG, never multi-color logos.
-   fill is set EXPLICITLY (not via SVG currentColor) so the graphite color resolves consistently
-   across browsers; flex-direction pinned to row so the 3 links stay horizontal at all breakpoints. */
+   :visited explicitly overridden to prevent browser default purple on external links. */
 .footer__social-row {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: var(--space-24);
   align-items: center;
   margin-top: var(--space-48);
   padding-top: var(--space-24);
   border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.18);
 }
-.footer__social-link {
+.footer__social-link,
+.footer__social-link:link,
+.footer__social-link:visited {
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: var(--space-8);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   text-decoration: none;
   transition: color var(--motion-duration-fast) var(--motion-easing-out);
 }
-.footer__social-link:hover { color: var(--color-text-primary); }
+.footer__social-link:hover,
+.footer__social-link:visited:hover {
+  color: var(--color-verdaca-oxblood);
+}
 .footer__social-link:focus-visible {
   outline: var(--border-width-thick) solid var(--color-rule-accent);
   outline-offset: 2px;
@@ -639,18 +645,18 @@ img, svg { display: block; max-width: 100%; }
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  fill: var(--color-verdaca-graphite);
+  fill: var(--color-verdaca-charcoal);
   transition: fill var(--motion-duration-fast) var(--motion-easing-out);
 }
 .footer__social-link:hover .footer__social-icon {
-  fill: var(--color-text-primary);
+  fill: var(--color-verdaca-oxblood);
 }
 .footer__social-label {
   color: inherit;
 }
-/* Mobile: keep all three links on one row by tightening gap + icon size */
+/* Mobile: keep both links on one row by tightening gap + icon size; stay right-aligned */
 @media (max-width: 767px) {
-  .footer__social-row { gap: var(--space-16); }
+  .footer__social-row { gap: var(--space-16); justify-content: flex-end; }
   .footer__social-icon { width: 18px; height: 18px; }
 }
 
