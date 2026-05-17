@@ -17,7 +17,7 @@ secondary. Sectional cites per V8 Approach b discipline.
 
 Substrate composition (per LiteLLM API surface probes 2026-05-11):
     call           — `litellm.completion(model, messages, max_tokens,
-                     temperature, api_key, ...)` returns
+                     temperature, api_key, api_base, ...)` returns
                      `litellm.types.utils.ModelResponse`. Marshals
                      LLMRequest fields through; strips upstream
                      cost-adjacent fields via DS-1 prefix-match before
@@ -126,7 +126,6 @@ from datetime import datetime, timezone
 from typing import Any, ClassVar
 
 import litellm
-
 from praxis.adapters.litellm.version_pin import UPSTREAM_NAME
 from praxis.ports.common import ContractViolation
 from praxis.ports.llm_proxy import (
@@ -235,6 +234,7 @@ class LiteLLMAdapter:
         self,
         *,
         api_keys: dict[str, str] | None = None,
+        api_base_overrides: dict[str, str] | None = None,
         default_correlation_id: str | None = None,
     ) -> None:
         """Construct an adapter.
@@ -245,6 +245,16 @@ class LiteLLMAdapter:
         ANTHROPIC_API_KEY, etc.). When passed, individual provider keys
         are threaded to `litellm.completion(api_key=...)` per call.
 
+        `api_base_overrides` is the per-provider endpoint-override map
+        (caller-DI, mirroring `api_keys`). When a provider key is
+        present, its value is threaded to
+        `litellm.completion(api_base=...)`, routing that provider
+        through a custom OpenAI-compatible endpoint — primarily the
+        EPAM DIAL gateway (`https://ai-proxy.lab.epam.com`). An absent
+        provider falls through to `litellm.completion(api_base=None)`
+        — the LiteLLM provider default — so the override is fully
+        backward-compatible. Per ADR-9.2-V5 v0.8 corrigendum.
+
         `default_correlation_id` per Mem0 (34a4eca) / Letta (b14285b) /
         Pi-Mono (325820a) sibling precedent.
 
@@ -252,6 +262,7 @@ class LiteLLMAdapter:
         β: stream() has NO caching.
         """
         self._api_keys = dict(api_keys or {})
+        self._api_base_overrides = dict(api_base_overrides or {})
         self._default_correlation_id = default_correlation_id or uuid.uuid4().hex
         # DS-4 idempotency cache; call()-only per DS-5 strict-β.
         self._idempotency_cache: dict[str, LLMResponse] = {}
@@ -307,6 +318,7 @@ class LiteLLMAdapter:
             max_tokens=request.max_tokens,
             temperature=request.temperature,
             api_key=self._api_keys.get(request.provider),
+            api_base=self._api_base_overrides.get(request.provider),
         )
 
         # 3. Compression detection (v0.1.0 no-op per scope restriction;
@@ -377,6 +389,7 @@ class LiteLLMAdapter:
             stream=True,
             stream_options={"include_usage": True},
             api_key=self._api_keys.get(request.provider),
+            api_base=self._api_base_overrides.get(request.provider),
         )
 
         chunk_index = 0

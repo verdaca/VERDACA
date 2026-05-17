@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "praxis-adapter-litellm"
-version = "0.1.0"
+version = "0.1.1"
 description = "Verdaca LLM Proxy port adapter — PyPI-pinned wrap of litellm SDK (ADR-9.2-V5 v0.6; sole LLMProxyPort substrate post-H2-falsification)"
 requires-python = ">=3.12"
 dependencies = [

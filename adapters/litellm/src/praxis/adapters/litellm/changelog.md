@@ -2,6 +2,34 @@
 
 Per `ports-architecture.md` v0.6 §5 (upgrade workflow shape; one entry per version bump).
 
+## v0.1.1 (2026-05-17)
+
+Per-provider `api_base` override routing — Phase 0 P0.3. Adds a caller-DI
+`api_base_overrides: dict[str, str] | None = None` constructor parameter
+(mirrors the `api_keys` shape) so `call()` / `stream()` can point
+`litellm.completion()` at a custom OpenAI-compatible endpoint — primarily
+the EPAM DIAL gateway (`https://ai-proxy.lab.epam.com`), letting engineers
+drive Verdaca with personal DIAL keys.
+
+Additive and backward-compatible: an absent provider override yields
+`litellm.completion(api_base=None)` — the LiteLLM provider default — so
+every existing call site and the 7 `M-T-LLM-*` contract tests pass
+unchanged.
+
+Sanctioned by the ADR-9.2-V5 v0.8 corrigendum (`ports-architecture.md`;
+substance-of-record in the P0.3 commit body per the gitignore caveat).
+Patch bump per `ports-architecture.md` §6.2 — adapter-internal change,
+no Protocol or DTO surface change (`LLMProxyPort.API_VERSION` stays
+`1.0.0`).
+
+### Adapter-internal test
+
+`tests/test_api_base_routing.py` — verifies the `api_base` override is
+threaded into `litellm.completion()` for `call()` + `stream()`, and that
+an absent override falls through to `api_base=None`. Adapter-internal per
+`ports-architecture.md` §2.1; the shared 7-ID-frozen contract suite is
+untouched.
+
 ## v0.1.0 (2026-05-11)
 
 Initial LiteLLM PyPI-pinned LLM Proxy adapter implementing `LLMProxyPort` per
