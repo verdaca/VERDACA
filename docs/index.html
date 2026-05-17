@@ -106,24 +106,121 @@ result  = session.run("[workflow-placeholder]")</code></pre>
 
       <p class="type-body-editorial">Verdaca is organized on two independent axes: swap the agent personas horizontally, swap the substrate adapters vertically. Neither axis requires changing the other.</p>
 
-      <div class="docs-diagram" role="img" aria-label="Two-axis pluggability architecture diagram">
-        <pre>
-  HORIZONTAL AXIS — PLUG-IN PERSONAS
-  ┌─────────────┬─────────────┬─────────────┬─────────────┐
-  │   UX expert │  Data sci.  │ Legal csl.  │ Sec. arch.  │
-  └──────┬──────┴──────┬──────┴──────┬──────┴──────┬──────┘
-         │             │             │             │
-         ▼             ▼             ▼             ▼
-  ┌─────────────────────────────────────────────────────────┐
-  │                  VERDACA KERNEL                         │
-  └───────────────────────┬─────────────────────────────────┘
-                          │
-  VERTICAL AXIS — SUBSTRATE-NEUTRAL ADAPTERS
-  ┌──────────┬────────────┴──────────┬──────────────────────┐
-  │  Memory  │     LLM provider      │  Compaction / output │
-  │ Mem0│Letta│ Anthropic │ OpenAI   │  Forge  │  Caveman   │
-  └──────────┴───────────────────────┴──────────────────────┘
-        </pre>
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 514" role="img" aria-labelledby="arch-title arch-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="arch-title">Verdaca two-axis pluggability architecture</title>
+          <desc id="arch-desc">Plug-in personas — UX Expert, Data Scientist, Legal Counsel, Security Architect — connect into the Verdaca Kernel. The kernel connects to substrate-neutral adapter groups: Memory (Mem0, Letta), LLM Provider (Anthropic, OpenAI), and Compaction and Output (Forge, Caveman).</desc>
+
+          <defs>
+            <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+          </defs>
+
+          <!-- horizontal axis label -->
+          <line x1="40" y1="45" x2="70" y2="45" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="64" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">HORIZONTAL AXIS &mdash; PLUG-IN PERSONAS</text>
+
+          <!-- persona cards -->
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="16" font-weight="500"
+             fill="#1F2226" text-anchor="middle">
+            <rect x="40"  y="80" width="168" height="62" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <rect x="224" y="80" width="168" height="62" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <rect x="408" y="80" width="168" height="62" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <rect x="592" y="80" width="168" height="62" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <text x="124" y="117">UX Expert</text>
+            <text x="308" y="117">Data Scientist</text>
+            <text x="492" y="117">Legal Counsel</text>
+            <text x="676" y="117">Security Architect</text>
+          </g>
+
+          <!-- persona routing into kernel -->
+          <g stroke="#42454A" stroke-width="1.5" fill="none">
+            <line x1="124" y1="142" x2="124" y2="162"/>
+            <line x1="308" y1="142" x2="308" y2="162"/>
+            <line x1="492" y1="142" x2="492" y2="162"/>
+            <line x1="676" y1="142" x2="676" y2="162"/>
+            <line x1="124" y1="162" x2="676" y2="162"/>
+            <line x1="400" y1="162" x2="400" y2="188" marker-end="url(#arch-arrow)"/>
+          </g>
+          <g fill="#42454A">
+            <circle cx="124" cy="162" r="2.6"/>
+            <circle cx="308" cy="162" r="2.6"/>
+            <circle cx="400" cy="162" r="2.6"/>
+            <circle cx="492" cy="162" r="2.6"/>
+            <circle cx="676" cy="162" r="2.6"/>
+          </g>
+
+          <!-- kernel -->
+          <rect x="220" y="190" width="360" height="86" fill="#6B1F25" fill-opacity="0.05"/>
+          <rect x="220" y="190" width="360" height="86" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <text x="400" y="230" text-anchor="middle"
+                font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="21" font-weight="600" letter-spacing="1.8" fill="#6B1F25">VERDACA KERNEL</text>
+          <text x="400" y="253" text-anchor="middle"
+                font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="13" fill="#42454A">Deliberation loop &middot; synthesis &middot; audit trail</text>
+
+          <!-- vertical axis label -->
+          <line x1="40" y1="300" x2="70" y2="300" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="319" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">VERTICAL AXIS &mdash; SUBSTRATE-NEUTRAL ADAPTERS</text>
+
+          <!-- kernel routing into adapters -->
+          <g stroke="#42454A" stroke-width="1.5" fill="none">
+            <line x1="400" y1="276" x2="400" y2="344"/>
+            <line x1="152" y1="344" x2="648" y2="344"/>
+            <line x1="152" y1="344" x2="152" y2="357" marker-end="url(#arch-arrow)"/>
+            <line x1="400" y1="344" x2="400" y2="357" marker-end="url(#arch-arrow)"/>
+            <line x1="648" y1="344" x2="648" y2="357" marker-end="url(#arch-arrow)"/>
+          </g>
+          <g fill="#42454A">
+            <circle cx="152" cy="344" r="2.6"/>
+            <circle cx="400" cy="344" r="2.6"/>
+            <circle cx="648" cy="344" r="2.6"/>
+          </g>
+
+          <!-- adapter groups -->
+          <g>
+            <rect x="36"  y="358" width="232" height="136" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <rect x="284" y="358" width="232" height="136" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+            <rect x="532" y="358" width="232" height="136" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+
+            <g font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas" font-size="12"
+               font-weight="500" letter-spacing="1" fill="#42454A" text-anchor="middle">
+              <text x="152" y="389">MEMORY</text>
+              <text x="400" y="389">LLM PROVIDER</text>
+              <text x="648" y="389">COMPACTION &amp; OUTPUT</text>
+            </g>
+
+            <g stroke="#42454A" stroke-width="1" stroke-opacity="0.3">
+              <line x1="58"  y1="401" x2="246" y2="401"/>
+              <line x1="306" y1="401" x2="494" y2="401"/>
+              <line x1="554" y1="401" x2="742" y2="401"/>
+            </g>
+
+            <g fill="none" stroke="#42454A" stroke-width="1.25">
+              <rect x="58"  y="417" width="88" height="55"/>
+              <rect x="158" y="417" width="88" height="55"/>
+              <rect x="306" y="417" width="88" height="55"/>
+              <rect x="406" y="417" width="88" height="55"/>
+              <rect x="554" y="417" width="88" height="55"/>
+              <rect x="654" y="417" width="88" height="55"/>
+            </g>
+            <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="14.5"
+               font-weight="500" fill="#1F2226" text-anchor="middle">
+              <text x="102" y="450">Mem0</text>
+              <text x="202" y="450">Letta</text>
+              <text x="350" y="450">Anthropic</text>
+              <text x="450" y="450">OpenAI</text>
+              <text x="598" y="450">Forge</text>
+              <text x="698" y="450">Caveman</text>
+            </g>
+          </g>
+        </svg>
       </div>
 
     </main>
