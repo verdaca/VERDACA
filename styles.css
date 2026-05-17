@@ -800,10 +800,13 @@ img, svg { display: block; max-width: 100%; }
   .footer__inner      { grid-template-columns: 1fr 1fr; }
   .footer__wordmark-col { grid-column: 1 / -1; }
 
-  /* OQ-5 amendment: simplified mobile nav — wordmark + CTA only.
-     No hamburger collapse (Phase 3). Non-CTA menu items hidden at mobile breakpoint. */
-  .nav__item:not(.nav__item--cta) {
-    display: none;
+  /* F02 fix — mobile nav wraps all links to a second row (no JS; R10 minimal-tech).
+     Replaces the prior rule that hid Product/Docs/About/Contact entirely. */
+  .nav__inner { flex-wrap: wrap; row-gap: var(--space-12); }
+  .nav__links {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--space-12) var(--space-16);
   }
 }
 

@@ -4,42 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Verdaca — Multi-Agent Deliberation</title>
+
+  <meta name="description" content="Verdaca runs a structured panel of specialized AI agents on your hardest questions — they argue, push back, and converge on an output that shows its reasoning.">
+  <meta property="og:title" content="Verdaca — Multi-Agent Deliberation">
+  <meta property="og:description" content="A structured panel of specialized AI agents that argue your hardest questions and converge on an output that shows its reasoning.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://verdaca.com/">
+  <meta name="twitter:card" content="summary">
+
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
 
-  <!-- =====================================================================
-       NAV — §6.1 wordmark slot + 5× §6.5 eyebrow nav items
-       Mobile: vertical-stack per Q-#2-4 (no JS; R10 minimal-tech)
-       §6.1 note: §6.2 product-shell lockup NOT used here (landing ≠ product shell).
-       ===================================================================== -->
+  <!-- Nav -->
   <header class="site-nav" role="banner">
     <div class="container nav__inner">
 
-      <!-- §6.1 wordmark slot -->
       <a href="index.html" class="nav__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
 
       <nav class="nav__links" aria-label="Primary navigation">
-        <a href="#product"              class="nav__item type-eyebrow">PRODUCT</a>
+        <a href="#product"     class="nav__item type-eyebrow">PRODUCT</a>
         <a href="docs/index.html" class="nav__item type-eyebrow">DOCS</a>
-        <a href="about.html"            class="nav__item type-eyebrow">ABOUT</a>
-        <a href="contact.html"          class="nav__item type-eyebrow">CONTACT</a>
-        <a href="#pricing"              class="nav__item nav__item--cta type-eyebrow">GET STARTED</a>
+        <a href="about.html"   class="nav__item type-eyebrow">ABOUT</a>
+        <a href="contact.html" class="nav__item type-eyebrow">CONTACT</a>
+        <a href="contact.html" class="nav__item nav__item--cta type-eyebrow">GET STARTED</a>
       </nav>
 
     </div>
   </header>
 
-  <!-- =====================================================================
-       S1 — Landing hero (verbatim Phase 1 inheritance)
-       Substrate: §6.1 wordmark slot · §6.10 + §7 CTA (Q-1 border-only)
-       · §6.9 metric+caveat (R5 indivisible · PD-2 INCLUDE)
-       ===================================================================== -->
+  <!-- Hero -->
   <section class="hero" aria-labelledby="hero-headline" id="product">
     <div class="container">
 
-      <!-- §6.1 wordmark slot: large marque in hero body (separate from nav instance) -->
       <h1 class="hero__wordmark type-marque-hero">VERDACA</h1>
 
       <p id="hero-headline" class="hero__headline type-display">The room your decision deserves, on demand.</p>
@@ -47,35 +45,19 @@
       <p class="hero__subheadline type-body-editorial">Verdaca runs a structured panel of specialized agents on your hardest questions — they argue, push back, and converge on an output that shows its reasoning. One question, multiple perspectives, deliberation visible.</p>
 
       <div class="hero__cta-row">
-        <a href="#pricing" class="cta cta--primary type-body">Request access</a>
+        <a href="contact.html" class="cta cta--primary type-body">Book a pilot conversation</a>
         <a href="docs/index.html" class="cta cta--secondary type-body">Read the docs</a>
       </div>
-
-      <!-- §6.9 Metric + A4-caveat unit · R5 indivisible · DO NOT split.
-           Caveat string "(internal scoring; A4 deferred)" is verbatim per
-           substrate §10 pre_stage7 template. Must remain in same DOM unit as metric. -->
-      <figure class="metric-strip" role="group" aria-label="Verdaca Studio session metric">
-        <p class="metric-strip__metric type-display">Verdaca Studio session</p>
-        <p class="metric-strip__metric type-display">+47% vs vanilla &nbsp;&middot;&nbsp; +21% vs enhanced</p>
-        <p class="metric-strip__caveat type-caveat">(internal scoring; A4 deferred)</p>
-      </figure>
 
     </div>
   </section>
 
-  <!-- =====================================================================
-       CAPABILITY GRID — 4 tiles 2×2 per Q-#2-1 disposition
-       Phase 1 tiles 1+2 verbatim; tiles 3+4 are elaboration tiles per
-       advisor Q-#2-1: "mirrors parent §3.3 two-axis pluggability dual
-       concept × 2 elaboration tiles."
-       Substrate: §6.5 eyebrow · type.headline · type.body · §6.6 (slot only)
-       ===================================================================== -->
+  <!-- Capabilities -->
   <section class="capabilities" aria-labelledby="capabilities-heading">
     <div class="container">
 
       <div class="capabilities__grid">
 
-        <!-- Tile 1: Phase 1 verbatim -->
         <article class="tile" aria-labelledby="tile-1-heading">
           <p class="tile__eyebrow type-eyebrow">HORIZONTAL &middot; PLUG-IN PERSONAS</p>
           <h3 id="tile-1-heading" class="tile__heading type-headline">Plug-in personas</h3>
@@ -83,26 +65,17 @@
           <p class="tile__pullquote type-narrative">The persona is the argument. Change who's in the room and the answer changes — without touching a line of workflow logic.</p>
         </article>
 
-        <!-- Tile 2: Phase 1 verbatim -->
         <article class="tile" aria-labelledby="tile-2-heading">
           <p class="tile__eyebrow type-eyebrow">VERTICAL &middot; SUBSTRATE-NEUTRAL</p>
           <h3 id="tile-2-heading" class="tile__heading type-headline">Substrate-neutral adapters</h3>
           <p class="tile__body type-body">Swap Mem0 &harr; Letta &middot; OpenAI &harr; Anthropic &middot; Forge &harr; Caveman &mdash; no agent change.</p>
-          <p class="tile__pullquote type-narrative">Your agents are agnostic about what stores their memory or which model does the inference. The contract is the only thing they trust.</p>
         </article>
 
       </div>
-      <!-- Tiles 3+4 removed: advisor GO at #2 confirmed S2 = 2 tiles only.
-           Two-axis conceptual model complete at 2. S4 feature grid handles expansion. -->
     </div>
   </section>
 
-  <!-- =====================================================================
-       FEATURE GRID — 6 items 3×2 per Q-#2-2 disposition
-       New surface: composition §6.5 eyebrow + type.body-editorial
-       No borders; lighter density than capability tiles (no tile frame)
-       §6.6 pull-quote NOT included here (would compete at item density)
-       ===================================================================== -->
+  <!-- Features -->
   <section class="features" aria-labelledby="features-eyebrow">
     <div class="container">
 
@@ -146,31 +119,17 @@
     </div>
   </section>
 
-  <!-- =====================================================================
-       S5 — Pricing-CTA placeholder (new surface; position 5 per approved IA)
-       §6.5 eyebrow + §6.6 accent rule (standalone; PD-T1-PRICING-CTA) +
-       type.display headline + §6.9 metric+caveat (R5 indivisible · PD-2) +
-       border-only CTA enlarged padding (space.24 × space.32 per PD-T1-PRICING-CTA).
-       No filled-color CTA (Q-1 confirmed).
-       ===================================================================== -->
-  <section class="pricing-cta" aria-labelledby="pricing-headline" id="pricing">
+  <!-- Working with us -->
+  <section class="pricing-cta" aria-labelledby="pricing-headline" id="working-with-us">
     <div class="container">
       <div class="pricing-cta__inner">
 
-        <p class="pricing-cta__eyebrow type-eyebrow">PRICING</p>
+        <p class="pricing-cta__eyebrow type-eyebrow">WORKING WITH US</p>
         <h2 id="pricing-headline" class="pricing-cta__headline type-display">Verdaca Studio runs a full structured deliberation per session, not a single model call.</h2>
-        <p class="pricing-cta__body type-body-editorial">Pricing is structured for teams. Talk to us about volume and deployment options.</p>
-
-        <!-- §6.9 Metric + A4-caveat unit · R5 indivisible · PD-2 verbatim caveat.
-             Present in S5 per approved halt-point #2 wireframe. -->
-        <figure class="metric-strip" role="group" aria-label="Verdaca Studio session metric">
-          <p class="metric-strip__metric type-display">Verdaca Studio session</p>
-          <p class="metric-strip__metric type-display">+47% vs vanilla &nbsp;&middot;&nbsp; +21% vs enhanced</p>
-          <p class="metric-strip__caveat type-caveat">(internal scoring; A4 deferred)</p>
-        </figure>
+        <p class="pricing-cta__body type-body-editorial">Verdaca is early. We're working hands-on with a small number of design-partner teams before we set public pricing — shaping the product around real, high-stakes decisions. If your team has a decision worth deliberating, we'd like to talk.</p>
 
         <div class="pricing-cta__actions">
-          <a href="#" class="cta cta--primary type-body">Request access</a>
+          <a href="contact.html" class="cta cta--primary type-body">Book a pilot conversation</a>
           <a href="docs/index.html" class="cta cta--secondary type-body">Read the docs</a>
         </div>
 
@@ -178,14 +137,7 @@
     </div>
   </section>
 
-  <!-- =====================================================================
-       S3 — Supplier-cite block (§6.4 BOM primitive; position 6 per approved IA)
-       Repositioned to after pricing-CTA per halt-point #2 IA: "trust signal before footer."
-       PD-X-SUPPLIER-SCOPE: 2-row §6.4 BOM only; Track 2 vendored-components
-       is composition-level table in conceptual-model.md, explicitly NOT §6.4.
-       Caravaggio §1.7: typographic citation, monochrome, charcoal line on cream.
-       R6: visible-by-default in-flow — satisfied at position 6.
-       ===================================================================== -->
+  <!-- Suppliers -->
   <section class="suppliers" aria-labelledby="suppliers-eyebrow">
     <div class="container">
 
@@ -204,30 +156,27 @@
     </div>
   </section>
 
-  <!-- =====================================================================
-       FOOTER — §6.1 wordmark + 4-column §6.5 nav links + type.caption small-print
-       ===================================================================== -->
+  <!-- Footer -->
   <footer class="site-footer" role="contentinfo">
     <div class="container">
       <div class="footer__inner">
 
-        <!-- §6.1 wordmark slot -->
         <div class="footer__wordmark-col">
           <a href="index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
           <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
         </div>
 
-        <!-- Column 1: Product -->
+        <!-- Product -->
         <div>
           <p class="footer__col-heading type-eyebrow">PRODUCT</p>
           <ul class="footer__links">
             <li class="footer__link-item"><a href="#product" class="footer__link type-caption">Overview</a></li>
-            <li class="footer__link-item"><a href="#pricing" class="footer__link type-caption">Get started</a></li>
+            <li class="footer__link-item"><a href="#working-with-us" class="footer__link type-caption">Working with us</a></li>
             <li class="footer__link-item"><a href="about.html" class="footer__link type-caption">About</a></li>
           </ul>
         </div>
 
-        <!-- Column 2: Docs -->
+        <!-- Docs -->
         <div>
           <p class="footer__col-heading type-eyebrow">DOCS</p>
           <ul class="footer__links">
@@ -237,7 +186,7 @@
           </ul>
         </div>
 
-        <!-- Column 3: Legal -->
+        <!-- Legal -->
         <div>
           <p class="footer__col-heading type-eyebrow">LEGAL</p>
           <ul class="footer__links">
@@ -247,7 +196,7 @@
           </ul>
         </div>
 
-        <!-- Column 4: Contact -->
+        <!-- Contact -->
         <div>
           <p class="footer__col-heading type-eyebrow">CONTACT</p>
           <ul class="footer__links">
@@ -255,7 +204,7 @@
           </ul>
         </div>
 
-        <!-- Social row · monochrome SVG icons (substrate §6.8 line-art register) + text labels -->
+        <!-- Social -->
         <div class="footer__social-row">
           <a href="https://github.com/verdaca/VERDACA" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Verdaca on GitHub">
             <svg class="footer__social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#1F2226" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
