@@ -13,7 +13,15 @@ Anchors:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import pytest
+
+# Add ports src to path so praxis.ports.* is importable
+_PORTS_SRC = Path(__file__).resolve().parents[3] / "ports" / "src"
+if _PORTS_SRC.exists() and str(_PORTS_SRC) not in sys.path:
+    sys.path.insert(0, str(_PORTS_SRC))
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

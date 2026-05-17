@@ -1,16 +1,21 @@
 """LLM judge client — production Tier 3 gateway.
 
-``LLMJudgeClient.call_live()`` is the real-LLM entry point invoked only
-by the nightly drift canary (§12) and release-gate A4 harness. Tier 1
-PR-gate tests NEVER call it — they use :class:`FakeLLMJudge`.
+``LLMJudgeClient.call_live()`` is the real-LLM entry point invoked with
+a live ``LLMProxyPort`` only by the nightly drift canary (§12) and the
+release-gate A4 harness. PR-gate gate judging never takes the live
+path — it uses :class:`FakeLLMJudge`; ``call_live``'s own request-
+mapping and reply-parsing logic is unit-tested at PR-gate time via a
+mocked ``LLMProxyPort``.
 
 **Coverage exclusion:** ``call_live()`` is excluded from coverage
 measurement per test-strategy v0.3 §13.5 Tension #7 resolution and
-the pi-mono/test-strategy.md §7 generated-file precedent. The omit
-entry in ``pyproject.toml [tool.coverage.run] omit`` is uncommented at
-step 4 (this step). Rationale: the method is exclusively exercised
-by Tier 3 nightly tests, never from PR-gate tests; excluding it
-keeps the ≥90% coverage floor honest.
+the pi-mono/test-strategy.md §7 generated-file precedent. Exclusion is
+enforced by the in-method ``# pragma: no cover`` on the ``call_live``
+definition line. Rationale: the live LLM call is exercised only by
+Tier 3 nightly / Tier 4 release tests, never from PR-gate tests; the
+method stays coverage-excluded under the ratified §13.5 policy
+regardless of the mock-driven PR-gate logic test, keeping the ≥90%
+coverage floor honest.
 
 The :meth:`build_prompt` helper is NOT excluded — it is pure logic
 that composes the judge prompt from the gate definition + calibration
@@ -24,11 +29,21 @@ Binding anchors:
 
 from __future__ import annotations
 
+import json
+import uuid
+
 from praxis.kernel.mac.gates.base import JudgeResponse
 from praxis.kernel.mac.gates.calibration_anchors import (
     CALIBRATION_ANCHORS,
     CalibrationAnchor,
 )
+from praxis.ports.common import Message
+from praxis.ports.llm_proxy import LLMProxyPort, LLMRequest
+
+# Pinned judge model. Exact routing identifier is confirmed when DIAL routing lands.
+_JUDGE_MODEL = "claude-opus-4-6"
+_SCHEMA_VERSION = 1
+_PROVIDER = "anthropic"
 
 
 _JUDGE_PROMPT_TEMPLATE: str = """\
@@ -57,7 +72,8 @@ class LLMJudgeClient:
     this class.
     """
 
-    def __init__(self, *, model: str = "claude-opus-4-6") -> None:
+    def __init__(self, llm_proxy: LLMProxyPort, *, model: str = _JUDGE_MODEL) -> None:
+        self._llm_proxy = llm_proxy
         self._model = model
 
     @staticmethod
@@ -106,23 +122,52 @@ class LLMJudgeClient:
         prompt: str,
         max_tokens: int = 512,
     ) -> JudgeResponse:
-        """Invoke the real LLM. **Tier 3 nightly / Tier 4 release only.**
+        """Invoke the real LLM via LLMProxyPort. **Tier 3 nightly / Tier 4 release only.**
+
+        Builds an :class:`LLMRequest` carrying the composed judge
+        *prompt* as a single user-role :class:`Message`, calls the sync
+        :meth:`LLMProxyPort.call`, and parses the model's JSON reply
+        (``{"score": <int 1-5>, "rationale": "<one sentence>"}``) into a
+        :class:`JudgeResponse`.
 
         Excluded from coverage measurement per test-strategy v0.3 §13.5
         Tension #7 resolution. The PR-gate suite never reaches this
-        line — only the nightly drift canary and release-gate A4
-        harness exercise it, and both are opt-in via ``--run-nightly``
-        and ``--run-release`` respectively.
+        line with a live port — only the nightly drift canary and
+        release-gate A4 harness exercise it, and both are opt-in via
+        ``--run-nightly`` and ``--run-release`` respectively.
 
-        Step 4 ships a NotImplementedError stub. Stage 7 POV Harness
-        wires in the real ``anthropic`` SDK call with proper
-        rate-limiting + retry.
+        Malformed model output (non-JSON, or a missing ``score`` /
+        ``rationale`` key) propagates as ``json.JSONDecodeError`` /
+        ``KeyError``; ``LLMProxyPort`` failures propagate as their
+        ``VerdacaPortError`` subclasses. No score-range validation or
+        error remapping is performed here — an unhandled failure is the
+        correct signal to the Tier 3/4 harness.
         """
-        del prompt, max_tokens
-        raise NotImplementedError(
-            "LLMJudgeClient.call_live is a Tier 3/4 gateway; not implemented at step 4. "
-            "PR-gate tests must use FakeLLMJudge."
+        correlation_id = uuid.uuid4().hex
+        request = LLMRequest(
+            schema_version=_SCHEMA_VERSION,
+            correlation_id=correlation_id,
+            idempotency_key=uuid.uuid4().hex,
+            provider=_PROVIDER,
+            model=self._model,
+            messages=[
+                Message(
+                    schema_version=_SCHEMA_VERSION,
+                    correlation_id=correlation_id,
+                    role="user",
+                    content=prompt,
+                ),
+            ],
+            max_tokens=max_tokens,
+            temperature=0.0,
+            compression_hint="none",
         )
+        # LLMProxyPort.call() is sync (ADR-9.1.2-6 §3 idempotency table);
+        # called directly from async call_live() — same pattern as
+        # Caveman's HaikuProvider.compress().
+        response = self._llm_proxy.call(request)
+        parsed = json.loads(response.content)
+        return JudgeResponse(score=parsed["score"], rationale=parsed["rationale"])
 
 
 __all__ = ("LLMJudgeClient",)
