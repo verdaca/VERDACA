@@ -75,43 +75,151 @@
 
       <p class="type-body-editorial">The horizontal axis controls deliberation composition &mdash; which personas are in the room and in what sequence they reason. The vertical axis controls substrate &mdash; which memory backend, model provider, and compaction engine the kernel routes through. A change on one axis has no effect on the other, because both axes talk only to the port contracts in between.</p>
 
-      <div class="docs-diagram" role="img" aria-label="Two-axis pluggability layered architecture">
-        <pre>
-╔════════════════════════════════════════════════════════════════════╗
-║  WORKFLOWS   "Strategy review" · "Code review" · "Hiring"          ║
-║              · "M&A diligence" · "Architecture review"             ║
-╠════════════════════════════════════════════════════════════════════╣
-║  AGENTS      Plug-in personas (the "who" in the room)              ║
-║  ┌────────┬────────┬────────┬────────┬────────┐                    ║
-║  │Strategy│  UX/   │Software│  Data  │  Your  │                    ║
-║  │  pack  │ Design │  Eng   │Science │ custom │                    ║
-║  │        │  pack  │  pack  │  pack  │  pack  │                    ║
-║  └────────┴────────┴────────┴────────┴────────┘                    ║
-╠════════════════════════════════════════════════════════════════════╣
-║  KERNEL      Orchestration · Routing · Provenance                  ║
-║              (knows nothing about domain — just protocol)          ║
-╠════════════════════════════════════════════════════════════════════╣
-║  PORTS       Memory · LLM Proxy · Compaction · QA · Coord          ║
-╠════════════════════════════════════════════════════════════════════╣
-║  ADAPTERS    Mem0/Letta · Anthropic/OpenAI · Forge/Caveman/...     ║
-╚════════════════════════════════════════════════════════════════════╝
-        </pre>
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 462" role="img" aria-labelledby="d1-title d1-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="d1-title">Two-axis pluggability — layered architecture</title>
+          <desc id="d1-desc">A five-layer stack: Workflows, Agents (five plug-in persona packs forming the horizontal axis), the Kernel, Ports, and Adapters. The kernel, ports and adapters form the vertical substrate axis.</desc>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">TWO-AXIS PLUGGABILITY</text>
+
+          <!-- kernel band wash -->
+          <rect x="41" y="259" width="678" height="62" fill="#6B1F25" fill-opacity="0.05"/>
+
+          <!-- outer stack + gutter + dividers -->
+          <rect x="40" y="80" width="680" height="346" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="176" y1="80"  x2="176" y2="426" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="40"  y1="132" x2="720" y2="132" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="40"  y1="258" x2="720" y2="258" stroke="#6B1F25" stroke-width="1.5"/>
+          <line x1="40"  y1="322" x2="720" y2="322" stroke="#6B1F25" stroke-width="1.5"/>
+          <line x1="40"  y1="372" x2="720" y2="372" stroke="#1F2226" stroke-width="1.5"/>
+
+          <!-- layer names -->
+          <g font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas" font-size="12" letter-spacing="0.6">
+            <text x="58" y="110" fill="#1F2226">WORKFLOWS</text>
+            <text x="58" y="199" fill="#1F2226">AGENTS</text>
+            <text x="58" y="292" fill="#6B1F25">KERNEL</text>
+            <text x="58" y="350" fill="#1F2226">PORTS</text>
+            <text x="58" y="401" fill="#1F2226">ADAPTERS</text>
+          </g>
+
+          <!-- workflows content -->
+          <text x="196" y="110" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Strategy review &middot; Code review &middot; Hiring &middot; M&amp;A diligence &middot; Architecture review</text>
+
+          <!-- agents content -->
+          <text x="196" y="156" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">HORIZONTAL AXIS &mdash; SWAP ANY PACK, NO KERNEL CHANGE</text>
+          <g fill="none" stroke="#1F2226" stroke-width="1.25">
+            <rect x="196" y="172" width="92" height="66"/>
+            <rect x="300" y="172" width="92" height="66"/>
+            <rect x="404" y="172" width="92" height="66"/>
+            <rect x="508" y="172" width="92" height="66"/>
+            <rect x="612" y="172" width="92" height="66" stroke-dasharray="4 3"/>
+          </g>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="12" fill="#1F2226" text-anchor="middle">
+            <text x="242" y="209">Strategy</text>
+            <text x="346" y="209">UX / Design</text>
+            <text x="450" y="209">Software Eng</text>
+            <text x="554" y="209">Data Science</text>
+            <text x="658" y="209">Your custom</text>
+          </g>
+
+          <!-- kernel content -->
+          <text x="196" y="287" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="13" fill="#1F2226">Orchestration &middot; Routing &middot; Provenance</text>
+          <text x="196" y="305" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11" fill="#42454A">Domain-blind &mdash; protocol only, no editorial judgment</text>
+
+          <!-- ports + adapters content -->
+          <text x="196" y="351" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Memory &middot; LLM Proxy &middot; Compaction &middot; QA &middot; Coordination</text>
+          <text x="196" y="402" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Mem0 / Letta &middot; Anthropic / OpenAI &middot; Forge / Caveman / &hellip;</text>
+
+          <!-- vertical-axis caption -->
+          <text x="40" y="449" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">VERTICAL AXIS &mdash; KERNEL, PORTS &amp; ADAPTERS SWAP FREELY, NO AGENT CHANGE</text>
+        </svg>
       </div>
 
       <h2 class="docs-content__section-heading type-headline">Deliberation loop</h2>
 
       <p class="type-body-editorial">Each persona in a session passes through a fixed five-phase loop: receive the current context, reason against its role constraints, propose an output, pass through the quality gate, and emit to the synthesis layer. Proposals that fail the gate re-enter the reason phase rather than propagating downstream. The kernel coordinates sequencing and provenance; it does not interpret domain content.</p>
 
-      <div class="docs-diagram" role="img" aria-label="Deliberation loop diagram">
-        <pre>
-  INPUT
-    │
-    ▼
-  RECEIVE  →  REASON  →  PROPOSE  →  GATE  →  EMIT
-    │                                  │
-    │         (per persona)            │ reject: re-reason
-    └──────────────────────────────────┘
-        </pre>
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 282" role="img" aria-labelledby="d2-title d2-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="d2-title">Deliberation loop — five-phase pipeline</title>
+          <desc id="d2-desc">Input enters the Receive phase, then flows through Reason, Propose, Gate and Emit to the synthesis layer. Proposals rejected at the Gate return to the Reason phase.</desc>
+
+          <defs>
+            <marker id="loop-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+            <marker id="loop-arrow-ox" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#6B1F25"/>
+            </marker>
+          </defs>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">DELIBERATION LOOP</text>
+
+          <!-- input -->
+          <text x="104" y="98" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="11" letter-spacing="0.6" fill="#42454A">INPUT</text>
+          <line x1="104" y1="106" x2="104" y2="123" stroke="#42454A" stroke-width="1.5" marker-end="url(#loop-arrow)"/>
+
+          <!-- stage boxes -->
+          <g fill="none" stroke="#1F2226" stroke-width="1.5">
+            <rect x="40"  y="124" width="128" height="58"/>
+            <rect x="188" y="124" width="128" height="58"/>
+            <rect x="336" y="124" width="128" height="58"/>
+            <rect x="632" y="124" width="128" height="58"/>
+          </g>
+          <rect x="484" y="124" width="128" height="58" fill="#6B1F25" fill-opacity="0.05"/>
+          <rect x="484" y="124" width="128" height="58" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="15" font-weight="500" text-anchor="middle">
+            <text x="104" y="158" fill="#1F2226">RECEIVE</text>
+            <text x="252" y="158" fill="#1F2226">REASON</text>
+            <text x="400" y="158" fill="#1F2226">PROPOSE</text>
+            <text x="548" y="158" fill="#6B1F25">GATE</text>
+            <text x="696" y="158" fill="#1F2226">EMIT</text>
+          </g>
+
+          <!-- inter-stage arrows -->
+          <g stroke="#42454A" stroke-width="1.5">
+            <line x1="168" y1="153" x2="186" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="316" y1="153" x2="334" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="464" y1="153" x2="482" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="612" y1="153" x2="630" y2="153" marker-end="url(#loop-arrow)"/>
+          </g>
+
+          <!-- emit to synthesis -->
+          <line x1="696" y1="182" x2="696" y2="201" stroke="#42454A" stroke-width="1.5" marker-end="url(#loop-arrow)"/>
+          <text x="696" y="217" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10.5" letter-spacing="0.5" fill="#42454A">SYNTHESIS LAYER</text>
+
+          <!-- reject feedback -->
+          <path d="M548,182 L548,230 L252,230 L252,184" fill="none" stroke="#6B1F25" stroke-width="1.5"
+                marker-end="url(#loop-arrow-ox)"/>
+          <circle cx="548" cy="230" r="2.4" fill="#6B1F25"/>
+          <circle cx="252" cy="230" r="2.4" fill="#6B1F25"/>
+          <rect x="332" y="221" width="136" height="16" fill="#F2EDE2"/>
+          <text x="400" y="233" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.4" fill="#6B1F25">REJECT &mdash; RE-REASON</text>
+
+          <!-- caption -->
+          <text x="400" y="263" text-anchor="middle" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11" fill="#42454A">The five-phase loop runs once per persona, each round.</text>
+        </svg>
       </div>
 
       <h2 class="docs-content__section-heading type-headline">Kernel responsibilities</h2>

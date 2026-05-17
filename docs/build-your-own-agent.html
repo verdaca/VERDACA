@@ -88,22 +88,61 @@
 
       <p class="type-body-editorial">A Verdaca agent is three things bound together: a role card that defines what the persona argues and under what constraints, an adapter list that specifies which port implementations it may call, and a conformance record that certifies it passes the no-waiver test suite. All three must be present before the kernel will accept the agent into a deliberation session.</p>
 
-      <div class="docs-diagram" role="img" aria-label="Agent anatomy diagram">
-        <pre>
-  ┌─────────────────────────────────────────────────────┐
-  │                    AGENT                            │
-  │                                                     │
-  │  ┌──────────────┐   ┌────────────────────────────┐ │
-  │  │   PERSONA    │   │         SUBSTRATE          │ │
-  │  │  (role def)  │   │  memory · LLM · compaction │ │
-  │  └──────────────┘   └────────────────────────────┘ │
-  │                                                     │
-  │  ┌──────────────────────────────────────────────┐  │
-  │  │           DELIBERATION LOOP                  │  │
-  │  │  receive → reason → propose → gate → emit    │  │
-  │  └──────────────────────────────────────────────┘  │
-  └─────────────────────────────────────────────────────┘
-        </pre>
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 338" role="img" aria-labelledby="d3-title d3-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="d3-title">Agent anatomy</title>
+          <desc id="d3-desc">An Agent binds together a Persona (role card, constraints, output format) and a Substrate (memory, LLM proxy, compaction adapters), both feeding the five-phase deliberation loop: receive, reason, propose, gate, emit.</desc>
+
+          <defs>
+            <marker id="anat-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+          </defs>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">AGENT ANATOMY</text>
+
+          <!-- outer agent container -->
+          <rect x="70" y="80" width="660" height="224" fill="#6B1F25" fill-opacity="0.04"/>
+          <rect x="70" y="80" width="660" height="224" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <text x="94" y="108" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="13" font-weight="600" letter-spacing="1.4" fill="#6B1F25">AGENT</text>
+
+          <!-- persona -->
+          <rect x="98" y="124" width="288" height="92" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <text x="118" y="155" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#1F2226">PERSONA</text>
+          <text x="118" y="180" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11.5" fill="#42454A">Role card &middot; constraints &middot; output format</text>
+
+          <!-- substrate -->
+          <rect x="414" y="124" width="288" height="92" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <text x="434" y="155" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#1F2226">SUBSTRATE</text>
+          <text x="434" y="180" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11.5" fill="#42454A">Memory &middot; LLM proxy &middot; compaction adapters</text>
+
+          <!-- bind connectors -->
+          <g stroke="#42454A" stroke-width="1.5">
+            <line x1="242" y1="216" x2="242" y2="236" marker-end="url(#anat-arrow)"/>
+            <line x1="558" y1="216" x2="558" y2="236" marker-end="url(#anat-arrow)"/>
+          </g>
+
+          <!-- deliberation loop -->
+          <rect x="98" y="238" width="604" height="52" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <text x="118" y="269" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="11" letter-spacing="0.8" fill="#1F2226">DELIBERATION LOOP</text>
+          <text x="476" y="269" text-anchor="middle" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">receive &#8594; reason &#8594; propose &#8594; gate &#8594; emit</text>
+
+          <!-- caption -->
+          <text x="400" y="326" text-anchor="middle" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11" fill="#42454A">Persona, substrate and loop bind together before the kernel admits the agent to a session.</text>
+        </svg>
       </div>
 
       <h2 class="docs-content__section-heading type-headline">Step 1 &mdash; Define a persona</h2>
