@@ -348,6 +348,7 @@ img, svg { display: block; max-width: 100%; }
 .docs-content {
   padding: var(--space-48) var(--space-64);
   max-width: 72ch;   /* prose width discipline per substrate §6.6 60ch + headings */
+  min-width: 0;      /* grid item must be allowed to shrink below content size — mobile overflow fix */
 }
 .docs-content__page-eyebrow {
   margin: 0 0 var(--space-8) 0;
@@ -534,6 +535,20 @@ img, svg { display: block; max-width: 100%; }
   }
   .docs-content {
     padding: var(--space-32) var(--space-16);
+  }
+  /* Wide diagrams stay legible and scroll horizontally rather than shrink to unreadable */
+  .docs-diagram svg { min-width: 600px; }
+  /* Tables scroll horizontally instead of forcing whole-page overflow */
+  .docs-table { display: block; overflow-x: auto; }
+  /* Larger touch targets on mobile */
+  .docs-sidebar__link {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+  .footer__link {
+    display: inline-block;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
   }
 }
 @media (min-width: 768px) and (max-width: 1023px) {

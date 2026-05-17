@@ -808,6 +808,16 @@ img, svg { display: block; max-width: 100%; }
     flex-wrap: wrap;
     gap: var(--space-12) var(--space-16);
   }
+  /* Larger touch targets on mobile */
+  .nav__item {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+  .footer__link {
+    display: inline-block;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
