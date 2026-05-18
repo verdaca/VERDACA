@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-compression"
 version = "0.1.0"
-description = "Praxis Compression Layer — Stage 2 (TONL + Forge + Caveman + RTK)"
+description = "Verdaca Compression Layer — Stage 2 (TONL + Forge + Caveman + RTK)"
 requires-python = ">=3.11"
 authors = [
-    {name = "Praxis Engineering"},
+    {name = "Verdaca Engineering"},
 ]
 license = {text = "Proprietary"}
 

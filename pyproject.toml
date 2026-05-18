@@ -1,4 +1,4 @@
-# Verdaca / Praxis — uv workspace root.
+# Verdaca — uv workspace root.
 # Virtual workspace; the repo root itself is not a Python project. All code
 # lives in workspace members listed below.
 #

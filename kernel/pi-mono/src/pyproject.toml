@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-pi-mono"
 version = "0.1.0"
-description = "Pi-Mono — Praxis cost tracker (measurement foundation)"
+description = "Pi-Mono — Verdaca cost tracker (measurement foundation)"
 requires-python = ">=3.12"
 authors = [
-    {name = "Praxis Engineering"},
+    {name = "Verdaca Engineering"},
 ]
 readme = "README.md"
 license = {text = "Proprietary"}

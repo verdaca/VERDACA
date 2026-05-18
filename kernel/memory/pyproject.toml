@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-memory"
 version = "0.1.0"
-description = "Praxis Memory module — unified facade over Beads + Mem0 + Atelier (Stage 3)"
+description = "Verdaca Memory module — unified facade over Beads + Mem0 + Atelier (Stage 3)"
 requires-python = ">=3.12"
 
 [tool.setuptools.packages.find]

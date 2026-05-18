@@ -1,4 +1,4 @@
-# Praxis — Clean repo scope
+# Verdaca — Clean repo scope
 # Only kernel/, shell/, and docs/ are tracked.
 # Everything else (BMAD framework, planning workspace, research, Claude config) is excluded.
 
@@ -7,7 +7,7 @@
 # ============================================================
 /*
 
-# Step 2: Re-include the Praxis project directories
+# Step 2: Re-include the Verdaca project directories
 !.gitignore
 !README.md
 !kernel/
@@ -24,16 +24,21 @@
 # ============================================================
 # Workspace files — NEVER tracked
 # ============================================================
-# These exist in the working directory but are not part of Praxis.
+# These exist in the working directory but are not part of Verdaca.
 # Listed explicitly for safety even though /* already covers them.
 _bmad/
 _bmad-output/
 .claude/
 Articles/
+# Leading slash root-anchors this pattern — it must NOT case-fold onto
+# the tracked kernel/memory/ package on the case-insensitive Windows FS.
 /Memory/
 CLAUDE.md
 claude-setup-reference.md
 knowledge/raw/
+# 9.4.8 FTS5 session index — local artifacts, never tracked
+knowledge/sessions.db
+knowledge/sessions.db-*
 
 # ============================================================
 # Python development cruft

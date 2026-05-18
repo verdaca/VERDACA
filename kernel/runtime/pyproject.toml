@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-runtime"
 version = "0.1.0"
-description = "Praxis Agent Runtime — Stage 4 multi-agent orchestration layer"
+description = "Verdaca Agent Runtime — Stage 4 multi-agent orchestration layer"
 requires-python = ">=3.12"
 dependencies = [
     # Runtime dependencies — needed to import and execute the package

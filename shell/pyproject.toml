@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-shell"
 version = "0.1.0"
-description = "Praxis POV Delivery Harness — Stage 7 (Web UI + Auth + Billing + API)"
+description = "Verdaca POV Delivery Harness — Stage 7 (Web UI + Auth + Billing + API)"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115,<1",

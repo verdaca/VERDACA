@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "praxis-studio"
 version = "0.1.0"
-description = "Praxis Studio Workflow Template layer — Stage 6 (configuration over MAC)"
+description = "Verdaca Studio Workflow Template layer — Stage 6 (configuration over MAC)"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.6,<3",
