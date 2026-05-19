@@ -10,6 +10,7 @@ Or via:   pytest pre_sales_demo.py  (pyproject.toml sets pythonpath automaticall
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 # -----------------------------------------------------------------------
@@ -36,16 +37,37 @@ def _cost_usd(tokens: int, input_ratio: float, output_ratio: float) -> float:
             output_tokens / 1_000_000 * _SONNET_OUTPUT_PER_M)
 
 
+def _assert_repo_root_pathwalk(repo_root: Path) -> None:
+    try:
+        git_root = Path(
+            subprocess.check_output(
+                ["git", "rev-parse", "--show-toplevel"],
+                cwd=Path(__file__).resolve().parent,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            ).strip()
+        ).resolve()
+    except (OSError, subprocess.CalledProcessError):
+        assert (repo_root / "pyproject.toml").is_file(), (
+            f"Repo root pathwalk drift: {repo_root} lacks pyproject.toml"
+        )
+    else:
+        assert repo_root == git_root, f"Repo root pathwalk drift: {repo_root} != {git_root}"
+
+
 def run_demo() -> None:
+    from uuid import uuid4
+
     from praxis.kernel.runtime.loader.manifest import AgentLoader
     from praxis.kernel.runtime.models import AgentRole
     from praxis.kernel.runtime.proxies import ProducerMemoryProxy, ReviewerMemoryProxy
     from praxis.kernel.runtime.spawner.budgets import ResourceBudget
     from praxis.kernel.runtime.spawner.spawner import _construct_proxy_for_role
     from praxis.kernel.runtime.testing import make_fake_memory, make_test_manifest
-    from uuid import uuid4
 
-    _REPO_ROOT = Path(__file__).resolve().parents[4]  # .../Anthropic/
+    # pre_sales_demo.py lives at .../repo/kernel/runtime/; parents[2] = repo root.
+    _REPO_ROOT = Path(__file__).resolve().parents[2]
+    _assert_repo_root_pathwalk(_REPO_ROOT)
     manifest_path = _REPO_ROOT / "_bmad" / "_config" / "agent-manifest.csv"
 
     # -----------------------------------------------------------------------
@@ -100,7 +122,10 @@ def run_demo() -> None:
             r_ok = "FAIL"
             spawn_errors.append(f"{agent_name} (reviewer): {e}")
 
-        print(f"  {i:<4} {cfg.agent.display_name:<28} {cfg.agent.module.value:<6} {p_ok:<12} {r_ok}")
+        print(
+            f"  {i:<4} {cfg.agent.display_name:<28} {cfg.agent.module.value:<6} "
+            f"{p_ok:<12} {r_ok}"
+        )
 
     print()
     if spawn_errors:
@@ -128,20 +153,32 @@ def run_demo() -> None:
     print()
     print("  Cost Model (Claude Sonnet 4.6, conservative utilisation):")
     print(f"  {'-' * 50}")
-    print(f"  Producer agent budget : {p_budget.max_tokens:>9,} tokens  -> est. ${p_cost:.4f}/spawn")
-    print(f"  Reviewer agent budget : {r_budget.max_tokens:>9,} tokens  -> est. ${r_cost:.4f}/spawn")
+    print(
+        f"  Producer agent budget : {p_budget.max_tokens:>9,} tokens  -> "
+        f"est. ${p_cost:.4f}/spawn"
+    )
+    print(
+        f"  Reviewer agent budget : {r_budget.max_tokens:>9,} tokens  -> "
+        f"est. ${r_cost:.4f}/spawn"
+    )
     print(f"  {'-' * 50}")
     print(f"  Minimal workflow (1P + 1R)          : ${single_workflow_cost:.4f}")
     print(f"  Medium workflow (4 agents, mixed)   : ${single_workflow_cost * 2:.4f}")
     print(f"  Full deliberation (16 agents)       : ${full_workflow_cost:.4f}")
     print(f"  {'-' * 50}")
-    print(f"  At scale:")
+    print("  At scale:")
     print(f"    100 workflows/day   = ${single_workflow_cost * 100:.2f}/day")
     print(f"    500 workflows/day   = ${single_workflow_cost * 500:.2f}/day")
     print(f"    2000 workflows/day  = ${single_workflow_cost * 2000:.2f}/day")
     print()
-    print(f"  Pricing basis: Sonnet 4.6 @ ${_SONNET_INPUT_PER_M}/M input, ${_SONNET_OUTPUT_PER_M}/M output")
-    print(f"  Utilisation ratios: {int(_PRODUCER_INPUT_RATIO*100)}% input / {int(_PRODUCER_OUTPUT_RATIO*100)}% output (conservative)")
+    print(
+        f"  Pricing basis: Sonnet 4.6 @ ${_SONNET_INPUT_PER_M}/M input, "
+        f"${_SONNET_OUTPUT_PER_M}/M output"
+    )
+    print(
+        f"  Utilisation ratios: {int(_PRODUCER_INPUT_RATIO * 100)}% input / "
+        f"{int(_PRODUCER_OUTPUT_RATIO * 100)}% output (conservative)"
+    )
     print()
     print("=" * 65)
     print("  Stage 4.6 gate: PASS" if not spawn_errors else "  Stage 4.6 gate: FAIL (spawn errors)")
@@ -158,6 +195,5 @@ def test_pre_sales_checkpoint() -> None:
 
 
 if __name__ == "__main__":
-    import sys
     # Allow running directly if src/ is on PYTHONPATH
     run_demo()

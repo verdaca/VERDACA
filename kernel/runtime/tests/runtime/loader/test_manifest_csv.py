@@ -5,19 +5,45 @@ Tests that AgentLoader parses _bmad/_config/agent-manifest.csv correctly.
 
 from __future__ import annotations
 
+import subprocess
 import textwrap
 from pathlib import Path
 
 import pytest
 
-from praxis.kernel.runtime.loader.manifest import AgentLoader, AgentLoaderError, AgentRuntimeConfig
+
+def _assert_repo_root_pathwalk(repo_root: Path) -> None:
+    try:
+        git_root = Path(
+            subprocess.check_output(
+                ["git", "rev-parse", "--show-toplevel"],
+                cwd=Path(__file__).resolve().parent,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            ).strip()
+        ).resolve()
+    except (OSError, subprocess.CalledProcessError):
+        assert (repo_root / "pyproject.toml").is_file(), (
+            f"Repo root pathwalk drift: {repo_root} lacks pyproject.toml"
+        )
+    else:
+        assert repo_root == git_root, f"Repo root pathwalk drift: {repo_root} != {git_root}"
+
 
 # Locate the actual BMAD manifest.
 # test_manifest_csv.py lives at:
-#   .../Anthropic/_bmad-output/implementation-artifacts/praxis/runtime/tests/runtime/loader/
-# parents[7] = .../Anthropic/
-_REPO_ROOT = Path(__file__).resolve().parents[7]
+#   .../repo/kernel/runtime/tests/runtime/loader/
+# parents[5] = repo root at the current kernel/runtime depth.
+_REPO_ROOT = Path(__file__).resolve().parents[5]
+_assert_repo_root_pathwalk(_REPO_ROOT)
 _MANIFEST_PATH = _REPO_ROOT / "_bmad" / "_config" / "agent-manifest.csv"
+
+# Import after the sentinel so repo-root drift fails before manifest loading.
+from praxis.kernel.runtime.loader.manifest import (  # noqa: E402
+    AgentLoader,
+    AgentLoaderError,
+    AgentRuntimeConfig,
+)
 
 _EXPECTED_AGENT_COUNT = 16
 
