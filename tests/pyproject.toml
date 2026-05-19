@@ -24,6 +24,13 @@ include = ["praxis*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "no_waiver: Stage-9 non-waivable contract invariant; inventory-locked by tests/src/praxis/contract_tests/ports/test_no_waiver_inventory.py",
+]
 
 [tool.ruff]
 line-length = 100

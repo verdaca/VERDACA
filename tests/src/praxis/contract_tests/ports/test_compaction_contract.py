@@ -336,6 +336,7 @@ def test_M_T_COMP_STRATEGY_DOWNGRADE_01_downgrade_as_return(
     assert result.tokens_out <= req.token_budget
 
 
+@pytest.mark.no_waiver
 def test_M_T_COMP_BUDGET_UNREACHABLE_01_lossless_overflow(
     adapter: CompactionPort,
 ) -> None:
@@ -351,6 +352,7 @@ def test_M_T_COMP_BUDGET_UNREACHABLE_01_lossless_overflow(
     assert exc_info.value.minimum_achievable >= 1
 
 
+# Binding test of M-T-COMP-BUDGET-UNREACHABLE-01; the no_waiver allow-list bearer for this invariant is `_lossless_overflow` - see test_no_waiver_inventory.py.  # noqa: E501
 def test_M_T_COMP_BUDGET_UNREACHABLE_01_recompress_exhaustion() -> None:
     """`compact()` on the LLMLingua adapter when an under-compressing substrate
     cannot reach the budget within `_MAX_RECOMPRESS=3` iterations — Raises
@@ -370,6 +372,7 @@ def test_M_T_COMP_BUDGET_UNREACHABLE_01_recompress_exhaustion() -> None:
     assert exc_info.value.minimum_achievable >= 2
 
 
+@pytest.mark.no_waiver
 def test_M_T_COMP_PRESERVED_EVICTED_01_preserved_span_invariant(
     adapter: CompactionPort, adapter_kind: str
 ) -> None:
@@ -417,6 +420,7 @@ def test_M_T_COMP_PRESERVED_EVICTED_01_preserved_span_invariant(
         adapter.compact(adv)
 
 
+@pytest.mark.no_waiver
 def test_M_T_COMP_DETERM_VIOLATION_01_caller_raised_shape() -> None:
     """DeterminismViolation is a ContractViolation with expected_hash +
     actual_hash; it is caller-raised (owned-vs-delegated table — the caller
