@@ -23,5 +23,5 @@ UPSTREAM_VERSION: Final[str] = "1.0.11"
 UPSTREAM_KIND: Final[Literal["pypi", "submodule", "sidecar_image", "in_tree"]] = "pypi"
 # Cleo 9.6 wires real sha256 from uv.lock for mem0ai==1.0.11 at supply-chain
 # review. Placeholder per Beads/TONL convention.
-UPSTREAM_LOCK_HASH: Final[str] = "sha256:placeholder-cleo-9.6-computes-on-supply-chain-review"
+UPSTREAM_LOCK_HASH: Final[str] = "sha256:ddb803bedc22bd514606d262407782e88df929f6991b59f6972fb8a25cc06001"
 ADAPTER_API_VERSION: Final[str] = "0.1.0"

@@ -1,6 +1,6 @@
 """Stage 4.4 Quinn checkpoint — All 16 agents spawn successfully.
 
-Verifies that every agent in _bmad/_config/agent-manifest.csv can be loaded
+Verifies that every agent in the committed runtime manifest fixture can be loaded
 and that a memory proxy (ProducerMemoryProxy or ReviewerMemoryProxy) is
 constructable for each agent without error.
 
@@ -40,7 +40,9 @@ def _assert_repo_root_pathwalk(repo_root: Path) -> None:
 # parents[5] = repo root at the current kernel/runtime depth.
 _REPO_ROOT = Path(__file__).resolve().parents[5]
 _assert_repo_root_pathwalk(_REPO_ROOT)
-_MANIFEST_PATH = _REPO_ROOT / "_bmad" / "_config" / "agent-manifest.csv"
+_MANIFEST_PATH = (
+    _REPO_ROOT / "kernel" / "runtime" / "tests" / "runtime" / "fixtures" / "agent-manifest.csv"
+)
 
 _EXPECTED_AGENT_COUNT = 16
 

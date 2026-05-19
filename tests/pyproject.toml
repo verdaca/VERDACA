@@ -10,6 +10,12 @@ requires-python = ">=3.12"
 dependencies = [
     "praxis-ports",
     "praxis-adapter-beads",
+    "praxis-adapter-in_tree_compaction_stub",
+    "praxis-adapter-pi_mono_native",
+    "praxis-adapter-litellm",
+    "praxis-adapter-mem0",
+    "praxis-adapter-letta",
+    "praxis-adapter-llmlingua",
     "pydantic>=2.0",
     "pytest>=7.0",
 ]
@@ -17,6 +23,12 @@ dependencies = [
 [tool.uv.sources]
 praxis-ports = { workspace = true }
 praxis-adapter-beads = { workspace = true }
+praxis-adapter-in_tree_compaction_stub = { workspace = true }
+praxis-adapter-pi_mono_native = { workspace = true }
+praxis-adapter-litellm = { workspace = true }
+praxis-adapter-mem0 = { workspace = true }
+praxis-adapter-letta = { workspace = true }
+praxis-adapter-llmlingua = { workspace = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]

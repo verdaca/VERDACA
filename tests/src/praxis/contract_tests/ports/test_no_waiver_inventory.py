@@ -9,12 +9,15 @@ Cross-regime summing is forbidden: the MAC 16-entry regime is separate.
 """
 
 import pytest
+import subprocess
+import sys
+from pathlib import Path
 
-MEMORY_CONTRACT = "tests/src/praxis/contract_tests/ports/test_memory_contract.py"
-SERIALIZATION_CONTRACT = (
-    "tests/src/praxis/contract_tests/ports/test_serialization_contract.py"
-)
-COMPACTION_CONTRACT = "tests/src/praxis/contract_tests/ports/test_compaction_contract.py"
+# Pytest node IDs are relative to the praxis-contract-tests root (`tests/`),
+# so this lock intentionally uses `src/...` paths.
+MEMORY_CONTRACT = "src/praxis/contract_tests/ports/test_memory_contract.py"
+SERIALIZATION_CONTRACT = "src/praxis/contract_tests/ports/test_serialization_contract.py"
+COMPACTION_CONTRACT = "src/praxis/contract_tests/ports/test_compaction_contract.py"
 
 PROMO_01 = f"{MEMORY_CONTRACT}::test_M_T_MEM_PROMO_01_threshold_violation"
 PROMO_02 = (
@@ -61,6 +64,32 @@ EXPECTED_PARAM_VARIANTS: dict[str, frozenset[str]] = {
 }
 
 
+def collect_no_waiver_nodeids() -> set[str]:
+    """Collect the full contract-test tree when this file is run standalone."""
+    tests_root = Path(__file__).resolve().parents[4]
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "src/praxis/contract_tests/ports",
+            "--collect-only",
+            "-q",
+            "-m",
+            "no_waiver",
+        ],
+        cwd=tests_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return {
+        line.strip()
+        for line in result.stdout.splitlines()
+        if line.startswith("src/") and "::" in line
+    }
+
+
 def strip_param(nodeid: str) -> str:
     """Strip one trailing pytest [param] suffix without touching earlier '['."""
     return nodeid.rsplit("[", 1)[0]
@@ -88,18 +117,12 @@ def test_strip_param(nodeid: str, expected: str) -> None:
     assert strip_param(nodeid) == expected
 
 
-@pytest.mark.skip(
-    reason=(
-        "F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01 - requires the full "
-        "praxis-contract-tests collection; un-skip after 9.6"
-    )
-)
 def test_stage9_no_waiver_inventory_matches_allowlist(request: pytest.FixtureRequest) -> None:
     observed = {
         item.nodeid
         for item in request.session.items
         if item.get_closest_marker("no_waiver") is not None
-    }
+    } or collect_no_waiver_nodeids()
     normalized = {strip_param(nodeid) for nodeid in observed}
 
     # No subset arithmetic: this Stage-9 regime has no cross-tree split.

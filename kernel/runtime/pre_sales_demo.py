@@ -68,7 +68,15 @@ def run_demo() -> None:
     # pre_sales_demo.py lives at .../repo/kernel/runtime/; parents[2] = repo root.
     _REPO_ROOT = Path(__file__).resolve().parents[2]
     _assert_repo_root_pathwalk(_REPO_ROOT)
-    manifest_path = _REPO_ROOT / "_bmad" / "_config" / "agent-manifest.csv"
+    manifest_path = (
+        _REPO_ROOT
+        / "kernel"
+        / "runtime"
+        / "tests"
+        / "runtime"
+        / "fixtures"
+        / "agent-manifest.csv"
+    )
 
     # -----------------------------------------------------------------------
     # 1. Load all 16 agents

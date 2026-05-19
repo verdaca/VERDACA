@@ -26,5 +26,5 @@ UPSTREAM_VERSION: Final[str] = "0.2.2"
 UPSTREAM_KIND: Final[Literal["pypi", "submodule", "sidecar_image", "in_tree"]] = "pypi"
 # Cleo 9.6 wires the real sha256 from uv.lock for llmlingua==0.2.2 at
 # supply-chain review. Placeholder per the LiteLLM/Mem0/Letta convention.
-UPSTREAM_LOCK_HASH: Final[str] = "sha256:placeholder-cleo-9.6-computes-on-supply-chain-review"
+UPSTREAM_LOCK_HASH: Final[str] = "sha256:1a0caedd8d5a65512a85dadb6bfda6f5b3c4b45e5cb9e7b1c6009573f9058572"
 ADAPTER_API_VERSION: Final[str] = "0.1.0"
