@@ -1,0 +1,72 @@
+name: Supply Chain Audit
+
+on:
+  pull_request:
+    paths:
+      - "adapters/**/pyproject.toml"
+      - "adapters/**/version_pin.py"
+      - "tests/pyproject.toml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/audit.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1"
+
+jobs:
+  pin-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - name: Sync workspace
+        run: uv sync --all-packages
+      - name: Verify Stage 9.6 pinned package hashes
+        run: |
+          uv run --package praxis-contract-tests python - <<'PY'
+          from __future__ import annotations
+
+          import re
+          from pathlib import Path
+
+          targets = {
+              "mem0ai": (
+                  "1.0.11",
+                  "sha256:ddb803bedc22bd514606d262407782e88df929f6991b59f6972fb8a25cc06001",
+                  Path("adapters/mem0/src/praxis/adapters/mem0/version_pin.py"),
+              ),
+              "letta-client": (
+                  "1.10.3",
+                  "sha256:26142e686a79cb0d645d245202aaa6889ff45aa1f52009bf10b73ca649649825",
+                  Path("adapters/letta/src/praxis/adapters/letta/version_pin.py"),
+              ),
+              "litellm": (
+                  "1.83.14",
+                  "sha256:24aef9b47cdc424c833e32f3727f411741c690832cd1fe4405e0077144fe09c9",
+                  Path("adapters/litellm/src/praxis/adapters/litellm/version_pin.py"),
+              ),
+              "llmlingua": (
+                  "0.2.2",
+                  "sha256:1a0caedd8d5a65512a85dadb6bfda6f5b3c4b45e5cb9e7b1c6009573f9058572",
+                  Path("adapters/llmlingua/src/praxis/adapters/llmlingua/version_pin.py"),
+              ),
+          }
+
+          lock_text = Path("uv.lock").read_text(encoding="utf-8")
+          for name, (version, expected_hash, pin_path) in targets.items():
+              match = re.search(
+                  rf'name = "{re.escape(name)}"\nversion = "{re.escape(version)}".*?'
+                  rf'sdist = \{{[^}}]*hash = "{re.escape(expected_hash)}"',
+                  lock_text,
+                  re.S,
+              )
+              if match is None:
+                  raise SystemExit(f"{name}=={version} missing expected sdist hash")
+
+              pin_text = pin_path.read_text(encoding="utf-8")
+              if expected_hash not in pin_text:
+                  raise SystemExit(f"{pin_path} missing {expected_hash}")
+          PY

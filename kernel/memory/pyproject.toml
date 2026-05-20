@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-memory"
+version = "0.1.0"
+description = "Verdaca Memory module — unified facade over Beads + Mem0 + Atelier (Stage 3)"
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+# TID = flake8-tidy-imports (includes TID251 banned-api)
+# E/F/W/I = core pyflakes + pycodestyle + isort
+# B = bugbear
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis", "tests"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+# Block relative imports entirely to force explicit absolute paths through the facade.
+ban-relative-imports = "all"
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# NR-S-R1 — Req #9: application code must not reach into Memory internals.
+# Any import from praxis.kernel.memory._internal or deeper raises TID251.
+# The Memory module itself is exempted via per-file-ignores below.
+"praxis.kernel.memory._internal".msg = "NR-S-R1 / Req #9: import from the praxis.kernel.memory facade, not _internal.*"
+
+[tool.ruff.lint.per-file-ignores]
+# The Memory module's own implementation MUST import from _internal — it owns it.
+"src/praxis/kernel/memory/**/*.py" = ["TID251"]
+# Tests of the Memory module may import _internal for white-box coverage.
+"tests/memory/**/*.py" = ["TID251"]
+# Self-test fixtures intentionally contain banned imports to verify detection.
+"tests/tooling/banned_import_fixtures/**/*.py" = ["F401", "TID251"]
+# Exclude scan/venv detritus (defense in depth alongside .gitignore).
+".venv/**/*.py" = ["ALL"]

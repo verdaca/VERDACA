@@ -1,0 +1,8 @@
+# Persona 3 rotation manifest — arch §10.2.
+# Updated every 4 weeks when the rotating corpus is replaced.
+replaced_at: 2026-04-14T00:00:00Z
+next_rotation_due: 2026-05-12T00:00:00Z
+cadence_weeks: 4
+source: step-5-stub-2026-04-14
+corpus_version: rc1
+prompt_count: 3

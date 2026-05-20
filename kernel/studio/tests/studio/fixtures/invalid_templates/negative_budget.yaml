@@ -1,0 +1,28 @@
+# negative_budget.yaml — triggers STUDIO-T-SCHEMA-NEG-05 (cost_budget_usd <= 0)
+name: negative_budget_test
+product: studio
+description: "Negative budget test fixture"
+version: "0.1.0"
+rendering_mode: "position_to_hold"
+inputs:
+  strategic_question:
+    type: string
+    required: true
+    description: "Question"
+cycles:
+  - name: only_cycle
+    budget_pct: 100
+    agents:
+      - role: researcher
+        agent_id: bmad_mary
+        output_label: research_output
+        depends_on: []
+quality_gates:
+  - gate_id: R1
+    min_score: 3
+outputs:
+  - format: markdown
+    template_path: "position_to_hold/brief.md.j2"
+    rendering_mode: "position_to_hold"
+cost_budget_usd: -1.0
+timeout_seconds: 300

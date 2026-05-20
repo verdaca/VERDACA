@@ -1,0 +1,30 @@
+name: Contract Tests
+
+on:
+  pull_request:
+    paths:
+      - "adapters/**"
+      - "ports/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/contract-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - name: Sync workspace
+        run: uv sync --all-packages
+      - name: Run no-waiver inventory
+        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports/test_no_waiver_inventory.py -q
+      - name: Run no-waiver contract tests
+        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports -m no_waiver -q
+      - name: Run port contract tests
+        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports -q

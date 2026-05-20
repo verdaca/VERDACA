@@ -1,0 +1,15 @@
+.hypothesis/
+coverage.json
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.egg-info/
+cleo-coverage.json
+cleo-internal-leaks.txt
+cleo-mypy.txt
+cleo-ruff-format-before.txt
+cleo-ruff-lint-before.txt

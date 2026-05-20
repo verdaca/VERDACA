@@ -1,0 +1,22 @@
+[Context Summary — {{ message_count }} messages compacted]
+
+**Period:** {{ first_timestamp }} → {{ last_timestamp }}
+**Participants:** {{ participant_roles | join(", ") }}
+
+{% if decisions_by_agent %}
+**Key decisions:**
+{% for agent, decisions in decisions_by_agent.items() %}
+- **{{ agent }}:** {{ decisions | join("; ") }}
+{% endfor %}
+{% endif %}
+
+{% if tool_calls_summarized %}
+**Tool calls during this period:**
+{% for call_group in tool_calls_summarized %}
+{% for call in call_group %}
+- `{{ call.get("name", "unknown") }}` ({{ call.get("type", "tool_use") }})
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+[End Context Summary]

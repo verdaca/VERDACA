@@ -1,0 +1,22 @@
+{# scenario.j2 — ADR-06 scenario rendering partial.
+   Three required sub-fields per scenario: trigger / invalidation / decision-rule.
+   STUDIO-T-TPL-SCENARIO-01: at least 2 named scenarios.
+   STUDIO-T-TPL-SCENARIO-02: trigger + invalidation + decision-rule per scenario.
+   STUDIO-T-TPL-SCENARIO-03: decision-rule includes owner + date (COO fold-back).
+   The word "invalidation conditions" is preserved verbatim per precedent §14 item 14.
+#}
+{% macro render_scenarios(scenarios) %}
+{% if scenarios | length < 2 %}
+<!-- RERUN_SIGNAL: fewer than 2 named scenarios — MAC re-run required -->
+*Fewer than 2 named scenarios available. Analysis requires at least 2 scenarios.*
+{% else %}
+{% for scenario in scenarios %}
+### Scenario: {{ scenario.name }}
+
+**Trigger condition:** {{ scenario.trigger }}
+**Invalidation conditions:** {{ scenario.invalidation }}
+**Decision rule:** {{ scenario.decision_rule }}
+
+{% endfor %}
+{% endif %}
+{% endmacro %}

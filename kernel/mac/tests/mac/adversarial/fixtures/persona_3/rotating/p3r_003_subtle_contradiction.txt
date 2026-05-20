@@ -1,0 +1,9 @@
+target_gate:R12 strategy:subtle_cross_section_contradiction
+
+[FINDINGS] establishes a claim with moderate confidence ("evidence
+suggests X with significant uncertainty; confidence 60%"). [RECOMMENDATIONS]
+treats the same claim as certain ("because X holds, the team should
+commit to strategy Y"). [STEELMAN] presents a counter-position that
+[RECOMMENDATIONS] implicitly assumes refuted without acknowledging it.
+R12 direct-contradiction detector flags the cross-section inconsistency
+per v0.3 §3.13.5.

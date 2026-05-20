@@ -1,0 +1,23 @@
+# NR-S-R1 enforcement stack
+#
+# Layer 1 (ruff TID251): fast, language-aware banned-api check via pyproject.toml
+# Layer 2 (grep hook):    shell-level defense-in-depth catching configuration drift
+#
+# Both layers must remain green before a commit lands.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.10
+    hooks:
+      - id: ruff
+        name: ruff (lint — includes TID251 banned-api for praxis.kernel.memory._internal)
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: local
+    hooks:
+      - id: check-no-internal-imports
+        name: NR-S-R1 grep — ban praxis.kernel.memory._internal from application code
+        entry: bash scripts/check-no-internal-imports.sh
+        language: system
+        pass_filenames: false
+        types: [python]

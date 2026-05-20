@@ -1,0 +1,7 @@
+target_gate:R5 strategy:manufactured_dissent
+
+The producer invents a dissent position that does not correspond to any
+stakeholder in the task context. Example: task asks about framework X for
+backend services; the producer's [DISSENT] section quotes "concerns about
+the cuneiform writing system" -- off-topic by Req-E domain guard. R5
+Req-C Pair 2 caps the raw score at min(R5, R4).

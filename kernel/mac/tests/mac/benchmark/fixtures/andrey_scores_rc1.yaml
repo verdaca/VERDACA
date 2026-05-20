@@ -1,0 +1,27 @@
+# Andrey-in-the-loop A4 fixture — release-candidate 1.
+# Format: paired automated + human scores with known Spearman ρ.
+# Step 4 ships a deterministic fixture with perfect positive
+# correlation (ρ = 1.0) for math verification. Stage 7 POV Harness
+# replaces with real Andrey-scored outputs once the 5.6 pre-sales
+# checkpoint runs.
+expected_spearman_rho: 1.0
+automated_scores:
+  Q1_vanilla: 62.0
+  Q1_enhanced: 72.0
+  Q1_mac: 84.0
+  Q4_vanilla: 58.0
+  Q4_enhanced: 69.0
+  Q4_mac: 81.0
+  Q7_vanilla: 65.0
+  Q7_enhanced: 74.0
+  Q7_mac: 87.0
+human_scores:
+  Q1_vanilla: 12.0
+  Q1_enhanced: 16.0
+  Q1_mac: 22.0
+  Q4_vanilla: 11.0
+  Q4_enhanced: 15.0
+  Q4_mac: 21.0
+  Q7_vanilla: 13.0
+  Q7_enhanced: 18.0
+  Q7_mac: 24.0

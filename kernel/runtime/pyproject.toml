@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-runtime"
+version = "0.1.0"
+description = "Verdaca Agent Runtime — Stage 4 multi-agent orchestration layer"
+requires-python = ">=3.12"
+dependencies = [
+    # Runtime dependencies — needed to import and execute the package
+    "mcp>=1.9.0",
+    "pydantic>=2.0",
+    "sqlalchemy[asyncio]>=2.0",
+]
+
+[project.optional-dependencies]
+test = [
+    # Test infrastructure
+    "asyncpg>=0.28",
+    "aiosqlite>=0.19",
+    "hypothesis>=6.0",
+    "pytest>=9.0",
+    "pytest-asyncio>=1.0",
+    "pytest-cov>=7.0",
+    "testcontainers[postgres]>=4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+pythonpath = ["src", "../memory/src"]
+markers = [
+    "asyncio_structural: Asyncio structural test (verifies async protocol properties)",
+    "critical: Risk-bearing test — maps to S4.R-* risk-closure targets (no quarantine allowed)",
+    "f1_absorption: F-1 Path A/B outbox absorption test",
+    "f3_absorption: F-3 Jobs infrastructure test",
+    "integration: Integration test requiring real Postgres (via testcontainers)",
+    "no_waiver: No-waiver test — cannot be skipped, xfailed, or quarantined under any circumstances",
+    "oqn_escalation_canary: OQ-N Path (i) escalation canary test",
+    "r53_structural: R53 field allowlist structural enforcement test",
+    "static: Static/structural test (mypy fixture, grep, AST scan — no runtime needed)",
+    "wall_clock: Wall-clock sensitive test (NFR-Q6 timing budget)",
+]
+filterwarnings = [
+    "error::pytest.PytestUnknownMarkWarning",
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+namespace_packages = true
+mypy_path = ["src", "../memory/src", "../pi-mono/src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis", "tests"]

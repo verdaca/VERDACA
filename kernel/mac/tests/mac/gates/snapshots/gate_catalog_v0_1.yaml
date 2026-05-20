@@ -1,0 +1,52 @@
+# Frozen 12-gate catalog snapshot per arch §6.1.
+# Format: one row per gate_id, with name + priority + primary section.
+# Generated from CALIBRATION_ANCHORS + GATE_SECTION_ROUTES at snapshot time.
+# Regeneration requires an arch §6.1 revision — not a fix-the-test hotpatch.
+R1:
+  name: Epistemic Calibration
+  priority: Critical
+  section: FULL
+R2:
+  name: Question Fidelity
+  priority: Critical
+  section: RECOMMENDATIONS
+R3:
+  name: Falsifiability
+  priority: High
+  section: FULL
+R4:
+  name: Steelman Completeness
+  priority: Critical
+  section: STEELMAN
+R5:
+  name: Dissent Preservation
+  priority: Critical
+  section: DISSENT
+R6:
+  name: Decision Relevance Density
+  priority: Medium
+  section: L1
+R7:
+  name: Reasoning Traceability
+  priority: Critical
+  section: L2
+R8:
+  name: Actionability Calibration
+  priority: High
+  section: RECOMMENDATIONS
+R9:
+  name: Evidence Impartiality
+  priority: Medium
+  section: FINDINGS
+R10:
+  name: Epistemic Scope Honesty
+  priority: High
+  section: FULL
+R11:
+  name: Scenario Coverage
+  priority: High
+  section: L2
+R12:
+  name: Internal Consistency
+  priority: High
+  section: FULL

@@ -1,0 +1,92 @@
+# Verdaca — Clean repo scope
+# Only kernel/, shell/, and docs/ are tracked.
+# Everything else (BMAD framework, planning workspace, research, Claude config) is excluded.
+
+# ============================================================
+# Step 1: Exclude everything at root by default
+# ============================================================
+/*
+
+# Step 2: Re-include the Verdaca project directories
+!.gitignore
+!README.md
+!kernel/
+!ports/
+!adapters/
+!tests/
+!shell/
+!docs/
+!knowledge/
+!pyproject.toml
+!.python-version
+!uv.lock
+
+# ============================================================
+# Workspace files — NEVER tracked
+# ============================================================
+# These exist in the working directory but are not part of Verdaca.
+# Listed explicitly for safety even though /* already covers them.
+_bmad/
+_bmad-output/
+.claude/
+Articles/
+# Leading slash root-anchors this pattern — it must NOT case-fold onto
+# the tracked kernel/memory/ package on the case-insensitive Windows FS.
+/Memory/
+CLAUDE.md
+claude-setup-reference.md
+knowledge/raw/
+# 9.4.8 FTS5 session index — local artifacts, never tracked
+knowledge/sessions.db
+knowledge/sessions.db-*
+
+# ============================================================
+# Python development cruft
+# ============================================================
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.hypothesis/
+**/.coverage
+**/.coverage.*
+**/htmlcov/
+**/.tox/
+**/dist/
+**/build/
+**/*.egg-info/
+**/.venv/
+**/venv/
+**/env/
+**/graphify-out/
+
+# ============================================================
+# Node.js / Next.js cruft
+# ============================================================
+**/node_modules/
+**/.next/
+**/out/
+**/.turbo/
+
+# ============================================================
+# Editor / OS cruft
+# ============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# Secrets (defensive — none expected but safety net)
+# ============================================================
+.env
+.env.*
+.env.local
+*.key
+*.pem
+credentials.json
+secrets.yaml

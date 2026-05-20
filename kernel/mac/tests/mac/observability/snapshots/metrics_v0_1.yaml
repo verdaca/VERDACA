@@ -1,0 +1,30 @@
+# Frozen metric catalog snapshot — step 4 subset.
+# Step 6 will expand to the full arch §11.2 catalog.
+metrics:
+  - name: mac.cycle.started
+    type: counter
+    labels: [cycle_id, cycle_phase, domain_class, tenant_hash]
+  - name: mac.cycle.cycle_1_produce_entered
+    type: counter
+    labels: [cycle_id]
+  - name: mac.cycle.cycle_2_review_entered
+    type: counter
+    labels: [cycle_id]
+  - name: mac.cycle.cycle_3_verify_entered
+    type: counter
+    labels: [cycle_id]
+  - name: mac.cycle.publish_entered
+    type: counter
+    labels: [cycle_id]
+  - name: mac.cycle.complete
+    type: counter
+    labels: [cycle_id, outcome, tenant_hash]
+  - name: mac.cycle.forge_degradation_detected
+    type: counter
+    labels: [cycle_id, forge_degraded]
+  - name: mac.cycle.backtrack_fired
+    type: counter
+    labels: [tenant_hash]
+  - name: mac.label_registry.violations
+    type: counter
+    labels: [tenant_hash]

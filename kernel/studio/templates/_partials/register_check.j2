@@ -1,0 +1,52 @@
+{# register_check.j2 — ADR-11 register-drift marker macro.
+   Flags register-drift markers in rendered output at template time.
+   The Python-level RegisterChecker runs post-render for programmatic checking.
+   This macro is a template-embedded advisory layer — it emits HTML comments
+   visible to the producer (not the customer) when drift is detected.
+
+   Drift marker categories (curated list per OQ-TS-S3; Quinn 6.4 validates):
+   - Exclamation marks in analytical text
+   - Dramatic-stakes verbs (founder-Twitter caricature)
+   - Urgency-performing adverbs
+   - Condescending patterns
+
+   Binding: studio/architecture.md §4.10, studio/register_guide.md
+#}
+{% macro flag_if_drift(text) %}
+{%- set dramatic_verbs = [
+    "revolutionize", "disrupt", "transform", "unprecedented",
+    "game-changing", "game changer", "breakthrough", "explosive",
+    "skyrocket", "rocket", "dominate", "crush", "obliterate",
+    "destroy", "massive", "incredible", "amazing", "phenomenal",
+    "spectacular", "unstoppable"
+] -%}
+{%- set urgency_words = ["urgently", "immediately", "asap", "right away"] -%}
+{%- set condescending_words = [
+    "obviously", "clearly you", "needless to say", "simply put",
+    "just do", "just implement", "just use"
+] -%}
+{%- set text_lower = text | lower -%}
+{%- set drift_detected = false -%}
+{%- for verb in dramatic_verbs -%}
+  {%- if verb in text_lower -%}
+    {%- set drift_detected = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- for word in urgency_words -%}
+  {%- if word in text_lower -%}
+    {%- set drift_detected = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- for word in condescending_words -%}
+  {%- if word in text_lower -%}
+    {%- set drift_detected = true -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if "!" in text -%}
+  {%- set drift_detected = true -%}
+{%- endif -%}
+{{ text }}
+{%- if drift_detected %}
+<!-- REGISTER_DRIFT_DETECTED: review text for ADR-11 compliance -->
+{%- endif %}
+{% endmacro %}

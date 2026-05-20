@@ -1,0 +1,41 @@
+{# position_to_hold/executive_summary.md.j2 — one-page executive summary.
+   Concise rendering of all four ADR-01 backbone sections.
+   Position-to-hold framing: commitment + trigger conditions.
+#}
+{% from "_partials/dissent.j2" import render_dissent %}
+{% from "_partials/scenario.j2" import render_scenarios %}
+{% from "_partials/scope_limits.j2" import render_scope_limits %}
+
+# Executive Summary: Position to Hold
+
+**The analysis supports the following position for the next two quarters:**
+
+{% for rec in trace.recommendations %}
+{{ rec.text }} *({{ rec.confidence }})*
+{% endfor %}
+
+## Structured Trade-offs
+
+{% for tf in trace.trade_offs %}
+- **{{ tf.factor }}**: {{ tf.recommendation }}
+{% endfor %}
+
+## Dissent
+
+{{ render_dissent(trace.dissent_frames) }}
+
+## Named Scenarios
+
+{{ render_scenarios(trace.scenarios) }}
+
+## What This Analysis Did Not Cover
+
+{{ render_scope_limits(trace.scope_limits) }}
+
+{% if trace.provenance_mode.value == "flexible" %}
+{% include "_partials/provenance_flexible.j2" %}
+{% elif trace.provenance_mode.value == "inspectable" %}
+{% include "_partials/provenance_inspectable.j2" %}
+{% else %}
+{% include "_partials/provenance_invisible.j2" %}
+{% endif %}
