@@ -235,6 +235,7 @@ class LiteLLMAdapter:
         *,
         api_keys: dict[str, str] | None = None,
         api_base_overrides: dict[str, str] | None = None,
+        api_version_overrides: dict[str, str] | None = None,
         default_correlation_id: str | None = None,
     ) -> None:
         """Construct an adapter.
@@ -255,6 +256,12 @@ class LiteLLMAdapter:
         — the LiteLLM provider default — so the override is fully
         backward-compatible. Per ADR-9.2-V5 v0.8 corrigendum.
 
+        `api_version_overrides` mirrors `api_base_overrides` for providers
+        that require a deployment API version. EPAM DIAL is reached through
+        LiteLLM's Azure provider shape, so callers can pass
+        `api_version_overrides={"azure": "2024-02-01"}` instead of relying
+        on process-global `AZURE_API_VERSION`.
+
         `default_correlation_id` per Mem0 (34a4eca) / Letta (b14285b) /
         Pi-Mono (325820a) sibling precedent.
 
@@ -263,6 +270,7 @@ class LiteLLMAdapter:
         """
         self._api_keys = dict(api_keys or {})
         self._api_base_overrides = dict(api_base_overrides or {})
+        self._api_version_overrides = dict(api_version_overrides or {})
         self._default_correlation_id = default_correlation_id or uuid.uuid4().hex
         # DS-4 idempotency cache; call()-only per DS-5 strict-β.
         self._idempotency_cache: dict[str, LLMResponse] = {}
@@ -319,6 +327,7 @@ class LiteLLMAdapter:
             temperature=request.temperature,
             api_key=self._api_keys.get(request.provider),
             api_base=self._api_base_overrides.get(request.provider),
+            api_version=self._api_version_overrides.get(request.provider),
         )
 
         # 3. Compression detection (v0.1.0 no-op per scope restriction;
@@ -390,6 +399,7 @@ class LiteLLMAdapter:
             stream_options={"include_usage": True},
             api_key=self._api_keys.get(request.provider),
             api_base=self._api_base_overrides.get(request.provider),
+            api_version=self._api_version_overrides.get(request.provider),
         )
 
         chunk_index = 0

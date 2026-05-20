@@ -2,6 +2,20 @@
 
 Per `ports-architecture.md` v0.6 §5 (upgrade workflow shape; one entry per version bump).
 
+## v0.1.2 (2026-05-20)
+
+Per-provider `api_version` override routing. Adds
+`api_version_overrides: dict[str, str] | None = None` to `LiteLLMAdapter`,
+mirroring `api_keys` and `api_base_overrides`.
+
+This fixes the EPAM DIAL live route when using LiteLLM's Azure provider shape
+(`provider="azure"`, e.g. `model="gpt-4o"`): DIAL requires
+`api_version="2024-02-01"`, and the adapter now threads that explicitly into
+`litellm.completion()` for both `call()` and `stream()` instead of relying on
+process-global `AZURE_API_VERSION`.
+
+Patch bump only: no `LLMProxyPort` Protocol or DTO surface change.
+
 ## v0.1.1 (2026-05-17)
 
 Per-provider `api_base` override routing — Phase 0 P0.3. Adds a caller-DI
