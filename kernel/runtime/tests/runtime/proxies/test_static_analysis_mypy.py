@@ -32,7 +32,8 @@ MYPY_FIXTURES = [
     ("reviewer_health_violation.py", r"has no attribute.*health"),
 ]
 
-FIXTURE_DIR = Path("tests/fixtures/type_level")
+_RUNTIME_ROOT = Path(__file__).resolve().parents[3]
+FIXTURE_DIR = _RUNTIME_ROOT / "tests" / "fixtures" / "type_level"
 
 
 @pytest.mark.critical
@@ -50,7 +51,7 @@ def test_mypy_strict_rejects_asymmetry_violation(
     import os
     import sys
 
-    env = {**os.environ, "MYPYPATH": str(Path("src").resolve())}
+    env = {**os.environ, "MYPYPATH": str((_RUNTIME_ROOT / "src").resolve())}
     result = subprocess.run(
         [
             sys.executable,
@@ -63,7 +64,7 @@ def test_mypy_strict_rejects_asymmetry_violation(
         ],
         capture_output=True,
         text=True,
-        cwd=".",
+        cwd=_RUNTIME_ROOT,
         env=env,
     )
     assert result.returncode != 0, (

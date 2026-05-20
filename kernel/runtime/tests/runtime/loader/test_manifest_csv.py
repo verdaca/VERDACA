@@ -131,11 +131,27 @@ def test_malformed_row_raises_agent_loader_error(tmp_path: Path) -> None:
 
 def test_duplicate_name_raises_agent_loader_error(tmp_path: Path) -> None:
     """Duplicate agent names raise AgentLoaderError."""
-    dup_csv = textwrap.dedent("""\
-        name,displayName,title,icon,capabilities,role,identity,communicationStyle,principles,module,path,canonicalId
-        bmad-agent-dev,Amelia,Developer,💻,story execution,Senior SW Engineer,Executes stories.,Terse.,Tests first.,bmm,_bmad/bmm/4-implementation/bmad-agent-dev,
-        bmad-agent-dev,Amelia,Developer,💻,story execution,Senior SW Engineer,Executes stories.,Terse.,Tests first.,bmm,_bmad/bmm/4-implementation/bmad-agent-dev,
-    """)
+    header = (
+        "name,displayName,title,icon,capabilities,role,identity,"
+        "communicationStyle,principles,module,path,canonicalId"
+    )
+    row = ",".join(
+        [
+            "bmad-agent-dev",
+            "Amelia",
+            "Developer",
+            "💻",
+            "story execution",
+            "Senior SW Engineer",
+            "Executes stories.",
+            "Terse.",
+            "Tests first.",
+            "bmm",
+            "_bmad/bmm/4-implementation/bmad-agent-dev",
+            "",
+        ]
+    )
+    dup_csv = f"{header}\n{row}\n{row}\n"
     tmp_manifest = tmp_path / "dup.csv"
     tmp_manifest.write_text(dup_csv, encoding="utf-8")
 

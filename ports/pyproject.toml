@@ -15,6 +15,16 @@ dependencies = [
 where = ["src"]
 include = ["praxis*"]
 
+[tool.setuptools.package-data]
+praxis = ["py.typed"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+namespace_packages = true
+mypy_path = ["src"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 

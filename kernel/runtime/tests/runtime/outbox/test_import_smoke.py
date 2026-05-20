@@ -4,7 +4,6 @@ Verifies that Pi-Mono public API is importable and that runtime/memory layers
 maintain clean separation (no cross-layer internal imports).
 """
 
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -52,21 +51,11 @@ def test_runtime_has_no_pi_mono_internal_imports():
     No file under src/praxis/kernel/runtime/ must import from
     praxis.kernel.cost._internal (the private Pi-Mono namespace).
     """
-    runtime_src = str(_SRC_ROOT / "praxis" / "kernel" / "runtime")
-    result = subprocess.run(
-        [
-            "grep",
-            "-rn",
-            "--include=*.py",
-            "praxis.kernel.cost._internal",
-            runtime_src,
-        ],
-        capture_output=True,
-        text=True,
-    )
-    matches = result.stdout.strip()
-    assert matches == "", (
-        "Found forbidden praxis.kernel.cost._internal imports in runtime/:\n" + matches
+    runtime_src = _SRC_ROOT / "praxis" / "kernel" / "runtime"
+    matches = _find_python_files_containing(runtime_src, "praxis.kernel.cost._internal")
+    assert matches == [], (
+        "Found forbidden praxis.kernel.cost._internal imports in runtime/:\n"
+        + "\n".join(matches)
     )
 
 
@@ -75,17 +64,19 @@ def test_memory_src_has_no_cost_imports():
     Stage 3 canary: no file under src/praxis/kernel/memory/ must import from
     praxis.kernel.cost (the cost layer must not bleed into the memory layer).
     """
-    memory_src = str(_SRC_ROOT / "praxis" / "kernel" / "memory")
-    result = subprocess.run(
-        [
-            "grep",
-            "-rn",
-            "--include=*.py",
-            "praxis.kernel.cost",
-            memory_src,
-        ],
-        capture_output=True,
-        text=True,
+    memory_src = _SRC_ROOT / "praxis" / "kernel" / "memory"
+    matches = _find_python_files_containing(memory_src, "praxis.kernel.cost")
+    assert matches == [], (
+        "Found forbidden praxis.kernel.cost imports in memory/:\n" + "\n".join(matches)
     )
-    matches = result.stdout.strip()
-    assert matches == "", "Found forbidden praxis.kernel.cost imports in memory/:\n" + matches
+
+
+def _find_python_files_containing(root: Path, needle: str) -> list[str]:
+    matches: list[str] = []
+    if not root.exists():
+        return matches
+    for path in root.rglob("*.py"):
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if needle in line:
+                matches.append(f"{path}:{line_number}:{line}")
+    return matches
