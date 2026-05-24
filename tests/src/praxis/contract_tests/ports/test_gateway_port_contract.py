@@ -1,8 +1,14 @@
-"""Stage 11 H#1 expected-RED GatewayPort probe.
+"""Stage 11 Phase A expected-RED GatewayPort implementation probe.
 
-This file is intentionally RED until the Stage 11 Phase A gateway package lands.
+This file is intentionally RED until the Stage 11 Phase A gateway package lands
+and satisfies the frozen GatewayPort Protocol from praxis.ports.gateway.
 """
 
 
 def test_gateway_port_contract_red_until_phase_a_impl() -> None:
-    from praxis.kernel.gateway import GatewayPort  # noqa: F401
+    from praxis.ports.gateway import GatewayPort
+    from praxis.kernel.gateway import VerdacaGatewayService
+
+    gateway = VerdacaGatewayService()
+
+    assert isinstance(gateway, GatewayPort)
