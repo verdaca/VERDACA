@@ -3,7 +3,7 @@
 **Compiled:** 2026-05-24
 **Branch:** `stage-10.0-port-stubs`
 **Stage 10 scope:** SessionIndexPort + SkillTelemetryPort data-plane
-**Verdict:** **RATIFIED-WITH-PROVISIONAL-VOC** — provisional pending real-VOC re-confirmation against Stage 11.1 (per [[docs/stage-10-voc-gate.md]] A7 gate)
+**Verdict:** **RATIFIED-WITH-PROVISIONAL-VOC** — provisional pending real-VOC re-confirmation against Stage 11.1 (per [[docs/stage-10-voc-gate.md]] A7 gate) **→ A7 CLOSED 2026-05-24 via team-lead override; see §9 amendment**
 
 ---
 
@@ -35,7 +35,8 @@ Stage 10 ships the **data-plane substrate** that Stage 11 will compose into a ch
 | Parent chain base | `45e1fd8` (9.6 corrigendum, NOT on origin/main) → `3e26f48` (origin/main 9.6 close) → ... → `85bdea1` (local main HEAD; 9.4.6 close) |
 | Pre-roundtable reconcile | `50ce68e` (F-10-RECONCILE-PRIOR-PORTS-01) |
 | Amendment SHA #1 (VOC gate marker) | `3d576a9` — "docs: Stage 10 — VOC gate marker (F-10-TEST-AUDIT-05 resolution)" (this session, 2026-05-24) |
-| Amendment SHA #2 (close memo) | TBD (this commit) |
+| Amendment SHA #2 (close memo) | `da47d67` — "docs: Stage 10 RATIFIED close memo (§provenance + audit ledger)" (this session, 2026-05-24) |
+| Amendment SHA #3 (A7 override close) | This commit — single commit lands [[docs/stage-10-voc-gate.md]] flip + this memo §9 amendment. Derive via `git log --oneline -1 -- docs/stage-10-voc-gate.md docs/stage-10-ratified-close-memo.md` |
 | Stage 10 RATIFIED date | 2026-05-24 |
 | Ratification authority | Team-lead (Andrey) — Path 1 lock 2026-05-24 |
 | origin/main HEAD at ratification | `e9c0643` (14 commits ahead of local main; FF requires `git pull` reconcile) |
@@ -70,6 +71,8 @@ Three-agent BMAD audit on `d2b5670`, all returning ready verdicts:
 **Path 1 lock decision:** Synthesis accepted as provisional. A7 (real-VOC re-confirmation) becomes a HARD Stage 11.1 charter precondition. Stage 11.1 charter authoring is BLOCKED until real Champion VOC calls complete and synthesize to non-PIVOT.
 
 **Machine-readable gate:** [[docs/stage-10-voc-gate.md]] — `provisional_voc=True`, `real_voc_required_before_stage_11_charter=True`. Stage 11.1 dispatch pre-flight enforces.
+
+**Update 2026-05-24 (amendment SHA #3 — see §9 below):** A7 CLOSED via explicit team-lead override. Marker flipped to `provisional_voc=False` + `real_voc_required_before_stage_11_charter=False` + `a7_close_kind=team_lead_override`. Closure substrate UNCHANGED (no real Champion calls; HYPOTHETICAL synthesis inherited). Downstream citation discipline per Stage 6.0.1 caveat pattern (see §9 for full text + acknowledged risks).
 
 ### Other VOC-10 Amendments
 
@@ -139,7 +142,9 @@ Three-agent BMAD audit on `d2b5670`, all returning ready verdicts:
 
 If any of (1)–(4) is unmet, Stage 11.1 charter MUST NOT be drafted.
 
-**Stage 11.x scope absorbs:** VOC-10-A2 (Word/PPT export), A5 (forwardable-link), F-10-EDGE-03 (WAL/pooling), F-10-EDGE-04 (payload guard), all 7 Cleo WARNINGs (W-10-Cleo-1..7 polish in Stage 7), F-10-ARCH-AUDIT-01/03 (port-API hardening + DB-substrate concerns), F-10-TEST-AUDIT-03 (schema-migration explicit tests).
+**Status 2026-05-24 (amendment SHA #3 — see §9):** Items (1)-(4) **explicitly bypassed** via team-lead override. Item (5) executed by amendment SHA #3 commit. Stage 11.1 charter dispatch **UNBLOCKED** for serial Phase 1 (H#1 substrate probes → H#1.5 Port-freeze → H#2 charter → H#3 MAC-T catalog) per master handover §7. Downstream Stage 11 work inherits the citation caveat from §9.
+
+**Stage 11.x scope absorbs:** VOC-10-A2 (Word/PPT export), A5 (forwardable-link), F-10-EDGE-03 (WAL/pooling), F-10-EDGE-04 (payload guard), all 7 Cleo WARNINGs (W-10-Cleo-1..7 polish in Stage 7), F-10-ARCH-AUDIT-01/03 (port-API hardening + DB-substrate concerns), F-10-TEST-AUDIT-03 (schema-migration explicit tests). **Plus added 2026-05-24:** `VOC-10-A7-DEFERRED` (real Champion outreach — RECOMMENDED-NOT-REQUIRED per §9 amendment).
 
 ## §8 — FF Strategy + Memory Entry Gate
 
@@ -181,6 +186,45 @@ before any draft work. Real VOC obligation is non-negotiable.
 ```
 
 Team-lead must explicitly authorize before this memory entry is written per `feedback_memory_authorization`.
+
+---
+
+## §9 — Amendment 2026-05-24: A7 CLOSED via Explicit Team-Lead Override
+
+**Amendment commit:** This commit — single commit covers both this memo §§ above and [[docs/stage-10-voc-gate.md]] flip. Derive SHA via `git log --oneline -1 -- docs/stage-10-voc-gate.md docs/stage-10-ratified-close-memo.md`.
+**Amendment authority:** Team-lead (Andrey) directive 2026-05-24 ("close A7") in Stage 11 advisor party-mode session.
+**Closure kind:** Explicit override — NO real Champion calls were run before closure.
+
+**Closure substrate (unchanged from §4):**
+- Original HYPOTHETICAL synthesis (3 simulated archetypes: reinsurer-ML / consultancy decision-engineering / industrial-AI)
+- K1/K2/K3 each fired on 1 of 3 calls (zero margin; no 2-of-3 PIVOT); K4 not flagged
+- Buyer-language HARD audit: 0 hits
+- Artifacts at `_bmad-output/planning-artifacts/Verdaca/voc-stage10/synthesis-run-hypothetical-2026-05-24/`
+
+**Closure effect:**
+- [[docs/stage-10-voc-gate.md]] Status flipped: `RATIFIED-WITH-PROVISIONAL-VOC` → `RATIFIED (A7 closed 2026-05-24 via explicit team-lead override)`
+- Machine-readable marker: `provisional_voc=False`, `real_voc_required_before_stage_11_charter=False`, `a7_close_kind=team_lead_override`, `a7_close_date=2026-05-24`, `a7_close_authority=team-lead Andrey`
+- Stage 11.1 charter dispatch **UNBLOCKED** for serial Phase 1 (per master handover §7)
+- VOC-10-A7 reclassified: HARD precondition → `VOC-10-A7-DEFERRED` (Stage 11.x debt ledger; RECOMMENDED-NOT-REQUIRED; re-activated if/when team-lead schedules Champion outreach)
+
+**Downstream citation discipline (binding per `feedback_go_with_amendments_tracked` + Stage 6.0.1 caveat pattern):** All Stage 11 results that trace back to A7 carry the caveat:
+
+> "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)"
+
+**Caveat inherited by (forward-propagation):**
+- Stage 11 RATIFIED close memo (`project_verdaca_stage11_ratified` close ceremony)
+- `project_verdaca_stage11_ratified` memory description
+- Any GTM / pitch material citing Stage 11 customer-fit
+- Any Stage 12+ work re-encountering K1-K4 risk material
+- Any external comms (sales decks, white papers, conference talks) citing Stage 11 buyer validation
+
+**Risk acknowledgment:** Stage 11 charter authors on the same fragile (zero-margin K1/K2/K3) substrate that triggered A7 in the first place. Treat A7 gate as **not load-bearing** for customer-fit claims. The HYPOTHETICAL synthesis remains the only VOC substrate at Stage 11 dispatch time.
+
+**Rollback path:** This amendment is supersession-compatible. If real Champion calls later contradict the HYPOTHETICAL synthesis, a §10 "Amendment YYYY-MM-DD: A7 supersession on real-VOC" may be authored — restoring or correcting the substrate without losing the override history.
+
+**Memory entry update:** The `project_verdaca_stage10_ratified` memory description (per §8 above, written 2026-05-24 with team-lead "save") will be updated separately to reflect A7 closure via override — **pending separate team-lead "save" authorization** per `feedback_memory_authorization`. Proposed description delta:
+
+> "Stage 10 RATIFIED 2026-05-24 at merge `8ae4f87` — SessionIndex / SkillTelemetry data-plane; PROVISIONAL VOC via HYPOTHETICAL synthesis; **A7 CLOSED 2026-05-24 via explicit team-lead override (no real Champion calls; downstream Stage 11 results carry HYPOTHETICAL-substrate caveat); Stage 11.1 charter dispatch UNBLOCKED**."
 
 ---
 
