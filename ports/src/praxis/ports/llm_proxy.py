@@ -54,7 +54,6 @@ from praxis.ports.common import (
     VerdacaDTOMixin,
 )
 
-
 # ---------------------------------------------------------------------------
 # DTOs — pinned per ADR-9.1.2-6 §3 (port-contracts.md v0.2.3)
 #   §3 base DTOs (3): LLMRequest, LLMResponse, LLMStreamChunk

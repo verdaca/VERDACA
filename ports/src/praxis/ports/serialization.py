@@ -36,7 +36,6 @@ from praxis.ports.common import (
     VerdacaDTOMixin,
 )
 
-
 # ---------------------------------------------------------------------------
 # Type alias — recursive JSON-compatible values per §2.3
 # ---------------------------------------------------------------------------

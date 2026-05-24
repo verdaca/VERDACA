@@ -29,7 +29,6 @@ from praxis.ports.common import (
     VerdacaDTOMixin,
 )
 
-
 # ---------------------------------------------------------------------------
 # DTOs — pinned per ADR-1 §3 corrigendum (port-contracts.md v0.2.1)
 #   §3 base DTOs (4): MemoryEntry, MemoryHit, PromotionTier, PromotionRationale

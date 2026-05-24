@@ -27,7 +27,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-
 # ---------------------------------------------------------------------------
 # §0.1 Base Error Hierarchy
 # ---------------------------------------------------------------------------

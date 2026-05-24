@@ -29,7 +29,6 @@ from praxis.ports.common import (
 from praxis.ports.migrator import Migrator
 from praxis.ports.serialization import SerializablePayload
 
-
 # ---------------------------------------------------------------------------
 # DTOs
 # ---------------------------------------------------------------------------

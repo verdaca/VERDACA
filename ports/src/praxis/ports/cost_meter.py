@@ -37,7 +37,6 @@ from praxis.ports.common import (
     VerdacaDTOMixin,
 )
 
-
 # ---------------------------------------------------------------------------
 # DTOs — pinned per ADR-9.1.2-5 §3 (port-contracts.md v0.2.2)
 #   §3 base DTOs (5): BudgetScope, CostEvent, CostBreakdown,
