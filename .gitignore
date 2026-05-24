@@ -42,6 +42,26 @@ knowledge/sessions.db
 knowledge/sessions.db-*
 
 # ============================================================
+# Operational docs/ files — local-only working artifacts
+# ============================================================
+# Stage handover / pipeline / phase / audit / advisor-continuation docs
+# are operational working files; substance-of-record lives in commit bodies +
+# advisor-applied filesystem edits per feedback_preload_tracking_status_verification.
+# Pattern resolves F-11-{E1,E2}-HANDOVER-{01,1} drift (Stage 11 advisor 2026-05-24):
+# previously these were UNTRACKED but handover text claimed GITIGNORED — now both.
+#
+# Tracked exceptions (re-included below): HTML pages (verdaca.com production),
+# CSS, ratified close memos, VOC gate markers.
+docs/*.md
+docs/*.mp3
+docs/*.json
+docs/_archive/
+docs/ai-news/
+# Re-include intentionally tracked docs
+!docs/stage-*-ratified-close-memo.md
+!docs/stage-*-voc-gate.md
+
+# ============================================================
 # Python development cruft
 # ============================================================
 **/__pycache__/
