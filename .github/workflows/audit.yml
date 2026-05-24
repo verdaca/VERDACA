@@ -70,3 +70,84 @@ jobs:
               if expected_hash not in pin_text:
                   raise SystemExit(f"{pin_path} missing {expected_hash}")
           PY
+      - name: W-1 CVE audit for Stage 9.6 pins
+        run: |
+          printf '%s\n' \
+            'mem0ai==1.0.11' \
+            'letta-client==1.10.3' \
+            'litellm==1.83.14' \
+            'llmlingua==0.2.2' > stage-9.6-pins.txt
+          # DEFERRED: F-9.6-CVE-MEM0AI-01 -> Stage 11.x; Stage 9.6 pin is fixed.
+          # DEFERRED: F-9.6-CVE-MEM0AI-TRANSITIVE-01 -> Stage 11.x dependency refresh.
+          uv run --with pip-audit pip-audit --strict \
+            --requirement stage-9.6-pins.txt \
+            --ignore-vuln CVE-2026-7597 \
+            --ignore-vuln PYSEC-2025-211 \
+            --ignore-vuln PYSEC-2025-212 \
+            --ignore-vuln PYSEC-2025-213 \
+            --ignore-vuln PYSEC-2025-214 \
+            --ignore-vuln PYSEC-2025-215 \
+            --ignore-vuln PYSEC-2025-216 \
+            --ignore-vuln PYSEC-2025-217 \
+            --ignore-vuln PYSEC-2025-218 \
+            --ignore-vuln PYSEC-2025-189 \
+            --ignore-vuln PYSEC-2025-190 \
+            --ignore-vuln PYSEC-2025-191 \
+            --ignore-vuln PYSEC-2025-192 \
+            --ignore-vuln PYSEC-2025-193 \
+            --ignore-vuln PYSEC-2025-194 \
+            --ignore-vuln PYSEC-2025-195 \
+            --ignore-vuln PYSEC-2025-196 \
+            --ignore-vuln PYSEC-2025-197 \
+            --ignore-vuln PYSEC-2025-210 \
+            --ignore-vuln PYSEC-2026-139 \
+            --ignore-vuln PYSEC-2026-97 \
+            --ignore-vuln PYSEC-2024-277
+      - name: W-2 license allowlist for Stage 9.6 pins
+        run: |
+          uv run --with pip-licenses pip-licenses \
+            --packages mem0ai letta-client litellm llmlingua \
+            --allow-only 'MIT;MIT License;Apache-2.0;BSD License;Apache Software License;Mozilla Public License 2.0 (MPL 2.0)'
+      - name: W-3 abandonment check for Stage 9.6 pins
+        run: |
+          uv run --package praxis-contract-tests python - <<'PY'
+          from __future__ import annotations
+
+          from datetime import datetime, timezone
+          from urllib.request import Request, urlopen
+          import json
+
+          pins = {
+              "mem0ai": "1.0.11",
+              "letta-client": "1.10.3",
+              "litellm": "1.83.14",
+              "llmlingua": "0.2.2",
+          }
+          # DEFERRED: F-9.4.6-LLMLINGUA-MAINTENANCE-STALENESS-1 -> Stage 11.x.
+          deferred = {"llmlingua"}
+          now = datetime.now(timezone.utc)
+          stale: list[str] = []
+
+          for name, version in pins.items():
+              request = Request(
+                  f"https://pypi.org/pypi/{name}/{version}/json",
+                  headers={"User-Agent": "verdaca-stage-9.6-audit"},
+              )
+              with urlopen(request, timeout=30) as response:
+                  payload = json.load(response)
+              upload_time = payload["urls"][0].get("upload_time_iso_8601")
+              if upload_time is None:
+                  raise SystemExit(f"{name}=={version} missing upload_time_iso_8601")
+              uploaded = datetime.fromisoformat(upload_time.replace("Z", "+00:00"))
+              age_days = (now - uploaded).days
+              message = f"{name}=={version}: {age_days} days since release"
+              if age_days > 180 and name not in deferred:
+                  stale.append(message)
+              elif age_days > 180:
+                  print(f"DEFERRED {message}")
+              else:
+                  print(message)
+
+          if stale:
+              raise SystemExit("Stage 9.6 stale pins: " + "; ".join(stale))
+          PY

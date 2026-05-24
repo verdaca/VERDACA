@@ -3,30 +3,32 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "praxis-ports"
+name = "praxis-kernel-session-index"
 version = "0.1.0"
-description = "Verdaca port Protocols + DTOs + error taxonomy (Stage 9.2 ports-architecture.md v0.2 / ADR-9.1.2-1..6)"
+description = "Verdaca SessionIndexPort + SkillTelemetryPort package (Stage 10)"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.0",
+    "praxis-ports",
 ]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["praxis*"]
 
 [tool.setuptools.package-data]
-praxis = ["py.typed"]
+"praxis.kernel.session_index" = ["py.typed"]
+"praxis.kernel.session_index.schema" = ["*.sql"]
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
 explicit_package_bases = true
 namespace_packages = true
-mypy_path = ["src"]
-
-[tool.pytest.ini_options]
-pythonpath = ["src", "."]
+mypy_path = ["src", "../../ports/src"]
 
 [tool.ruff]
 line-length = 100

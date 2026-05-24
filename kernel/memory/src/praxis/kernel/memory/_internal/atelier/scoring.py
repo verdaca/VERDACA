@@ -77,7 +77,7 @@ def score_decision(
         if not 0.0 <= value <= 1.0:
             raise ValueError(f"{name}={value!r} must be in [0, 1] (§5.3 invariant)")
 
-    return (
+    return (  # type: ignore[no-any-return]  # F-9.5-MYPY-SCORING-PREEXISTING-01
         semantic_similarity
         * state_weight
         * recency_weight

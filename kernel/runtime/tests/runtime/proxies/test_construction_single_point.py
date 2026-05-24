@@ -12,7 +12,6 @@ Test-strategy §11.2.1 + §11.2.2 + §11.2.3.
 from __future__ import annotations
 
 import re
-import subprocess
 from pathlib import Path
 from uuid import uuid4
 
@@ -25,6 +24,15 @@ from praxis.kernel.runtime.proxies import (
     _construct_memory_proxy,
 )
 from praxis.kernel.runtime.testing import make_fake_memory
+
+
+def _find_python_files_containing(root: Path, needle: str) -> list[str]:
+    matches: list[str] = []
+    for path in root.rglob("*.py"):
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if needle in line:
+                matches.append(f"{path}:{line_number}:{line}")
+    return matches
 
 # ---------------------------------------------------------------------------
 # §11.2.3 — Construction round-trip: role → correct proxy type
@@ -85,13 +93,8 @@ class TestConstructionRoundTrip:
 @pytest.mark.static
 def test_construct_memory_proxy_defined_exactly_once() -> None:
     """grep over runtime src for 'def _construct_memory_proxy' — must be 1."""
-    runtime_root = Path("src/praxis/kernel/runtime")
-    result = subprocess.run(
-        ["grep", "-rn", "def _construct_memory_proxy", str(runtime_root)],
-        capture_output=True,
-        text=True,
-    )
-    definitions = [ln for ln in result.stdout.splitlines() if ln.strip()]
+    runtime_root = Path(__file__).resolve().parents[3] / "src" / "praxis" / "kernel" / "runtime"
+    definitions = _find_python_files_containing(runtime_root, "def _construct_memory_proxy")
     assert len(definitions) == 1, (
         f"Expected exactly 1 definition of _construct_memory_proxy, found "
         f"{len(definitions)}: {definitions}"
@@ -111,16 +114,11 @@ def test_proxy_classes_only_constructed_inside_construction_module() -> None:
     Any construction outside that file is a Layer 2 back-door bypassing
     the Spawner's role-based selection (arch §9.1.1 single-point claim).
     """
-    runtime_root = Path("src/praxis/kernel/runtime")
+    runtime_root = Path(__file__).resolve().parents[3] / "src" / "praxis" / "kernel" / "runtime"
     for proxy_class in ["ProducerMemoryProxy", "ReviewerMemoryProxy"]:
-        result = subprocess.run(
-            ["grep", "-rn", "--include=*.py", f"{proxy_class}(", str(runtime_root)],
-            capture_output=True,
-            text=True,
-        )
         forbidden = [
             line
-            for line in result.stdout.splitlines()
+            for line in _find_python_files_containing(runtime_root, f"{proxy_class}(")
             if line.strip()
             and "_construction.py" not in line
             # Allow class definitions themselves

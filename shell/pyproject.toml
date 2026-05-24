@@ -20,7 +20,15 @@ dependencies = [
     "stripe>=12.0,<13",
     "pyjwt[crypto]>=2.9,<3",
     "sentry-sdk[fastapi]>=2.0,<3",
+    "praxis-kernel-session-index",
 ]
+
+[project.scripts]
+verdaca = "praxis.shell.cli:main"
+
+[tool.uv.sources]
+praxis-kernel-session-index = { path = "../kernel/session_index" }
+praxis-ports = { path = "../ports" }
 
 [project.optional-dependencies]
 dev = [
@@ -31,8 +39,8 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["api*"]
+where = [".", "src"]
+include = ["api*", "praxis*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

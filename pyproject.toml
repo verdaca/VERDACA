@@ -23,5 +23,6 @@ members = [
     "kernel/memory",
     "kernel/pi-mono/src",
     "kernel/runtime",
+    "kernel/session_index",
     "kernel/studio",
 ]

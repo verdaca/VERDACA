@@ -18,6 +18,12 @@ from pathlib import Path
 MEMORY_CONTRACT = "src/praxis/contract_tests/ports/test_memory_contract.py"
 SERIALIZATION_CONTRACT = "src/praxis/contract_tests/ports/test_serialization_contract.py"
 COMPACTION_CONTRACT = "src/praxis/contract_tests/ports/test_compaction_contract.py"
+SESSION_INDEX_CONTRACT = (
+    "src/praxis/contract_tests/ports/test_session_index_port_contract.py"
+)
+SKILL_TELEMETRY_CONTRACT = (
+    "src/praxis/contract_tests/ports/test_skill_telemetry_port_contract.py"
+)
 
 PROMO_01 = f"{MEMORY_CONTRACT}::test_M_T_MEM_PROMO_01_threshold_violation"
 PROMO_02 = (
@@ -52,6 +58,36 @@ STAGE9_NO_WAIVER_ALLOWLIST: frozenset[str] = frozenset(
         COMP_PRESERVED_01,
         COMP_DETERM_01,
     }
+)
+
+SESSIONIDX_LIST_01 = (
+    f"{SESSION_INDEX_CONTRACT}::"
+    "test_M_T_SESSIONIDX_LIST_01_returns_records_for_empty_and_populated_store"
+)
+SESSIONIDX_GET_01 = (
+    f"{SESSION_INDEX_CONTRACT}::"
+    "test_M_T_SESSIONIDX_GET_01_known_id_returns_record_with_dto_fields"
+)
+SESSIONIDX_SEARCH_01 = (
+    f"{SESSION_INDEX_CONTRACT}::"
+    "test_M_T_SESSIONIDX_SEARCH_01_keyword_uses_fts5_and_returns_scored_excerpts"
+)
+SKILLTEL_EMIT_01 = (
+    f"{SKILL_TELEMETRY_CONTRACT}::"
+    "test_M_T_SKILLTEL_EMIT_01_record_invocation_returns_stable_observation_id"
+)
+
+STAGE10_DELTA_NO_WAIVER_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        SESSIONIDX_LIST_01,
+        SESSIONIDX_GET_01,
+        SESSIONIDX_SEARCH_01,
+        SKILLTEL_EMIT_01,
+    }
+)
+
+STAGE10_NO_WAIVER_ALLOWLIST: frozenset[str] = frozenset(
+    {*STAGE9_NO_WAIVER_ALLOWLIST, *STAGE10_DELTA_NO_WAIVER_ALLOWLIST}
 )
 
 EXPECTED_PARAM_VARIANTS: dict[str, frozenset[str]] = {
@@ -125,11 +161,25 @@ def test_stage9_no_waiver_inventory_matches_allowlist(request: pytest.FixtureReq
     } or collect_no_waiver_nodeids()
     normalized = {strip_param(nodeid) for nodeid in observed}
 
-    # No subset arithmetic: this Stage-9 regime has no cross-tree split.
-    assert normalized == STAGE9_NO_WAIVER_ALLOWLIST
+    assert normalized & STAGE9_NO_WAIVER_ALLOWLIST == STAGE9_NO_WAIVER_ALLOWLIST
 
     for base_nodeid, expected_variants in EXPECTED_PARAM_VARIANTS.items():
         actual_variants = {
             nodeid for nodeid in observed if strip_param(nodeid) == base_nodeid
         }
         assert actual_variants == expected_variants
+
+
+def test_stage10_no_waiver_inventory_matches_allowlist(request: pytest.FixtureRequest) -> None:
+    observed = {
+        item.nodeid
+        for item in request.session.items
+        if item.get_closest_marker("no_waiver") is not None
+    } or collect_no_waiver_nodeids()
+    normalized = {strip_param(nodeid) for nodeid in observed}
+
+    assert len(STAGE10_NO_WAIVER_ALLOWLIST) <= 13
+    assert len(STAGE10_DELTA_NO_WAIVER_ALLOWLIST) <= 4
+    assert STAGE9_NO_WAIVER_ALLOWLIST <= STAGE10_NO_WAIVER_ALLOWLIST
+    assert all("::test_M_T_" in nodeid for nodeid in STAGE10_NO_WAIVER_ALLOWLIST)
+    assert normalized == STAGE10_NO_WAIVER_ALLOWLIST
