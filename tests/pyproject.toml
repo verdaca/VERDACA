@@ -16,6 +16,7 @@ dependencies = [
     "praxis-adapter-mem0",
     "praxis-adapter-letta",
     "praxis-adapter-llmlingua",
+    "praxis-kernel-gateway",
     "praxis-kernel-session-index",
     "asyncpg==0.31.0",
     "aiosqlite>=0.19",
@@ -39,6 +40,7 @@ praxis-adapter-litellm = { workspace = true }
 praxis-adapter-mem0 = { workspace = true }
 praxis-adapter-letta = { workspace = true }
 praxis-adapter-llmlingua = { workspace = true }
+praxis-kernel-gateway = { workspace = true }
 praxis-kernel-session-index = { workspace = true }
 
 [tool.setuptools.packages.find]

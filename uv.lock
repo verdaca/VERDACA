@@ -20,6 +20,7 @@ members = [
     "praxis-adapter-tonl",
     "praxis-compression",
     "praxis-contract-tests",
+    "praxis-kernel-gateway",
     "praxis-kernel-session-index",
     "praxis-mac",
     "praxis-memory",
@@ -2299,6 +2300,7 @@ dependencies = [
     { name = "praxis-adapter-llmlingua" },
     { name = "praxis-adapter-mem0" },
     { name = "praxis-adapter-pi-mono-native" },
+    { name = "praxis-kernel-gateway" },
     { name = "praxis-kernel-session-index" },
     { name = "praxis-ports" },
     { name = "pydantic" },
@@ -2323,6 +2325,7 @@ requires-dist = [
     { name = "praxis-adapter-llmlingua", editable = "adapters/llmlingua" },
     { name = "praxis-adapter-mem0", editable = "adapters/mem0" },
     { name = "praxis-adapter-pi-mono-native", editable = "adapters/pi_mono_native" },
+    { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
     { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
     { name = "praxis-ports", editable = "ports" },
     { name = "pydantic", specifier = ">=2.0" },
@@ -2332,6 +2335,20 @@ requires-dist = [
     { name = "testcontainers", extras = ["postgres"], specifier = "==4.14.2" },
 ]
 
+[[package]]
+name = "praxis-kernel-gateway"
+version = "0.1.0"
+source = { editable = "kernel/gateway" }
+dependencies = [
+    { name = "praxis-kernel-session-index" },
+    { name = "praxis-ports" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
+    { name = "praxis-ports", editable = "ports" },
+]
 [[package]]
 name = "praxis-kernel-session-index"
 version = "0.1.0"

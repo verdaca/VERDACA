@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-kernel-gateway"
+version = "0.1.0"
+description = "Verdaca channel-neutral gateway service package (Stage 11)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "praxis-kernel-session-index",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+praxis-kernel-session-index = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.setuptools.package-data]
+"praxis.kernel.gateway" = ["py.typed"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+namespace_packages = true
+mypy_path = ["src", "../../ports/src", "../session_index/src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"

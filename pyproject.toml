@@ -20,6 +20,7 @@ members = [
     "tests",
     "kernel/compression",
     "kernel/mac",
+    "kernel/gateway",
     "kernel/memory",
     "kernel/pi-mono/src",
     "kernel/runtime",
