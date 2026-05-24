@@ -26,3 +26,13 @@ members = [
     "kernel/session_index",
     "kernel/studio",
 ]
+
+[tool.importlinter]
+root_packages = ["praxis", "adapters", "kernel", "shell"]
+
+[[tool.importlinter.contracts]]
+id = "spike-snapshot-not-importable"
+name = "spike-snapshot-not-importable"
+type = "forbidden"
+source_modules = ["praxis", "adapters", "kernel", "shell"]
+forbidden_modules = ["tests.reference.*"]
