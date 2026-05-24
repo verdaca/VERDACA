@@ -1,70 +1,52 @@
 # Verdaca — Remaining Work to POV-Ready
 
-**Compiled:** 2026-05-08 | **Current HEAD:** `1a42896` | **Stage:** 9.4.4 in-progress
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-24 (Stage 10 RATIFIED via merge `8ae4f87`) | **Local main HEAD:** `8ae4f87` | **origin/main HEAD:** `e9c0643` (local 5 commits ahead — push gated) | **Stage:** Stage 9 RATIFIED; **Stage 10 RATIFIED 2026-05-24** (VOC PROVISIONAL via HYPOTHETICAL synthesis; close memo at [[docs/stage-10-ratified-close-memo.md]]; memory entry write pending); Stage 11 (planned) opens after A7 real-VOC re-confirmation per [[docs/stage-10-voc-gate.md]]
 
 ---
 
-## Immediate: Stage 9.4.4 Pi-Mono (In Flight)
+## Immediate: Stage 10.1 VOC + Ratification Gate
 
-| Phase | What | Status |
-|---|---|---|
-| A.1 | ADR corrigendum — pin 7 DTOs in `ports-architecture.md` | ✅ DONE |
-| A.2 | Author `ports/cost_meter.py` (7 DTOs: `CostRecord`, `CostSummary`, `CostQuery`, `BillingEvent`, `UsageReport`, `ThrottleSignal`, `BudgetAlert`) | 🔄 NEXT |
-| B | `adapters/pi_mono_native/` (200-LOC Python pricing math) + 8 M-T-COST-* contract tests + ADR | ⬜ BLOCKED on A.2 |
-| C | 9.4.4 close-handoff + §provenance table | ⬜ BLOCKED on B |
+Stage 9 RATIFIED 2026-05-20 (`origin/main` merge `76eea26`, CI close `3e26f48`). Stage 10 implementation already landed at `d2b5670` (#42) on branch `stage-10.0-port-stubs` (pre-roundtable reconcile `50ce68e`). Forge substrate retired at 9.4.6 A.1 in favor of LLMLingua — the historic Forge G-1 BLOCKING GATE is moot.
+
+The next ratification work is **Stage 10 VOC gate + ceremony**:
+
+| Item | Status |
+|---|---|
+| Mary's VOC | ✅ COMPLETE-PROVISIONAL 2026-05-24 — HYPOTHETICAL synthesis (3 simulated archetypes: reinsurer-ML / consultancy decision-engineering / industrial-AI); 6 files at `voc-stage10/synthesis-run-hypothetical-2026-05-24/`; verdict **GO-with-amendments, LOW confidence**; fragility flag: K1/K2/K3 each triggered once on 1/3 calls (no 2-of-3 trigger, zero margin); buyer-language HARD audit 0 hits |
+| VOC kill-switch criteria | K1/K2/K3 each fired on 1/3 (no PIVOT); K4 not flagged |
+| Path 1 lock (team-lead 2026-05-24) | Synthesis accepted as provisional; A2/A3/A5 → Stage 11.x scope additions; **A7 = hard Stage 11.1 charter precondition** (real-VOC re-confirmation before Stage 11 locks); A1/A4/A6 forwarded to Stage 11.x ledger |
+| Stage 10 RATIFIED ceremony | ✅ COMPLETE 2026-05-24 — Winston/Murat/Cleo audit cycle ALL READY-WITH-AMENDMENTS/WARNINGS; 134 ports tests passed/7 skipped + mypy clean; 2 amendment commits (`3d576a9` VOC gate marker + `da47d67` close memo); merge `8ae4f87` |
+| `stage-10.0-port-stubs` FF into main | ✅ DONE via merge `8ae4f87` (origin pull from `85bdea1`→`e9c0643` + merge); local now 5 commits ahead of origin |
+| `project_verdaca_stage10_ratified` memory entry | Drafted in close memo §8; **pending team-lead authorization** per `feedback_memory_authorization` |
+| Push to origin | **NOT YET DONE** — explicit team-lead consent required per `feedback_memory_authorization` adjacent risk-action discipline |
 
 ---
 
-## Stage 9 Sequence After 9.4.4
+## Stage 9 Sequence — COMPLETE 2026-05-20
 
 ```
-9.4.4 Pi-Mono    [IN FLIGHT]
+9.4.4 Pi-Mono    ✅ RATIFIED 2026-05-08 (close `eccc307`)
   ↓
-9.4.5 RTK        ports/llm_proxy.py + Docker sidecar + live-Letta orchestration (7 deferred probes)
+9.4.5 LLM Proxy  ✅ RATIFIED 2026-05-12 (close `5b7019f`; H2-falsification — Docker sidecar retired; LiteLLM sole substrate)
   ↓
-9.4.6 Forge      Forge adapter (implied by G-1 BLOCKING GATE)
+9.4.6 Compaction ✅ RATIFIED 2026-05-17 (close `85bdea1`; ADR-9.2-V6 substrate Forge→LLMLingua; CompactionPort + 2 adapters + 14 M-T-COMP-*; Phase 0 P0.1-P0.3 closed in parallel)
   ↓
-9.4.2 TONL       Deferred-work (authorized separate launch — not blocking sequence)
+Pair 1 [concurrent]
+  9.4.7 Namespace ✅ CLOSED 2026-05-18 (`c466049`) — 12 markers deleted, _archive/ created
+  9.4.8 FTS5      ✅ CLOSED 2026-05-18 (`2b7cbf3`) — scripts/index-sessions.py + knowledge/sessions.db
   ↓
-9.4.7 Atomic PR  Delete 12 namespace markers + archive legacy _bmad-output/praxis/ tree (F9 audit included)
+Pair 2 [concurrent]
+  9.5 Arch review ✅ CLOSED 2026-05-19 (`e7bd77d`) — F10 document-and-defer; PATHWALK fix
+  9.9 Test-strat  ✅ CLOSED 2026-05-19 (`ef401a2`) — Stage-9 enforcer + sublist 6→9 + F11/F12/F13 close
   ↓
-9.4.8 Upstream bump workflow + FTS5 session index (scripts/index-sessions.py → knowledge/sessions.db)
+9.6 Cleo supply-chain ✅ CLOSED 2026-05-19 (`3e26f48` #40; merge `76eea26`)
   ↓
-9.5 Architectural review  F10 praxis.kernel asymmetry + F11/F12/F13 coupled marker-registration landing
+Stage 9 RATIFIED 2026-05-20 — full ports-and-adapters production rebuild
   ↓
-9.6 Cleo supply-chain    uv.lock SHA pinning + dependency monitoring + CI automation
-  ↓
-9.9 Test-strategy ratification  2 gaps: Q-B3-7 Tier 4 marker + Q-B3-17 ContractViolation vocabulary
+9.4.2 TONL — deferred-work (authorized separate launch; not blocking forward sequence)
 ```
 
----
-
-## Stage 9.6 — Cleo Supply-Chain (Expanded Scope)
-
-Original scope: uv.lock SHA pinning for `mem0ai==1.0.11` + `letta-client==1.10.3`.
-
-**Expanded 2026-05-08:** add full dependency monitoring + CI automation so pins stay current automatically after ratification.
-
-| Deliverable | File | Purpose |
-|---|---|---|
-| SHA pin policy | `uv.lock` + `pyproject.toml` version bounds | Lock `mem0ai` + `letta-client` to exact SHAs; Cleo W-2 license audit |
-| Dependency monitoring config | `.github/renovate.json` (preferred over Dependabot — native uv workspace support) | Weekly scan of all `adapters/*/pyproject.toml` + `shell/package.json`; opens PRs per bump; patch → auto-merge label, minor/major → review label |
-| CI contract-test gate | `.github/workflows/contract-tests.yml` | Triggers on PRs touching `adapters/**` or `uv.lock`; runs `uv run pytest tests/`; all 40+ contract tests must pass before merge |
-| Weekly security audit | `.github/workflows/audit.yml` | Cron Monday 09:00; runs `pip-audit --require-hashes -r uv.lock` + `npm audit` in `shell/`; opens GitHub issue on CVE hit |
-| Auto-merge policy | Renovate config + branch protection rules | Patch bumps auto-merge if contract-test CI green; minor/major require Winston review + Andrey explicit go |
-
-**Bump-type policy (binding after 9.6 ratification):**
-- `PATCH` (1.0.11 → 1.0.12): Renovate auto-merge if all contract tests pass. Zero human involvement.
-- `MINOR` (1.0.x → 1.1.0): Renovate opens PR labeled `dependency:minor`. Winston reviews API surface delta against MemoryPort/CostMeterPort contract. Executor updates adapter if needed.
-- `MAJOR` (1.x → 2.0): Full halt-cycle. Adapter rewrite may be required. Stage gate + Andrey go.
-
-**Who owns ongoing operation after 9.6:**
-- Renovate Bot — detection + PR creation
-- CI — contract test gate
-- Amelia — adapter code changes for minor/major bumps
-- Winston — API delta review on minor/major
-- Murat — confirms contract test catalog covers updated adapter
-- Andrey — approves major version bumps; any no_waiver allow-list changes
+⚠ Memory entry `[[project_verdaca_stage9_ratified]]` cites SHA `45e1fd8 #41`; that commit exists only on feature branches (`stage-9.4.7-namespace-cleanup`, `stage-9.6-cleo-supply-chain`, `stage-10.0-port-stubs`) and is a 9.6 corrigendum not merged into `origin/main`. The actual Stage-9 close on `origin/main` is `3e26f48` (#40 CI close) + `76eea26` (Stage 9 ratification merge). Memory SHA correction pending team-lead authorization.
 
 ---
 
@@ -81,70 +63,106 @@ Original scope: uv.lock SHA pinning for `mem0ai==1.0.11` + `letta-client==1.10.3
 
 ---
 
-## Per-Stage Gate Criteria (What Must Be True Before Next Stage Opens)
+## Per-Stage Gate Criteria (current)
 
-### Before 9.4.5 starts
-- [ ] 9.4.4 Phase C close-handoff complete
-- [ ] §provenance table in close memo
-- [ ] Andrey explicit "continue" go
+### Stage 10 RATIFIED when
+- [x] Mary's VOC complete + synthesized — **PROVISIONAL** via HYPOTHETICAL synthesis 2026-05-24; A7 carries real-VOC obligation forward to Stage 11.1
+- [x] VOC readout = GO-with-amendments (no PIVOT; K1/K2/K3 each triggered once — fragility flag noted)
+- [x] `stage-10.0-port-stubs` FF into main — DONE via merge `8ae4f87` 2026-05-24; `git pull` to e9c0643 + merge branch with 3 amendments (`d2b5670` + `3d576a9` + `da47d67`)
+- [x] Close memo with §provenance table per `feedback_provenance_pin` + synthesis VOC provenance + A7 gate — DONE at [[docs/stage-10-ratified-close-memo.md]] (`da47d67`)
+- [ ] Andrey explicit "continue" go to Stage 11 — pending real-VOC re-confirmation per A7
+- [ ] `project_verdaca_stage10_ratified` memory entry authorized + written — draft in close memo §8; team-lead gate per `feedback_memory_authorization`
 
-### Before 9.6 starts
-- [ ] Forge G-1 BLOCKING GATE cleared (Cleo W-2 license audit)
-- [ ] 9.4.5 RTK close + 7 live-Letta probes resolved
+### Before Stage 11 charter opens
+- [ ] Stage 10 RATIFIED
+- [ ] 4 substrate-API probes PASS (BLOCKING at §4.0 per Stage-11 advisor handover):
+      - [ ] FastMCP surface (Python `mcp.server.fastmcp.FastMCP` exists with required API)
+      - [ ] JSON-RPC 2.0 golden (request/response shape)
+      - [ ] Stateless HTTP invariant (`stateless_http=True` semantics confirmed in FastMCP)
+      - [ ] Gateway contract (composition of LLMProxy + Memory + Cost + Compaction + SessionIndex)
+- [ ] CAI spike port viable: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` mirror
 
-### 9.6 done when
-- [ ] `uv.lock` SHA-pinned for mem0ai + letta-client (Cleo W-2 satisfied)
-- [ ] `.github/renovate.json` committed + Renovate app installed on repo
-- [ ] `.github/workflows/contract-tests.yml` green on main
-- [ ] `.github/workflows/audit.yml` green on first scheduled run
-- [ ] Auto-merge policy tested: one patch bump merged end-to-end without human touch
-- [ ] Bump-type policy documented in `docs/dependency-policy.md`
-- [ ] Andrey explicit "continue" go to 9.9
-
-### Before Stage 10 (if applicable)
-- [ ] F10 architectural review complete at 9.5
-- [ ] F11/F12/F13 coupled landing done
-- [ ] 9.9 test-strategy ratification complete
-- [ ] Stage 9.4.5 `LLMProxyPort` ratified (prerequisite for CuratorAdapter)
-- [ ] Phase 0 self-learning data collection running (provenance tags + `.usage.json` sidecars + MAC telemetry)
-- [ ] Post-9.6 port stubs ratified: `SessionIndexPort`, `SkillObserverPort`, `SkillPort` (5 M-T-SKILL-* tests green)
+### Stage 11 RATIFIED when
+- [ ] `adapters/mcp_server/` implements MCPTransportPort + GatewayPort + 1 ChannelAdapterPort (CLI minimum)
+- [ ] 5 MCP tools + 5 resources + 1 prompt working end-to-end against Claude Desktop
+- [ ] M-T-GATEWAY-* (≥8) + M-T-MCP-* (≥10) + M-T-DIAL-EXEC-* (≥2) + M-T-MCP-API-SURFACE-* (≥2) green
+- [ ] No new no_waiver entries beyond +≤5 sublist (target ≤22 Stage-9+10+11 total)
+- [ ] Demo packaging: Champion can install + invoke end-to-end via Claude Desktop within X minutes (X TBD per Stage 11 charter)
 
 ---
 
-## Stage 10 — Self-Learning Infrastructure (Planned)
+## Stage 10 — SessionIndex / Knowledge / Learning (in-flight; gated on VOC)
 
-Derived from Hermes Agent source analysis, roundtable 2026-05-08. Prerequisite: Stage 9.4.5 `LLMProxyPort` ratified.
+Decided at 5-agent roundtable 2026-05-20 (4-1 vote for data-plane / transport split). Hermes Agent self-learning roadmap is preserved; the 2026-05-08 plan was reshaped into the data-plane-first sequence below.
 
-### Phase 0 — Zero-cost data collection (start now, no stage gate)
-| Deliverable | File | Notes |
+### Implementation status
+- Branch: `stage-10.0-port-stubs`
+- Implementation COMPLETE at `d2b5670` (#42)
+- Pre-roundtable reconcile pass: `50ce68e` (F-10-RECONCILE-PRIOR-PORTS-01)
+- Amendment commits on `stage-10.0-port-stubs`: `3d576a9` (VOC gate marker, F-10-TEST-AUDIT-05 resolution) + `da47d67` (close memo §provenance)
+- **RATIFIED 2026-05-24** at merge `8ae4f87` into `main` (close memo: [[docs/stage-10-ratified-close-memo.md]]; VOC gate: [[docs/stage-10-voc-gate.md]]); VOC PROVISIONAL via HYPOTHETICAL synthesis — A7 = hard Stage 11.1 precondition for real-VOC re-confirmation
+
+### Ports (landed)
+| Port | Methods | Key DTOs |
 |---|---|---|
-| Provenance frontmatter | All `.claude/skills/*/SKILL.md` | Add `provenance: user`; curator safety valve |
-| Usage sidecar script | `scripts/track-skill-usage.py` | Reads JSONL → writes `.usage.json` per skill |
-| MAC session telemetry | `knowledge/raw/skill-telemetry/{id}.json` | Gate scores + beat counts at each MAC close |
+| `SessionIndexPort` (API_VERSION 1.0.0) | index_session, search(mode=keyword\|semantic), list_sessions, get_session, get_artifact, get_telemetry | SessionExcerpt, SessionRecord, SessionFilter, ArtifactRef, TelemetryEvent, TimeWindow |
+| `SkillTelemetryPort` (renamed from SkillObserverPort) | record_invocation, query(window) | SkillOutcome, SkillUsage, SkillInvocationRecord |
 
-### Phase 1 — Stage 9.4.8 (FTS5, already in sequence)
-| Deliverable | File | Notes |
-|---|---|---|
-| Session index script | `scripts/index-sessions.py` → `knowledge/sessions.db` | SQLite FTS5; ~50 LOC; zero deps |
-| Wiki-update integration | `/verdaca-wiki-update --index` flag | Replaces grep in freshness scan |
+Semantic search is a no-op stub at Stage 10 (keyword/FTS5 only); semantic promotion is a Stage-10.1+ enhancement.
 
-### Phase 2 — Post-9.6 port stubs (no adapters, contracts only)
-| Port | File | Key methods |
-|---|---|---|
-| `SessionIndexPort` | `ports/src/praxis/ports/session_index.py` | `index_session`, `search(mode: keyword\|semantic)` |
-| `SkillObserverPort` | `ports/src/praxis/ports/skill_observer.py` | `record_invocation(outcome_signals)`, `suggest_patch`, `get_usage` |
-| `SkillPort` | `ports/src/praxis/ports/skill.py` | `record_usage`, `query_by_relevance`, `propose_improvement`, `apply_patch(authorized_by)` |
+### CLI surface
+`verdaca session list` + `verdaca session show <id>` — replay + cost surfaces.
 
-Contract tests (5 M-T-SKILL-*): USAGE-01, USAGE-02, PATCH-01, PATCH-02 (AuthorizationError if no authorized_by), PROV-01 (SkillExemptError for provenance:user).
+### MAC-T + allow-list deltas
+- +4 no_waiver entries (9 → 13)
+- MAC-T floor ≥18: `M-T-SESSIONIDX-*` (11) + `M-T-SKILLTEL-*` (6) + `M-T-TELEMETRY-*` (1)
 
-### Phase 3 — Stage 10 adapters
-| Deliverable | Prerequisite | Notes |
-|---|---|---|
-| `adapters/skill_curator/` | 9.4.5 LLMProxyPort + Phase 0 data | Curator implements `SkillPort`; state machine active→stale→archived; only touches `provenance: agent`; `apply_patch` requires `authorized_by` |
-| `adapters/honcho/` | External users onboarding | Implements `UserModelPort`; `USER.md` behavioral profile |
-| Trajectory capture | 500+ rated MAC sessions | `save_trajectories` flag; Atropos RL environments |
+### Stage 10 §7 debt items routed forward
+- F-10-EDGE-03 (SQLite WAL/pooling for async)
+- F-10-EDGE-04 (max payload guard)
+- F-10-COMPRESSION-MOCKER-DEP-01
+- F-10-MAC-CRLF-SNAPSHOT-01
+- F-9.4.6-LLMLINGUA-MAINTENANCE-STALENESS-1 (carried from 9.6 CVE-deferrals)
 
-**Victor's constraint:** Stub `SkillEvolutionPort` (alias for `SkillPort`) before Stage 10 opens — empty protocol, no implementation, just the contract. Architectural commitment costs zero now; missing it costs the moat later.
+### VOC artifacts (`_bmad-output/planning-artifacts/Verdaca/voc-stage10/`)
+- `voc-stage10-icp-and-target-list.md` — Champion cohort definition
+- `voc-stage10-call-script.md` — interview script (governance preference, VP readout, vendor onboarding, JTBD)
+- `voc-stage10-scoring-rubric.md` — GO / GO-with-amendments / PIVOT decision; 4 kill-switch criteria K1-K4
+- `voc-stage10-synthesis-template.md`, `voc-stage10-readout-template.md`, `README.md`
+
+### Carry-forward: SkillPort + curator/honcho adapters
+The original Stage 10 Phase 2/3 design (`SkillPort` with apply_patch authorization gate, `adapters/skill_curator/`, `adapters/honcho/`) is **deferred to Stage-10.1+ or Stage-12**. Stage 10 ships only SessionIndex + SkillTelemetry as the data-plane substrate; curator/state-machine work happens after the VOC tells us users actually need it.
+
+---
+
+## Stage 11 — Channel-Neutral MCP Gateway (planned)
+
+Opens after Stage 10 RATIFIED. Atlas + Mary precedent from CAI spike: populated MCP resources sold the demo, not tool calls — Stage 11 binds to ratified `SessionIndexPort` (NO stubs).
+
+### Ports
+| Port | Notes |
+|---|---|
+| `GatewayPort` | `execute(intent: StartAnalysisRequest, ctx: ChannelContext) → AnalysisResult`; composes LLMProxy + Memory + Cost + Compaction + SessionIndex |
+| `MCPTransportPort` | stdio + Streamable HTTP; `stateless_http=True` PINNED as contract invariant |
+| `ChannelAdapterPort` | 5 wrappers: Teams, Slack, CLI, UI, Claude-Desktop (Teams/Copilot manifests deferred post-Stage-11) |
+
+### MCP surface (5 tools + 5 resources + 1 prompt)
+- Tool language ("buyer-language"): "defensible recommendation with cited tradeoffs"
+- Resources: `verdaca://sessions/{id}/result/{summary,transcript,artifacts}` + 2 others
+- Mirror CAI spike: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` (line-for-line port to Python `mcp.server.fastmcp.FastMCP`)
+
+### VOC-10 amendment carry-forward (2026-05-24 Path 1 lock)
+- **A2** — Word/PPT export surface (firm-template-friendly); load-bearing for consultancy senior-partner→client path
+- **A3** — 3 procurement gates (data-residency / client-data SOP / Microsoft-stack-fit); Stage 10 charter covers via charter-clauses + architecture invariants; Stage 11 inherits and extends to channel-adapter manifests
+- **A5** — Forwardable-link surface (stable URL inside channel thread; distinct from Shape A and Shape B)
+- **A7** — **HARD CHARTER PRECONDITION** — real-VOC re-confirmation MUST happen before Stage 11.1 locks
+- **A1 / A4 / A6** — latency-mode positioning / multi-LLM contract wording / post-mortem-survivability → Stage 11.x ledger
+
+### Post-Stage-11 explicit defers
+- Teams/Copilot manifests
+- UI rewire to be a gateway client
+- OAuth 2.1 auth stage
+- Learning/feedback ports beyond SkillTelemetry
 
 ---
 
@@ -152,24 +170,38 @@ Contract tests (5 M-T-SKILL-*): USAGE-01, USAGE-02, PATCH-01, PATCH-02 (Authoriz
 
 | Work block | Sessions estimate |
 |---|---|
-| 9.4.4 A.2+B+C | 2–3 sessions |
-| 9.4.5 RTK | 3–4 sessions |
-| 9.4.6 Forge | 2–3 sessions |
-| 9.4.7 atomic PR + 9.4.8 (incl. FTS5 index) | 1–2 sessions |
-| 9.5 arch review + 9.6 + 9.9 | 4–5 sessions |
-| **Total Stage 9 remaining** | **~12–17 sessions** |
-| Stage 10 Phase 0+1 (data + port stubs) | 1–2 sessions |
-| Stage 10 Phase 3 (curator + Honcho adapters) | 3–4 sessions |
-| **Total Stage 9+10** | **~16–23 sessions** |
+| ~~9.4.4 → 9.4.6 (Pi-Mono, LiteLLM, Compaction)~~ | ✅ DONE through 2026-05-17 |
+| ~~9.4.7 ‖ 9.4.8 Pair 1~~ | ✅ DONE 2026-05-18 (~0.5 session — concurrent) |
+| ~~9.5 ‖ 9.9 Pair 2~~ | ✅ DONE 2026-05-19 (~1 session — concurrent) |
+| ~~9.6 Cleo supply-chain + Stage 9 RATIFIED~~ | ✅ DONE 2026-05-19 → 2026-05-20 |
+| Stage 10 — 3 VOC calls + synthesis + ratification | 1–2 sessions (depends on call cadence) |
+| Stage 11 — substrate probes + Gateway + MCP transport + 1 ChannelAdapter | 4–6 sessions |
+| Stage 11 — demo packaging + Champion onboarding | 1–2 sessions |
+| **Total to POV-ready (post-Stage-11)** | **~6–10 sessions** |
+| Post-Stage-11 (Teams/Copilot, UI rewire, OAuth) | deferred |
 
 ---
 
 ## Quick Reference: What the Next Executor Needs
 
-**For 9.4.4 Phase A.2 (next work):**
-- HEAD = `1a42896`; working tree clean (2 untracked docs only: `docs/epam-security-clearance-email-draft.md`, `docs/openclaw-setup-guide.md`)
-- Authorized file: `ports/src/praxis/ports/cost_meter.py` (new file)
-- 7 DTOs from A.1 ADR corrigendum — read A.1 commit body for verbatim field definitions
-- API_VERSION = "1.0.0" (new port, first version)
-- §9.C check: `isinstance(PiMonoNativeAdapter(), CostMeterPort) == True` must hold after B
-- Halt discipline: no `adapters/`, no `tests/`, no `kernel/` touches in Phase A.2
+**For Stage 10 VOC ratification (next ratification work):**
+- Local main HEAD = `85bdea1`; origin/main HEAD = `e9c0643` (14 commits ahead; consider `git pull` before VOC ceremony)
+- Stage 10 implementation already landed at `d2b5670` on `stage-10.0-port-stubs` branch
+- Run 3 Champion VOC calls (Andrey owns) per `voc-stage10-call-script.md`
+- Mary synthesizes per `voc-stage10-scoring-rubric.md` (4 kill-switch criteria K1-K4)
+- Halt discipline per `feedback_preload_first_gating`, memory writes gated per `feedback_memory_authorization`
+
+**For Stage 11 (after Stage 10 RATIFIED):**
+- 4 substrate-API probes BLOCKING before charter (FastMCP, JSON-RPC, stateless HTTP, gateway contract)
+- Reference: CAI spike at `spike-mcp-server/src/http.ts` for the Python port pattern
+- Stage 11 binds to ratified `SessionIndexPort` — NO stubs allowed
+
+---
+
+## Design Work Remaining (Phase 3+)
+
+- **Factory shell cycle** — next per-surface cycle (S-1..S-4 analogue for Factory product shell); opens at team-lead discretion (after a break per 2026-05-13 disposition)
+- **Subsequent shells** — Shield, Pipeline, Ops (per parent brief §4.3)
+- **v1.1 substrate amendment cycle** — gates on ≥3 surfaces from 7 P3-* candidates; no schedule yet
+- **R3 dark-canonical re-disposition** — required before any production Studio deploy (F-3 thin-slice deviation must not extend to production)
+- **v1.1 brand-mark amendments** — 3 candidates from brand-mark cycle: P-BM-1 (master glyph slot spec), P-BM-2 (archive path-of-record corrigendum), P-BM-3 (kickoff-template embedded-repo seam clarification)
