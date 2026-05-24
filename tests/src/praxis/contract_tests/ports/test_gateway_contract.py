@@ -29,7 +29,13 @@ def test_M_T_GW_PORT_HANDSHAKE_01_imports_resolve() -> None:
     assert AuthClaimsAccessError is not None
     assert GatewayCtxError is not None
     assert CallerKind.HUMAN.value == "human"
-    assert ChannelKind.MCP.value == "mcp"
+    assert {member.value for member in ChannelKind} == {
+        "cli",
+        "teams",
+        "slack",
+        "claude_desktop",
+        "web",
+    }
     assert StartAnalysisRequest is not None
     assert AnalysisResult is not None
     assert SessionHandle is not None

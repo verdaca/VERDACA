@@ -18,11 +18,11 @@ class CallerKind(Enum):
 
 
 class ChannelKind(Enum):
-    STDIO = "stdio"
-    HTTP = "http"
-    WEBSOCKET = "websocket"
-    MCP = "mcp"
     CLI = "cli"
+    TEAMS = "teams"
+    SLACK = "slack"
+    CLAUDE_DESKTOP = "claude_desktop"
+    WEB = "web"
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
