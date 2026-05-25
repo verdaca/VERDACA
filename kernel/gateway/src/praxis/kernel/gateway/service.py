@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import ClassVar
 
-from praxis.kernel.gateway.policy import GatewayPolicy
+from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
 from praxis.kernel.gateway.wal import GatewayWalStore
 from praxis.kernel.session_index.port import SessionIndexPort
 from praxis.ports.common import Message
@@ -53,6 +53,10 @@ class VerdacaGatewayService:
 
     def execute(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AnalysisResult:
         """Execute one channel-neutral analysis request."""
+        policy_decision = evaluate_gateway_policy(intent, ctx, self.policy, self.cost_meter)
+        if not policy_decision.allowed:
+            raise self._policy_error(ctx, policy_decision.reason)
+
         cached = self._cached_result(intent.idempotency_key)
         if cached is not None:
             return cached
@@ -229,6 +233,16 @@ class VerdacaGatewayService:
             occurred_at=datetime.now(timezone.utc),
             violation_class="invariant",
             context_field=f"{context_field}:{type(exc).__name__}",
+        )
+
+    @staticmethod
+    def _policy_error(ctx: ChannelContext, reason: str | None) -> GatewayCtxError:
+        return GatewayCtxError(
+            port_name=_GATEWAY_PORT_NAME,
+            correlation_id=ctx.request_id,
+            occurred_at=datetime.now(timezone.utc),
+            violation_class="invariant",
+            context_field=f"policy:{reason or 'rejected'}",
         )
 
 

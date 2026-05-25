@@ -9,7 +9,12 @@ from decimal import Decimal
 from pathlib import Path
 from typing import ClassVar
 
-from praxis.kernel.gateway import GatewayWalConfig, GatewayWalStore, VerdacaGatewayService
+from praxis.kernel.gateway import (
+    GatewayPolicy,
+    GatewayWalConfig,
+    GatewayWalStore,
+    VerdacaGatewayService,
+)
 from praxis.kernel.session_index.sqlite_store import SqliteSessionIndex
 from praxis.ports.compaction import CompactionEstimate, CompactionRequest, CompactionResult
 from praxis.ports.cost_meter import (
@@ -139,8 +144,10 @@ class FakeMemory:
 class FakeCostMeter:
     API_VERSION: ClassVar[str] = "1.0.0"
 
-    def __init__(self) -> None:
+    def __init__(self, *, consumed_usd: Decimal = Decimal("0")) -> None:
+        self.budget_checks: list[BudgetScope] = []
         self.records: list[CostEvent] = []
+        self.consumed_usd = consumed_usd
 
     def record(self, event: CostEvent) -> CostLedgerEntry:
         self.records.append(event)
@@ -173,12 +180,13 @@ class FakeCostMeter:
         )
 
     def budget_check(self, scope: BudgetScope) -> BudgetStatus:
+        self.budget_checks.append(scope)
         return BudgetStatus(
             schema_version=1,
             correlation_id=scope.correlation_id,
             idempotency_key=scope.idempotency_key,
             scope=scope,
-            consumed_usd=Decimal("0"),
+            consumed_usd=self.consumed_usd,
             limit_usd=None,
             remaining_usd=None,
             status="ok",
@@ -257,10 +265,16 @@ def make_ctx(request_id: str = "req-1") -> ChannelContext:
     )
 
 
-def make_gateway_harness(tmp_path: Path, *, fail_llm: bool = False) -> GatewayHarness:
+def make_gateway_harness(
+    tmp_path: Path,
+    *,
+    fail_llm: bool = False,
+    policy: GatewayPolicy | None = None,
+    consumed_usd: Decimal = Decimal("0"),
+) -> GatewayHarness:
     llm = FakeLLMProxy(fail=fail_llm)
     memory = FakeMemory()
-    cost = FakeCostMeter()
+    cost = FakeCostMeter(consumed_usd=consumed_usd)
     compaction = FakeCompaction()
     session_index = CountingSqliteSessionIndex(tmp_path / "session-index.sqlite3")
     gateway = VerdacaGatewayService(
@@ -272,6 +286,7 @@ def make_gateway_harness(tmp_path: Path, *, fail_llm: bool = False) -> GatewayHa
         wal_store=GatewayWalStore(
             GatewayWalConfig(database_path=tmp_path / "gateway-idempotency.sqlite3")
         ),
+        policy=policy or GatewayPolicy(allowed_user_ids=frozenset({"user-1"})),
     )
     return GatewayHarness(
         gateway=gateway,
