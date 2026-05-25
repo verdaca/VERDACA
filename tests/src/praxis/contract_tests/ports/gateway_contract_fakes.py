@@ -15,8 +15,13 @@ from praxis.kernel.gateway import (
     GatewayWalStore,
     VerdacaGatewayService,
 )
-from praxis.kernel.session_index.models import ArtifactRef as SessionIndexArtifactRef
-from praxis.kernel.session_index.models import SessionRecord
+from praxis.kernel.session_index.models import (
+    ArtifactRef as SessionIndexArtifactRef,
+)
+from praxis.kernel.session_index.models import (
+    SessionFilter,
+    SessionRecord,
+)
 from praxis.kernel.session_index.sqlite_store import SqliteSessionIndex
 from praxis.ports.compaction import CompactionEstimate, CompactionRequest, CompactionResult
 from praxis.ports.cost_meter import (
@@ -232,6 +237,7 @@ class CountingSqliteSessionIndex(SqliteSessionIndex):
         self.index_calls = 0
         self.get_session_calls = 0
         self.get_artifact_calls = 0
+        self.list_sessions_calls = 0
         super().__init__(db_path)
 
     def index_session(self, session_id: str, content: str) -> None:
@@ -250,6 +256,13 @@ class CountingSqliteSessionIndex(SqliteSessionIndex):
         self.get_artifact_calls += 1
         return super().get_artifact(session_id, artifact_id)
 
+    def list_sessions(
+        self,
+        criteria: SessionFilter | None = None,
+    ) -> Sequence[SessionRecord]:
+        self.list_sessions_calls += 1
+        return super().list_sessions(criteria)
+
 
 @dataclass(slots=True)
 class GatewayHarness:
@@ -261,11 +274,15 @@ class GatewayHarness:
     session_index: CountingSqliteSessionIndex
 
 
-def make_intent(idempotency_key: str = "idem-1") -> StartAnalysisRequest:
+def make_intent(
+    idempotency_key: str = "idem-1",
+    *,
+    workspace_id: str = "workspace-1",
+) -> StartAnalysisRequest:
     return StartAnalysisRequest(
         question="Which buyer path should we take?",
         requester_user_id="user-1",
-        workspace_id="workspace-1",
+        workspace_id=workspace_id,
         idempotency_key=idempotency_key,
     )
 

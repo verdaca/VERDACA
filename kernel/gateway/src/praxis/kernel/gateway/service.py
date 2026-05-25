@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -209,6 +210,30 @@ class VerdacaGatewayService:
             title=None,
         )
 
+    def list_sessions(
+        self,
+        *,
+        workspace_id: str | None = None,
+        limit: int = 50,
+    ) -> Sequence[SessionHandle]:
+        """Return persisted session handles, optionally scoped to a workspace."""
+        if limit <= 0:
+            return ()
+
+        records = self._run_session_index_read(
+            AsyncSessionIndex(self.session_index).list_sessions()
+        )
+        handles = [
+            SessionHandle(
+                session_id=record.session_id,
+                status=record.status,
+                source_uri=record.source_uri or "",
+            )
+            for record in records
+            if self._matches_workspace(record, workspace_id)
+        ]
+        return tuple(handles[: min(limit, 50)])
+
     def _cached_result(self, idempotency_key: str) -> AnalysisResult | None:
         if self.wal_store is None:
             return None
@@ -250,7 +275,7 @@ class VerdacaGatewayService:
             session=SessionHandle(
                 session_id=session_id,
                 status="completed",
-                source_uri=f"gateway://{ctx.channel.value}/{ctx.channel_session_id}",
+                source_uri=self._source_uri(intent, ctx),
             ),
             recommendation=recommendation,
             cited_tradeoffs=("cost_meter_recorded", "memory_context_queried"),
@@ -286,6 +311,19 @@ class VerdacaGatewayService:
             f"{intent.workspace_id}:{intent.idempotency_key}".encode("utf-8")
         ).hexdigest()[:16]
         return f"gw-{digest}"
+
+    @staticmethod
+    def _source_uri(intent: StartAnalysisRequest, ctx: ChannelContext) -> str:
+        return (
+            f"gateway://workspaces/{intent.workspace_id}/channels/{ctx.channel.value}/"
+            f"sessions/{ctx.channel_session_id}"
+        )
+
+    @staticmethod
+    def _matches_workspace(record: SessionRecord, workspace_id: str | None) -> bool:
+        if workspace_id is None:
+            return True
+        return (record.source_uri or "").startswith(f"gateway://workspaces/{workspace_id}/")
 
     @staticmethod
     def _gateway_error(ctx: ChannelContext, context_field: str, exc: Exception) -> GatewayCtxError:

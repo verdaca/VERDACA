@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import ClassVar, Protocol, runtime_checkable
 
 from praxis.ports.gateway_dto import (
     AnalysisResult,
     ArtifactRef,
     ChannelContext,
+    SessionHandle,
     StartAnalysisRequest,
 )
 
@@ -27,6 +29,14 @@ class GatewayPort(Protocol):
 
     def get_artifact(self, session_id: str, artifact_id: str) -> ArtifactRef:
         """Return a gateway-visible artifact reference."""
+
+    def list_sessions(
+        self,
+        *,
+        workspace_id: str | None = None,
+        limit: int = 50,
+    ) -> Sequence[SessionHandle]:
+        """Return persisted session handles for gateway resources and tools."""
 
 
 @runtime_checkable
