@@ -15,6 +15,7 @@ members = [
     "praxis-adapter-letta",
     "praxis-adapter-litellm",
     "praxis-adapter-llmlingua",
+    "praxis-adapter-mcp-server",
     "praxis-adapter-mem0",
     "praxis-adapter-pi-mono-native",
     "praxis-adapter-tonl",
@@ -2188,6 +2189,23 @@ requires-dist = [
 ]
 
 [[package]]
+name = "praxis-adapter-mcp-server"
+version = "0.1.0"
+source = { editable = "adapters/mcp_server" }
+dependencies = [
+    { name = "mcp" },
+    { name = "praxis-ports" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "mcp", specifier = "==1.27.0" },
+    { name = "praxis-ports", editable = "ports" },
+    { name = "pydantic", specifier = ">=2.0" },
+]
+
+[[package]]
 name = "praxis-adapter-mem0"
 version = "0.1.0"
 source = { editable = "adapters/mem0" }
@@ -2298,6 +2316,7 @@ dependencies = [
     { name = "praxis-adapter-letta" },
     { name = "praxis-adapter-litellm" },
     { name = "praxis-adapter-llmlingua" },
+    { name = "praxis-adapter-mcp-server" },
     { name = "praxis-adapter-mem0" },
     { name = "praxis-adapter-pi-mono-native" },
     { name = "praxis-kernel-gateway" },
@@ -2323,6 +2342,7 @@ requires-dist = [
     { name = "praxis-adapter-letta", editable = "adapters/letta" },
     { name = "praxis-adapter-litellm", editable = "adapters/litellm" },
     { name = "praxis-adapter-llmlingua", editable = "adapters/llmlingua" },
+    { name = "praxis-adapter-mcp-server", editable = "adapters/mcp_server" },
     { name = "praxis-adapter-mem0", editable = "adapters/mem0" },
     { name = "praxis-adapter-pi-mono-native", editable = "adapters/pi_mono_native" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
@@ -2349,6 +2369,7 @@ requires-dist = [
     { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
     { name = "praxis-ports", editable = "ports" },
 ]
+
 [[package]]
 name = "praxis-kernel-session-index"
 version = "0.1.0"

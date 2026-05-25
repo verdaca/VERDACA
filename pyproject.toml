@@ -14,6 +14,7 @@ members = [
     "adapters/in_tree_compaction_stub",
     "adapters/pi_mono_native",
     "adapters/litellm",
+    "adapters/mcp_server",
     "adapters/mem0",
     "adapters/letta",
     "adapters/llmlingua",
