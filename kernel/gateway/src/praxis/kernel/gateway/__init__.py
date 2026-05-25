@@ -7,11 +7,18 @@ exports implementation types only.
 from praxis.kernel.gateway.execution import NormalizedExecution, normalize_execution_request
 from praxis.kernel.gateway.policy import GatewayPolicy, PolicyDecision
 from praxis.kernel.gateway.service import VerdacaGatewayService
-from praxis.kernel.gateway.wal import WAL_PRAGMAS, GatewayWalConfig
+from praxis.kernel.gateway.wal import (
+    WAL_PRAGMAS,
+    AsyncSessionIndex,
+    GatewayWalConfig,
+    GatewayWalStore,
+)
 
 __all__ = [
+    "AsyncSessionIndex",
     "GatewayPolicy",
     "GatewayWalConfig",
+    "GatewayWalStore",
     "NormalizedExecution",
     "PolicyDecision",
     "VerdacaGatewayService",

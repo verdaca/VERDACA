@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
-
-import pytest
+from decimal import Decimal
 
 from praxis.ports.gateway import ChannelAdapterPort, GatewayPort
 from praxis.ports.gateway_dto import (
@@ -19,8 +18,6 @@ from praxis.ports.gateway_dto import (
     StartAnalysisRequest,
 )
 from praxis.ports.gateway_errors import AuthClaimsAccessError, GatewayCtxError
-
-pytestmark = pytest.mark.skip(reason="Stage 11 Phase A gateway impl lands at section 4.3")
 
 
 def test_M_T_GW_PORT_HANDSHAKE_01_imports_resolve() -> None:
@@ -50,3 +47,19 @@ def test_M_T_GW_PORT_HANDSHAKE_01_channel_context_field_allowlist() -> None:
         f"ChannelContext drift: added={actual - FROZEN_FIELD_ALLOWLIST}, "
         f"removed={FROZEN_FIELD_ALLOWLIST - actual}"
     )
+
+
+def test_M_T_GW_CHANNELCTX_ALLOWLIST_DRIFT_01_runtime_asdict_keys() -> None:
+    ctx = ChannelContext(
+        caller_id="user-1",
+        caller_kind=CallerKind.HUMAN,
+        auth_claims=AuthClaims(_claims={"sub": "user-1"}),
+        channel=ChannelKind.CLI,
+        channel_session_id="cli-session-1",
+        request_id="req-1",
+        trace_id="trace-1",
+        budget_remaining_usd=Decimal("1.00"),
+        rate_limit_token="token-1",
+    )
+
+    assert frozenset(dataclasses.asdict(ctx).keys()) == FROZEN_FIELD_ALLOWLIST

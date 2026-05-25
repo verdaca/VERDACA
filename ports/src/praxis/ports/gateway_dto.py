@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
-from types import MappingProxyType
-from typing import Mapping, NoReturn
+from typing import Iterator, Mapping, NoReturn
 
 from praxis.ports.gateway_errors import AuthClaimsAccessError
 
@@ -25,6 +24,25 @@ class ChannelKind(Enum):
     WEB = "web"
 
 
+class _ImmutableClaims(Mapping[str, str]):
+    """Deepcopy-safe immutable mapping for dataclasses.asdict traversal."""
+
+    def __init__(self, claims: Mapping[str, str]) -> None:
+        self._claims = dict(claims)
+
+    def __getitem__(self, key: str) -> str:
+        return self._claims[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._claims)
+
+    def __len__(self) -> int:
+        return len(self._claims)
+
+    def __deepcopy__(self, memo: object) -> "_ImmutableClaims":
+        return _ImmutableClaims(self._claims)
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AuthClaims:
     """Opaque wrapper around auth claims. PII protection by construction."""
@@ -32,7 +50,7 @@ class AuthClaims:
     _claims: Mapping[str, str]
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "_claims", MappingProxyType(dict(self._claims)))
+        object.__setattr__(self, "_claims", _ImmutableClaims(self._claims))
 
     def __repr__(self) -> str:
         return f"AuthClaims(<{len(self._claims)} redacted>)"
