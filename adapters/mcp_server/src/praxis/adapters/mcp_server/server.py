@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
 
+from praxis.adapters.mcp_server.prompts import register_prompts
+from praxis.adapters.mcp_server.resources import register_resources
 from praxis.adapters.mcp_server.tools import register_tools
 from praxis.ports.gateway import GatewayPort
 
@@ -31,4 +33,6 @@ def create_verdaca_mcp_server(
         stateless_http=stateless_http,
     )
     register_tools(server, gateway=gateway)
+    register_resources(server, gateway=gateway)
+    register_prompts(server)
     return server

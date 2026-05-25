@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from praxis.adapters.mcp_server.http import (
     create_mcp_http_app,
     create_mcp_http_server,
@@ -23,9 +21,13 @@ def test_M_T_MCP_TRANSPORT_HTTP_STATELESS_01_adapter_exposes_mcp_path() -> None:
     assert "/mcp" in route_paths
 
 
-def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_blocks_on_e1_policy() -> None:
-    with pytest.raises(NotImplementedError, match=r"E1 policy\.py"):
-        verify_bearer_authorization("Bearer test-token")
+def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_uses_e1_policy(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("VERDACA_GATEWAY_BEARER_TOKEN", "test-token")
+
+    assert verify_bearer_authorization("Bearer test-token") is True
+    assert verify_bearer_authorization("Bearer wrong-token") is False
 
 
 def test_M_T_MCP_TRANSPORT_STDIO_TOOL_LIST_01_stdio_server_has_tools() -> None:

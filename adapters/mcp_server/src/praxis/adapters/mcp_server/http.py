@@ -3,39 +3,22 @@
 from __future__ import annotations
 
 import asyncio
-import importlib
 import os
-from collections.abc import Callable
-from typing import cast
 
 from mcp.server.fastmcp import FastMCP
 
 from praxis.adapters.mcp_server.server import create_verdaca_mcp_server
+from praxis.kernel.gateway.policy import verify_bearer_token
 from praxis.ports.gateway import GatewayPort
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 3000
 
 
-def _load_bearer_verifier() -> Callable[[str | None], None]:
-    try:
-        policy = importlib.import_module("praxis.kernel.gateway.policy")
-        verifier = policy.verify_bearer_token
-    except (ImportError, ModuleNotFoundError) as exc:
-        raise NotImplementedError(
-            "Bearer-token policy integration waits for E1 policy.py at [E1-H#2.4]"
-        ) from exc
-    except AttributeError as exc:
-        raise NotImplementedError(
-            "Bearer-token policy integration waits for E1 policy.py at [E1-H#2.4]"
-        ) from exc
-    return cast(Callable[[str | None], None], verifier)
+def verify_bearer_authorization(authorization: str | None) -> bool:
+    """Return whether E1's policy gate accepts the deployment bearer token."""
 
-
-def verify_bearer_authorization(authorization: str | None) -> None:
-    """Call E1's policy gate when it exists."""
-
-    _load_bearer_verifier()(authorization)
+    return verify_bearer_token(authorization)
 
 
 def create_mcp_http_server(*, gateway: GatewayPort | None = None) -> FastMCP:

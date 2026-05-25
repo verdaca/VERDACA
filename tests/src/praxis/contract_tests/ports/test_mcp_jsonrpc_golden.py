@@ -10,6 +10,7 @@ from typing import Any
 SNAPSHOT_ROOT = Path("reference/spike-mcp-server-snapshot-d93f71a")
 STDIO_SOURCE = SNAPSHOT_ROOT / "src" / "stdio.ts"
 GOLDEN_FIXTURE = Path("fixtures/mcp_jsonrpc_golden/cai_stdio_initialize.jsonl")
+ERROR_FIXTURE_GLOB = "fixtures/mcp_jsonrpc_golden/cai_stdio_error_*.jsonl"
 STDIO_SHA256 = "23e550582c17ffaa9442fd1d1031b29af25014cdb8a2817699496fee406f4a34"
 INITIALIZE_BYTES = (
     b'{"jsonrpc":"2.0","id":1,"method":"initialize","params":'
@@ -60,3 +61,23 @@ def test_mcp_jsonrpc_golden_replay_bytes_are_byte_identical() -> None:
         "method": "notifications/initialized",
         "params": {},
     }
+
+
+def test_M_T_MCP_JSONRPC_ERROR_FRAME_01_error_codes_match_spec() -> None:
+    fixtures_root = Path(__file__).resolve().parents[4]
+    fixtures = sorted(fixtures_root.glob(ERROR_FIXTURE_GLOB))
+    observed_codes: set[int] = set()
+
+    assert fixtures
+    for fixture_path in fixtures:
+        fixture = _load_jsonl(fixture_path)
+        assert fixture[0]["kind"] == "metadata"
+        assert fixture[0]["source_snapshot"] == "spike-mcp-server-snapshot-d93f71a"
+        frames = [entry for entry in fixture if entry["kind"] == "frame"]
+        assert len(frames) == 1
+        frame = json.loads(frames[0]["bytes"])
+        observed_codes.add(frame["error"]["code"])
+        assert frame["jsonrpc"] == "2.0"
+        assert "message" in frame["error"]
+
+    assert observed_codes == {-32600, -32601, -32603}
