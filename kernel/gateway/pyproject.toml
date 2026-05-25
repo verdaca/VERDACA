@@ -9,11 +9,13 @@ description = "Verdaca channel-neutral gateway service package (Stage 11)"
 requires-python = ">=3.12"
 dependencies = [
     "praxis-ports",
+    "praxis-adapter-litellm",
     "praxis-kernel-session-index",
 ]
 
 [tool.uv.sources]
 praxis-ports = { workspace = true }
+praxis-adapter-litellm = { workspace = true }
 praxis-kernel-session-index = { workspace = true }
 
 [tool.setuptools.packages.find]

@@ -2360,12 +2360,14 @@ name = "praxis-kernel-gateway"
 version = "0.1.0"
 source = { editable = "kernel/gateway" }
 dependencies = [
+    { name = "praxis-adapter-litellm" },
     { name = "praxis-kernel-session-index" },
     { name = "praxis-ports" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "praxis-adapter-litellm", editable = "adapters/litellm" },
     { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
     { name = "praxis-ports", editable = "ports" },
 ]

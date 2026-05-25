@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import ClassVar
 
+from praxis.kernel.gateway.dial import DIAL_LITELLM_MODEL, DIAL_LITELLM_PROVIDER
 from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
 from praxis.kernel.gateway.wal import GatewayWalStore
 from praxis.kernel.session_index.port import SessionIndexPort
@@ -28,9 +29,6 @@ from praxis.ports.memory import MemoryEntry, MemoryPort, MemoryQuery
 from praxis.ports.serialization import SerializablePayload
 
 _GATEWAY_PORT_NAME = "gateway"
-_DEFAULT_PROVIDER = "azure"
-_DEFAULT_MODEL = "gpt-4o"
-
 
 @dataclass(slots=True, kw_only=True)
 class VerdacaGatewayService:
@@ -99,8 +97,8 @@ class VerdacaGatewayService:
                     schema_version=1,
                     correlation_id=ctx.request_id,
                     idempotency_key=intent.idempotency_key,
-                    provider=_DEFAULT_PROVIDER,
-                    model=_DEFAULT_MODEL,
+                    provider=DIAL_LITELLM_PROVIDER,
+                    model=DIAL_LITELLM_MODEL,
                     messages=[
                         Message(
                             schema_version=1,
@@ -124,8 +122,8 @@ class VerdacaGatewayService:
                     schema_version=1,
                     correlation_id=ctx.request_id,
                     idempotency_key=intent.idempotency_key,
-                    provider=_DEFAULT_PROVIDER,
-                    model=_DEFAULT_MODEL,
+                    provider=DIAL_LITELLM_PROVIDER,
+                    model=DIAL_LITELLM_MODEL,
                     input_tokens=llm_response.input_tokens,
                     output_tokens=llm_response.output_tokens,
                     occurred_at=datetime.now(timezone.utc),
