@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from typing import ClassVar, Protocol, runtime_checkable
 
-from praxis.ports.gateway_dto import AnalysisResult, ChannelContext, StartAnalysisRequest
+from praxis.ports.gateway_dto import (
+    AnalysisResult,
+    ArtifactRef,
+    ChannelContext,
+    StartAnalysisRequest,
+)
 
 
 @runtime_checkable
@@ -13,6 +18,15 @@ class GatewayPort(Protocol):
 
     def execute(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AnalysisResult:
         """Execute one gateway request."""
+
+    def get_session_summary(self, session_id: str) -> str:
+        """Return a compact synopsis for a persisted session."""
+
+    def get_session_transcript(self, session_id: str) -> str:
+        """Return the full transcript payload for a persisted session."""
+
+    def get_artifact(self, session_id: str, artifact_id: str) -> ArtifactRef:
+        """Return a gateway-visible artifact reference."""
 
 
 @runtime_checkable

@@ -15,6 +15,8 @@ from praxis.kernel.gateway import (
     GatewayWalStore,
     VerdacaGatewayService,
 )
+from praxis.kernel.session_index.models import ArtifactRef as SessionIndexArtifactRef
+from praxis.kernel.session_index.models import SessionRecord
 from praxis.kernel.session_index.sqlite_store import SqliteSessionIndex
 from praxis.ports.compaction import CompactionEstimate, CompactionRequest, CompactionResult
 from praxis.ports.cost_meter import (
@@ -228,11 +230,25 @@ class FakeCompaction:
 class CountingSqliteSessionIndex(SqliteSessionIndex):
     def __init__(self, db_path: Path) -> None:
         self.index_calls = 0
+        self.get_session_calls = 0
+        self.get_artifact_calls = 0
         super().__init__(db_path)
 
     def index_session(self, session_id: str, content: str) -> None:
         self.index_calls += 1
         super().index_session(session_id, content)
+
+    def get_session(self, session_id: str) -> SessionRecord | None:
+        self.get_session_calls += 1
+        return super().get_session(session_id)
+
+    def get_artifact(
+        self,
+        session_id: str,
+        artifact_id: str,
+    ) -> SessionIndexArtifactRef | None:
+        self.get_artifact_calls += 1
+        return super().get_artifact(session_id, artifact_id)
 
 
 @dataclass(slots=True)

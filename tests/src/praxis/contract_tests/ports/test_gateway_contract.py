@@ -38,6 +38,9 @@ def test_M_T_GW_PORT_HANDSHAKE_01_imports_resolve() -> None:
     assert SessionHandle is not None
     assert ArtifactRef is not None
     assert AuthClaims is not None
+    assert callable(GatewayPort.get_session_summary)
+    assert callable(GatewayPort.get_session_transcript)
+    assert callable(GatewayPort.get_artifact)
 
 
 def test_M_T_GW_PORT_HANDSHAKE_01_channel_context_field_allowlist() -> None:

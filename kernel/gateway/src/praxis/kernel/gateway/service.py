@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import ClassVar
+from typing import ClassVar, Coroutine, TypeVar
 
 from praxis.kernel.gateway.dial import DIAL_LITELLM_MODEL, DIAL_LITELLM_PROVIDER
 from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
-from praxis.kernel.gateway.wal import GatewayWalStore
+from praxis.kernel.gateway.wal import AsyncSessionIndex, GatewayWalStore
+from praxis.kernel.session_index.models import SessionRecord
 from praxis.kernel.session_index.port import SessionIndexPort
 from praxis.ports.common import Message
 from praxis.ports.compaction import CompactionPort, CompactionRequest
@@ -29,6 +31,8 @@ from praxis.ports.memory import MemoryEntry, MemoryPort, MemoryQuery
 from praxis.ports.serialization import SerializablePayload
 
 _GATEWAY_PORT_NAME = "gateway"
+_T = TypeVar("_T")
+
 
 @dataclass(slots=True, kw_only=True)
 class VerdacaGatewayService:
@@ -162,10 +166,70 @@ class VerdacaGatewayService:
             self.wal_store.complete_attempt(intent.idempotency_key, result)
         return result
 
+    def get_session_summary(self, session_id: str) -> str:
+        """Return a compact synopsis for a persisted session."""
+        record = self._read_session_record(session_id)
+        payload = {
+            "session_id": record.session_id,
+            "status": record.status,
+            "title": record.title,
+            "source_uri": record.source_uri,
+            "artifact_ids": record.artifact_ids,
+        }
+        return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+    def get_session_transcript(self, session_id: str) -> str:
+        """Return the full SessionIndex transcript payload for a persisted session."""
+        record = self._read_session_record(session_id)
+        payload = {
+            "session_id": record.session_id,
+            "user_id": record.user_id,
+            "title": record.title,
+            "created_at": record.created_at.isoformat(),
+            "updated_at": record.updated_at.isoformat(),
+            "status": record.status,
+            "skill_ids": record.skill_ids,
+            "artifact_ids": record.artifact_ids,
+            "source_uri": record.source_uri,
+        }
+        return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
+    def get_artifact(self, session_id: str, artifact_id: str) -> ArtifactRef:
+        """Return a gateway-visible artifact reference for a persisted session."""
+        artifact = self._run_session_index_read(
+            AsyncSessionIndex(self.session_index).get_artifact(session_id, artifact_id)
+        )
+        if artifact is None:
+            raise self._read_error(session_id, f"artifact_missing:{artifact_id}")
+        return ArtifactRef(
+            artifact_id=artifact.id,
+            session_id=session_id,
+            kind=artifact.kind,
+            uri=artifact.payload_uri,
+            title=None,
+        )
+
     def _cached_result(self, idempotency_key: str) -> AnalysisResult | None:
         if self.wal_store is None:
             return None
         return self.wal_store.get_result(idempotency_key)
+
+    def _read_session_record(self, session_id: str) -> SessionRecord:
+        record = self._run_session_index_read(
+            AsyncSessionIndex(self.session_index).get_session(session_id)
+        )
+        if record is None:
+            raise self._read_error(session_id, "session_missing")
+        return record
+
+    @staticmethod
+    def _run_session_index_read(coro: Coroutine[object, object, _T]) -> _T:
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(coro)
+        coro.close()
+        raise RuntimeError("Gateway read API must be called outside an active event loop")
 
     def _build_result(
         self,
@@ -241,6 +305,16 @@ class VerdacaGatewayService:
             occurred_at=datetime.now(timezone.utc),
             violation_class="invariant",
             context_field=f"policy:{reason or 'rejected'}",
+        )
+
+    @staticmethod
+    def _read_error(session_id: str, context_field: str) -> GatewayCtxError:
+        return GatewayCtxError(
+            port_name=_GATEWAY_PORT_NAME,
+            correlation_id=session_id,
+            occurred_at=datetime.now(timezone.utc),
+            violation_class="invariant",
+            context_field=f"read:{context_field}",
         )
 
 
