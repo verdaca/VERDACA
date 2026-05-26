@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.exceptions import ToolError
 
 from praxis.ports.gateway import GatewayPort
 from praxis.ports.gateway_dto import ArtifactRef
@@ -18,6 +20,7 @@ RESOURCE_URIS: tuple[str, ...] = (
     "verdaca://sessions/{session_id}/result/transcript",
     "verdaca://sessions/{session_id}/artifacts/{artifact_id}",
 )
+_ID_PATTERN = re.compile(r"^[a-zA-Z0-9_-]{1,128}$")
 
 METHODOLOGY = {
     "name": "Verdaca decision methodology",
@@ -61,18 +64,22 @@ def templates_payload() -> dict[str, Any]:
 def session_summary_payload(gateway: GatewayPort, session_id: str) -> str:
     """Return the cheap session summary path via GatewayPort."""
 
+    _validate_id("session_id", session_id)
     return gateway.get_session_summary(session_id)
 
 
 def session_transcript_payload(gateway: GatewayPort, session_id: str) -> str:
     """Return the full transcript path via GatewayPort."""
 
+    _validate_id("session_id", session_id)
     return gateway.get_session_transcript(session_id)
 
 
 def artifact_payload(gateway: GatewayPort, session_id: str, artifact_id: str) -> ArtifactRef:
     """Return an artifact through GatewayPort."""
 
+    _validate_id("session_id", session_id)
+    _validate_id("artifact_id", artifact_id)
     return gateway.get_artifact(session_id, artifact_id)
 
 
@@ -84,6 +91,13 @@ def _required_gateway(gateway: GatewayPort | None, resource_name: str) -> Gatewa
     if gateway is None:
         raise RuntimeError(f"GatewayPort binding is required for {resource_name}")
     return gateway
+
+
+def _validate_id(field_name: str, value: str) -> None:
+    if _ID_PATTERN.fullmatch(value) is None:
+        raise ToolError(
+            f"Invalid {field_name}: expected 1-128 ASCII letters, digits, underscores, or hyphens"
+        )
 
 
 def register_resources(server: FastMCP, *, gateway: GatewayPort | None = None) -> None:
