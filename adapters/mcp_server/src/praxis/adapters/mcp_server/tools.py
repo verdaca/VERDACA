@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from decimal import Decimal
 from types import MappingProxyType
 from typing import Any, Mapping
@@ -11,10 +12,12 @@ from mcp.server.fastmcp import FastMCP
 from praxis.ports.gateway import GatewayPort
 from praxis.ports.gateway_dto import (
     AnalysisResult,
+    ArtifactRef,
     AuthClaims,
     CallerKind,
     ChannelContext,
     ChannelKind,
+    SessionHandle,
     StartAnalysisRequest,
 )
 
@@ -22,12 +25,16 @@ TOOL_DESCRIPTIONS: Mapping[str, str] = MappingProxyType(
     {
         "verdaca_start_analysis": "Get a defensible recommendation with cited tradeoffs "
         "for a strategic decision question.",
-        "verdaca_estimate_cost": "Estimate cost and depth before running a deliberation.",
+        "verdaca_estimate_cost": (
+            "Preview cost and depth before committing to a full recommendation."
+        ),
         "verdaca_get_result": (
-            "Retrieve the final recommendation and dissent frames for a session."
+            "Retrieve the recommendation and the dissenting positions captured during the session."
         ),
         "verdaca_list_sessions": "Browse prior decisions and their cited tradeoffs.",
-        "verdaca_get_artifact": "Fetch a specific artifact produced by a session.",
+        "verdaca_get_artifact": (
+            "Fetch a specific document or memo produced during a decision session."
+        ),
     }
 )
 
@@ -97,9 +104,37 @@ def analysis_result_to_payload(result: AnalysisResult) -> dict[str, Any]:
     }
 
 
+def session_handle_to_payload(session: SessionHandle) -> dict[str, str]:
+    """Convert a GatewayPort session handle to a JSON-serializable MCP payload."""
+
+    return {
+        "session_id": session.session_id,
+        "status": session.status,
+        "source_uri": session.source_uri,
+    }
+
+
+def artifact_ref_to_payload(artifact: ArtifactRef) -> dict[str, str | None]:
+    """Convert a GatewayPort artifact reference to a JSON-serializable MCP payload."""
+
+    return {
+        "artifact_id": artifact.artifact_id,
+        "session_id": artifact.session_id,
+        "kind": artifact.kind,
+        "uri": artifact.uri,
+        "title": artifact.title,
+    }
+
+
+def session_list_to_payload(sessions: Sequence[SessionHandle]) -> dict[str, Any]:
+    """Convert GatewayPort session handles to an MCP list payload."""
+
+    return {"sessions": [session_handle_to_payload(session) for session in sessions]}
+
+
 def _gateway_required(gateway: GatewayPort | None) -> GatewayPort:
     if gateway is None:
-        raise NotImplementedError("GatewayPort binding is provided by E1 integration")
+        raise RuntimeError("GatewayPort binding is required for MCP tools")
     return gateway
 
 
@@ -162,14 +197,13 @@ def register_tools(server: FastMCP, *, gateway: GatewayPort | None = None) -> No
 
     @server.tool(
         name="verdaca_get_result",
-        title="Get Result",
+        title="Get Recommendation",
         description=TOOL_DESCRIPTIONS["verdaca_get_result"],
         structured_output=True,
     )
     def verdaca_get_result(session_id: str) -> dict[str, str]:
-        raise NotImplementedError(
-            f"Result retrieval for {session_id!r} blocks on E1 GatewayPort resources wiring"
-        )
+        transcript = _gateway_required(gateway).get_session_transcript(session_id)
+        return {"session_id": session_id, "transcript": transcript}
 
     @server.tool(
         name="verdaca_list_sessions",
@@ -178,18 +212,16 @@ def register_tools(server: FastMCP, *, gateway: GatewayPort | None = None) -> No
         structured_output=True,
     )
     def verdaca_list_sessions(workspace_id: str | None = None) -> dict[str, Any]:
-        raise NotImplementedError(
-            f"Session listing for workspace {workspace_id!r} blocks on E1 "
-            "GatewayPort resources wiring"
+        return session_list_to_payload(
+            _gateway_required(gateway).list_sessions(workspace_id=workspace_id, limit=50)
         )
 
     @server.tool(
         name="verdaca_get_artifact",
-        title="Get Artifact",
+        title="Get Document",
         description=TOOL_DESCRIPTIONS["verdaca_get_artifact"],
         structured_output=True,
     )
-    def verdaca_get_artifact(session_id: str, artifact_id: str) -> dict[str, str]:
-        raise NotImplementedError(
-            f"Artifact retrieval for {session_id!r}/{artifact_id!r} blocks on E1 resources wiring"
-        )
+    def verdaca_get_artifact(session_id: str, artifact_id: str) -> dict[str, str | None]:
+        artifact = _gateway_required(gateway).get_artifact(session_id, artifact_id)
+        return artifact_ref_to_payload(artifact)
