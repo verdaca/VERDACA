@@ -51,6 +51,7 @@ class SessionFilter(VerdacaDTOMixin):
     skill_id: str | None = None
     time_window: TimeWindow | None = None
     status: SessionStatus | None = None
+    source_uri_prefix: str | None = None
 
 
 class ArtifactRef(VerdacaDTOMixin):

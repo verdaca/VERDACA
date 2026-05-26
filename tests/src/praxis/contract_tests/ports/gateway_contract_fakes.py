@@ -238,6 +238,7 @@ class CountingSqliteSessionIndex(SqliteSessionIndex):
         self.get_session_calls = 0
         self.get_artifact_calls = 0
         self.list_sessions_calls = 0
+        self.list_sessions_criteria: list[SessionFilter | None] = []
         super().__init__(db_path)
 
     def index_session(self, session_id: str, content: str) -> None:
@@ -261,6 +262,7 @@ class CountingSqliteSessionIndex(SqliteSessionIndex):
         criteria: SessionFilter | None = None,
     ) -> Sequence[SessionRecord]:
         self.list_sessions_calls += 1
+        self.list_sessions_criteria.append(criteria)
         return super().list_sessions(criteria)
 
 

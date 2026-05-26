@@ -46,3 +46,15 @@ def test_M_T_GW_SESSIONINDEX_BIND_01_uses_real_stage10_session_index(tmp_path) -
     assert isinstance(harness.session_index, CountingSqliteSessionIndex)
     assert harness.session_index.index_calls == 1
     assert harness.session_index.get_session(result.session.session_id) is not None
+
+
+def test_M_T_GATEWAY_READ_LIST_01_pushes_workspace_filter_to_session_index(tmp_path) -> None:
+    harness = make_gateway_harness(tmp_path)
+
+    harness.gateway.list_sessions(workspace_id="workspace-a")
+
+    assert harness.session_index.list_sessions_criteria[-1] is not None
+    assert (
+        harness.session_index.list_sessions_criteria[-1].source_uri_prefix
+        == "gateway://workspaces/workspace-a/"
+    )

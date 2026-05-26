@@ -8,7 +8,7 @@ import os
 from mcp.server.fastmcp import FastMCP
 
 from praxis.adapters.mcp_server.server import create_verdaca_mcp_server
-from praxis.kernel.gateway.policy import verify_bearer_token
+from praxis.kernel.gateway.policy import policy_health_check, verify_bearer_token
 from praxis.ports.gateway import GatewayPort
 
 DEFAULT_HOST = "127.0.0.1"
@@ -43,6 +43,7 @@ async def serve_http(*, gateway: GatewayPort | None = None) -> None:
 
 
 def main() -> None:
+    policy_health_check()
     asyncio.run(serve_http())
 
 

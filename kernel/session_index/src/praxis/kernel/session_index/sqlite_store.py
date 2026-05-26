@@ -19,7 +19,6 @@ from praxis.kernel.session_index.models import (
     SessionExcerpt,
     SessionFilter,
     SessionRecord,
-    SessionStatus,
     TelemetryEvent,
 )
 from praxis.kernel.session_index.port import SessionIndexPort
@@ -185,6 +184,9 @@ class SqliteSessionIndex(SessionIndexPort):
             if criteria.status is not None:
                 clauses.append("status = ?")
                 params.append(criteria.status)
+            if criteria.source_uri_prefix is not None:
+                clauses.append("source_uri LIKE ? || '%'")
+                params.append(criteria.source_uri_prefix)
             if criteria.time_window is not None:
                 self._require_aware(criteria.time_window.start)
                 self._require_aware(criteria.time_window.end)
@@ -321,7 +323,10 @@ class SqliteSessionIndex(SessionIndexPort):
         if start > end:
             raise self._violation("ordering")
 
-    def _violation(self, violation_class: Literal["type", "value", "invariant", "ordering"]) -> ContractViolation:
+    def _violation(
+        self,
+        violation_class: Literal["type", "value", "invariant", "ordering"],
+    ) -> ContractViolation:
         return ContractViolation(
             port_name=_PORT_NAME,
             correlation_id=_DEFAULT_CORRELATION_ID,

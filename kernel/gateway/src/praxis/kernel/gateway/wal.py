@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import sqlite3
+from contextlib import closing
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
@@ -45,7 +46,7 @@ class GatewayWalStore:
 
     def begin_attempt(self, idempotency_key: str) -> None:
         """Record that the gateway accepted an idempotent attempt."""
-        with self._connect() as conn:
+        with closing(self._connect()) as conn, conn:
             conn.execute(
                 """
                 INSERT OR IGNORE INTO gateway_idempotency (
@@ -58,7 +59,7 @@ class GatewayWalStore:
 
     def get_result(self, idempotency_key: str) -> AnalysisResult | None:
         """Return a completed cached result, if one exists."""
-        with self._connect() as conn:
+        with closing(self._connect()) as conn, conn:
             row = conn.execute(
                 """
                 SELECT result_json
@@ -73,7 +74,7 @@ class GatewayWalStore:
 
     def complete_attempt(self, idempotency_key: str, result: AnalysisResult) -> None:
         """Persist the canonical result for future idempotent replays."""
-        with self._connect() as conn:
+        with closing(self._connect()) as conn, conn:
             conn.execute(
                 """
                 INSERT INTO gateway_idempotency (
@@ -88,7 +89,7 @@ class GatewayWalStore:
             )
 
     def _initialize(self) -> None:
-        with self._connect() as conn:
+        with closing(self._connect()) as conn, conn:
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS gateway_idempotency (

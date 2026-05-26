@@ -12,7 +12,7 @@ from praxis.contract_tests.ports.gateway_contract_fakes import (
     make_intent,
 )
 from praxis.kernel.gateway import GatewayPolicy
-from praxis.kernel.gateway.policy import verify_bearer_token
+from praxis.kernel.gateway.policy import policy_health_check, verify_bearer_token
 from praxis.ports.gateway_errors import GatewayCtxError
 
 
@@ -80,3 +80,10 @@ def test_deployment_bearer_token_outer_gate(monkeypatch) -> None:
     assert verify_bearer_token("Bearer expected-token") is True
     assert verify_bearer_token("Bearer wrong-token") is False
     assert verify_bearer_token(None) is False
+
+
+def test_policy_health_check_warns_when_bearer_token_unset(monkeypatch, caplog) -> None:
+    monkeypatch.delenv("VERDACA_GATEWAY_BEARER_TOKEN", raising=False)
+
+    assert policy_health_check() is False
+    assert "auth misconfigured - all requests will reject" in caplog.text

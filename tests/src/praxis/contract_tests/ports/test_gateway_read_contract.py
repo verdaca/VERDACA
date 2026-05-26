@@ -87,6 +87,11 @@ def test_M_T_GATEWAY_READ_LIST_01_delegates_with_workspace_filter_and_limit(tmp_
     }
     assert len(limited_handles) == 1
     assert len(all_handles) == 3
+    assert harness.session_index.list_sessions_criteria[0] is not None
+    assert (
+        harness.session_index.list_sessions_criteria[0].source_uri_prefix
+        == "gateway://workspaces/workspace-1/"
+    )
     assert all(
         handle.source_uri.startswith("gateway://workspaces/workspace-1/")
         for handle in workspace_handles

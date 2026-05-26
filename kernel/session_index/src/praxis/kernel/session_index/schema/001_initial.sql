@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS skill_invocations (
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_status ON sessions(status);
 CREATE INDEX IF NOT EXISTS idx_sessions_created_at ON sessions(created_at);
+CREATE INDEX IF NOT EXISTS idx_sessions_source_uri ON sessions(source_uri);
 CREATE INDEX IF NOT EXISTS idx_skill_invocations_skill_id ON skill_invocations(skill_id);
 CREATE INDEX IF NOT EXISTS idx_skill_invocations_observed_at ON skill_invocations(observed_at);
 

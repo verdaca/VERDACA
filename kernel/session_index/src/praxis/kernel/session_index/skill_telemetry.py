@@ -145,7 +145,10 @@ class SqliteSkillTelemetry(SkillTelemetryPort):
         if start > end:
             raise self._violation("ordering")
 
-    def _violation(self, violation_class: Literal["type", "value", "invariant", "ordering"]) -> ContractViolation:
+    def _violation(
+        self,
+        violation_class: Literal["type", "value", "invariant", "ordering"],
+    ) -> ContractViolation:
         return ContractViolation(
             port_name=_PORT_NAME,
             correlation_id=_DEFAULT_CORRELATION_ID,

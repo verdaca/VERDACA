@@ -39,6 +39,9 @@ class _ImmutableClaims(Mapping[str, str]):
     def __len__(self) -> int:
         return len(self._claims)
 
+    def __repr__(self) -> str:
+        return f"<_ImmutableClaims with {len(self._claims)} redacted>"
+
     def __deepcopy__(self, memo: object) -> "_ImmutableClaims":
         return _ImmutableClaims(self._claims)
 

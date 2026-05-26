@@ -52,7 +52,7 @@ def test_M_T_GATEWAY_EXEC_ERROR_01_maps_downstream_failures(tmp_path) -> None:
     with pytest.raises(GatewayCtxError) as exc_info:
         harness.gateway.execute(make_intent(), make_ctx())
 
-    assert exc_info.value.context_field == "execute:RuntimeError"
+    assert exc_info.value.context_field == "execute:builtins.RuntimeError"
     assert exc_info.value.port_name == "gateway"
 
 

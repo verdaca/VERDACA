@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from praxis.adapters.mcp_server import http
 from praxis.adapters.mcp_server.http import (
     create_mcp_http_app,
     create_mcp_http_server,
@@ -28,6 +29,27 @@ def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_uses_e1_policy(
 
     assert verify_bearer_authorization("Bearer test-token") is True
     assert verify_bearer_authorization("Bearer wrong-token") is False
+
+
+def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_main_runs_policy_health_check(
+    monkeypatch,
+) -> None:
+    calls: list[str] = []
+
+    def fake_policy_health_check() -> bool:
+        calls.append("health")
+        return True
+
+    def fake_asyncio_run(coro) -> None:
+        calls.append("run")
+        coro.close()
+
+    monkeypatch.setattr(http, "policy_health_check", fake_policy_health_check)
+    monkeypatch.setattr(http.asyncio, "run", fake_asyncio_run)
+
+    http.main()
+
+    assert calls == ["health", "run"]
 
 
 def test_M_T_MCP_TRANSPORT_STDIO_TOOL_LIST_01_stdio_server_has_tools() -> None:

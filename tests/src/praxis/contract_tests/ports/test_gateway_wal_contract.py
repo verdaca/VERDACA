@@ -5,15 +5,21 @@ from __future__ import annotations
 import subprocess
 import sys
 import textwrap
+from decimal import Decimal
 
 from praxis.contract_tests.ports.gateway_contract_fakes import (
     make_ctx,
     make_gateway_harness,
     make_intent,
 )
+from praxis.kernel.gateway import GatewayWalConfig, GatewayWalStore
+from praxis.ports.gateway_dto import AnalysisResult, ArtifactRef, SessionHandle
 
 
-def test_M_T_GW_WAL_CRASH_REPLAY_01_recovers_abandoned_attempt(tmp_path) -> None:
+def test_M_T_GW_WAL_RECOVERS_FROM_ORPHANED_IN_PROGRESS_01_recovers_attempt(tmp_path) -> None:
+    # Binding: orphaned in_progress WAL rows recover to one completed result on replay.
+    # This does not cover mid-execute process death after LLM cost is burned; that risk
+    # is routed to STAGE-11-DEBT-WAL-MID-EXEC-CRASH-01.
     child_script = tmp_path / "begin_attempt_then_wait.py"
     wal_path = tmp_path / "gateway-idempotency.sqlite3"
     child_script.write_text(
@@ -58,3 +64,39 @@ def test_M_T_GW_WAL_CRASH_REPLAY_01_recovers_abandoned_attempt(tmp_path) -> None
     assert replay_harness.session_index.index_calls == 0
     assert len(replay_harness.llm.calls) == 0
     assert len(harness.session_index.list_sessions()) == 1
+
+
+def test_gateway_wal_store_closes_sqlite_connections_after_repeated_access(tmp_path) -> None:
+    wal_path = tmp_path / "gateway-idempotency.sqlite3"
+
+    for index in range(100):
+        store = GatewayWalStore(GatewayWalConfig(database_path=wal_path))
+        idempotency_key = f"idem-{index}"
+        store.begin_attempt(idempotency_key)
+        store.complete_attempt(idempotency_key, _wal_result(f"session-{index}"))
+        assert store.get_result(idempotency_key) is not None
+
+    for suffix in ("", "-wal", "-shm"):
+        wal_path.with_name(f"{wal_path.name}{suffix}").unlink(missing_ok=True)
+
+
+def _wal_result(session_id: str) -> AnalysisResult:
+    return AnalysisResult(
+        session=SessionHandle(
+            session_id=session_id,
+            status="completed",
+            source_uri=f"gateway://workspaces/workspace-1/sessions/{session_id}",
+        ),
+        recommendation="Use the enterprise buyer path.",
+        cited_tradeoffs=("cost_meter_recorded",),
+        artifacts=(
+            ArtifactRef(
+                artifact_id=f"{session_id}-summary",
+                session_id=session_id,
+                kind="summary",
+                uri=f"session://{session_id}/artifacts/{session_id}-summary",
+                title="Gateway analysis summary",
+            ),
+        ),
+        cost_usd=Decimal("0.01"),
+    )

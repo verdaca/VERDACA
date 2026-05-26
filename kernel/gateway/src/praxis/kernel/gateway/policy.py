@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hmac
+import logging
 import os
 from dataclasses import dataclass
 from decimal import Decimal
@@ -12,6 +13,7 @@ from praxis.ports.gateway_dto import ChannelContext, StartAnalysisRequest
 
 _BEARER_PREFIX = "Bearer "
 _DEPLOYMENT_TOKEN_ENV = "VERDACA_GATEWAY_BEARER_TOKEN"
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -41,6 +43,14 @@ def verify_bearer_token(token: str | None) -> bool:
 
     candidate = token.removeprefix(_BEARER_PREFIX)
     return hmac.compare_digest(candidate, expected)
+
+
+def policy_health_check() -> bool:
+    """Warn at startup when deployment bearer auth is not configured."""
+    if os.environ.get(_DEPLOYMENT_TOKEN_ENV) is None:
+        _LOGGER.warning("auth misconfigured - all requests will reject")
+        return False
+    return True
 
 
 def evaluate_user_allowlist(
@@ -134,5 +144,6 @@ __all__ = [
     "evaluate_gateway_policy",
     "evaluate_safety",
     "evaluate_user_allowlist",
+    "policy_health_check",
     "verify_bearer_token",
 ]

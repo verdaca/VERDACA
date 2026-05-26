@@ -14,7 +14,7 @@ from typing import ClassVar, Coroutine, TypeVar
 from praxis.kernel.gateway.dial import DIAL_LITELLM_MODEL, DIAL_LITELLM_PROVIDER
 from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
 from praxis.kernel.gateway.wal import AsyncSessionIndex, GatewayWalStore
-from praxis.kernel.session_index.models import SessionRecord
+from praxis.kernel.session_index.models import SessionFilter, SessionRecord
 from praxis.kernel.session_index.port import SessionIndexPort
 from praxis.ports.common import Message
 from praxis.ports.compaction import CompactionPort, CompactionRequest
@@ -56,9 +56,10 @@ class VerdacaGatewayService:
 
     def execute(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AnalysisResult:
         """Execute one channel-neutral analysis request."""
+        now = datetime.now(timezone.utc)
         policy_decision = evaluate_gateway_policy(intent, ctx, self.policy, self.cost_meter)
         if not policy_decision.allowed:
-            raise self._policy_error(ctx, policy_decision.reason)
+            raise self._policy_error(ctx, policy_decision.reason, now)
 
         cached = self._cached_result(intent.idempotency_key)
         if cached is not None:
@@ -131,7 +132,7 @@ class VerdacaGatewayService:
                     model=DIAL_LITELLM_MODEL,
                     input_tokens=llm_response.input_tokens,
                     output_tokens=llm_response.output_tokens,
-                    occurred_at=datetime.now(timezone.utc),
+                    occurred_at=now,
                     scope=BudgetScope(
                         schema_version=1,
                         correlation_id=ctx.request_id,
@@ -141,10 +142,10 @@ class VerdacaGatewayService:
                     ),
                 )
             )
-            result = self._build_result(intent, ctx, llm_response.content, ledger.cost_usd)
+            result = self._build_result(intent, ctx, llm_response.content, ledger.cost_usd, now)
             self.session_index.index_session(
                 result.session.session_id,
-                self._session_index_content(intent, ctx, result),
+                self._session_index_content(intent, ctx, result, now),
             )
             self.memory.store(
                 MemoryEntry(
@@ -161,7 +162,7 @@ class VerdacaGatewayService:
                 )
             )
         except Exception as exc:
-            raise self._gateway_error(ctx, "execute", exc) from exc
+            raise self._gateway_error(ctx, "execute", exc, now) from exc
 
         if self.wal_store is not None:
             self.wal_store.complete_attempt(intent.idempotency_key, result)
@@ -169,7 +170,8 @@ class VerdacaGatewayService:
 
     def get_session_summary(self, session_id: str) -> str:
         """Return a compact synopsis for a persisted session."""
-        record = self._read_session_record(session_id)
+        now = datetime.now(timezone.utc)
+        record = self._read_session_record(session_id, now)
         payload = {
             "session_id": record.session_id,
             "status": record.status,
@@ -181,7 +183,8 @@ class VerdacaGatewayService:
 
     def get_session_transcript(self, session_id: str) -> str:
         """Return the full SessionIndex transcript payload for a persisted session."""
-        record = self._read_session_record(session_id)
+        now = datetime.now(timezone.utc)
+        record = self._read_session_record(session_id, now)
         payload = {
             "session_id": record.session_id,
             "user_id": record.user_id,
@@ -197,11 +200,12 @@ class VerdacaGatewayService:
 
     def get_artifact(self, session_id: str, artifact_id: str) -> ArtifactRef:
         """Return a gateway-visible artifact reference for a persisted session."""
+        now = datetime.now(timezone.utc)
         artifact = self._run_session_index_read(
             AsyncSessionIndex(self.session_index).get_artifact(session_id, artifact_id)
         )
         if artifact is None:
-            raise self._read_error(session_id, f"artifact_missing:{artifact_id}")
+            raise self._read_error(session_id, f"artifact_missing:{artifact_id}", now)
         return ArtifactRef(
             artifact_id=artifact.id,
             session_id=session_id,
@@ -220,8 +224,15 @@ class VerdacaGatewayService:
         if limit <= 0:
             return ()
 
+        criteria = SessionFilter(
+            schema_version=1,
+            correlation_id="gateway:list_sessions",
+            source_uri_prefix=(
+                f"gateway://workspaces/{workspace_id}/" if workspace_id is not None else None
+            ),
+        )
         records = self._run_session_index_read(
-            AsyncSessionIndex(self.session_index).list_sessions()
+            AsyncSessionIndex(self.session_index).list_sessions(criteria)
         )
         handles = [
             SessionHandle(
@@ -230,7 +241,6 @@ class VerdacaGatewayService:
                 source_uri=record.source_uri or "",
             )
             for record in records
-            if self._matches_workspace(record, workspace_id)
         ]
         return tuple(handles[: min(limit, 50)])
 
@@ -239,12 +249,12 @@ class VerdacaGatewayService:
             return None
         return self.wal_store.get_result(idempotency_key)
 
-    def _read_session_record(self, session_id: str) -> SessionRecord:
+    def _read_session_record(self, session_id: str, now: datetime) -> SessionRecord:
         record = self._run_session_index_read(
             AsyncSessionIndex(self.session_index).get_session(session_id)
         )
         if record is None:
-            raise self._read_error(session_id, "session_missing")
+            raise self._read_error(session_id, "session_missing", now)
         return record
 
     @staticmethod
@@ -262,6 +272,7 @@ class VerdacaGatewayService:
         ctx: ChannelContext,
         recommendation: str,
         cost_usd: Decimal,
+        now: datetime,
     ) -> AnalysisResult:
         session_id = self._session_id(intent)
         artifact = ArtifactRef(
@@ -288,6 +299,7 @@ class VerdacaGatewayService:
         intent: StartAnalysisRequest,
         ctx: ChannelContext,
         result: AnalysisResult,
+        now: datetime,
     ) -> str:
         payload = {
             "schema_version": 1,
@@ -296,8 +308,8 @@ class VerdacaGatewayService:
             "session_id": result.session.session_id,
             "user_id": intent.requester_user_id,
             "title": intent.question[:80],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": now.isoformat(),
+            "updated_at": now.isoformat(),
             "status": result.session.status,
             "skill_ids": ["stage11-gateway"],
             "artifact_ids": [artifact.artifact_id for artifact in result.artifacts],
@@ -320,37 +332,44 @@ class VerdacaGatewayService:
         )
 
     @staticmethod
-    def _matches_workspace(record: SessionRecord, workspace_id: str | None) -> bool:
-        if workspace_id is None:
-            return True
-        return (record.source_uri or "").startswith(f"gateway://workspaces/{workspace_id}/")
-
-    @staticmethod
-    def _gateway_error(ctx: ChannelContext, context_field: str, exc: Exception) -> GatewayCtxError:
+    def _gateway_error(
+        ctx: ChannelContext,
+        context_field: str,
+        exc: Exception,
+        occurred_at: datetime,
+    ) -> GatewayCtxError:
         return GatewayCtxError(
             port_name=_GATEWAY_PORT_NAME,
             correlation_id=ctx.request_id,
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=occurred_at,
             violation_class="invariant",
-            context_field=f"{context_field}:{type(exc).__name__}",
+            context_field=f"{context_field}:{type(exc).__module__}.{type(exc).__name__}",
         )
 
     @staticmethod
-    def _policy_error(ctx: ChannelContext, reason: str | None) -> GatewayCtxError:
+    def _policy_error(
+        ctx: ChannelContext,
+        reason: str | None,
+        occurred_at: datetime,
+    ) -> GatewayCtxError:
         return GatewayCtxError(
             port_name=_GATEWAY_PORT_NAME,
             correlation_id=ctx.request_id,
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=occurred_at,
             violation_class="invariant",
             context_field=f"policy:{reason or 'rejected'}",
         )
 
     @staticmethod
-    def _read_error(session_id: str, context_field: str) -> GatewayCtxError:
+    def _read_error(
+        session_id: str,
+        context_field: str,
+        occurred_at: datetime,
+    ) -> GatewayCtxError:
         return GatewayCtxError(
             port_name=_GATEWAY_PORT_NAME,
             correlation_id=session_id,
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=occurred_at,
             violation_class="invariant",
             context_field=f"read:{context_field}",
         )

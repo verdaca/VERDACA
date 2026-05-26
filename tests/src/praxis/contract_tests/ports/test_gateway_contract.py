@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 from decimal import Decimal
 
 from praxis.ports.gateway import ChannelAdapterPort, GatewayPort
@@ -66,3 +67,27 @@ def test_M_T_GW_CHANNELCTX_ALLOWLIST_DRIFT_01_runtime_asdict_keys() -> None:
     )
 
     assert frozenset(dataclasses.asdict(ctx).keys()) == FROZEN_FIELD_ALLOWLIST
+
+
+def test_M_T_GW_CHANNELCTX_PII_REDACTION_VALUES_01_asdict_paths_redact_claims() -> None:
+    ctx = ChannelContext(
+        caller_id="caller-public",
+        caller_kind=CallerKind.HUMAN,
+        auth_claims=AuthClaims(
+            _claims={"sub": "user-1", "email": "user@example.test"},
+        ),
+        channel=ChannelKind.CLI,
+        channel_session_id="cli-session-1",
+        request_id="req-1",
+    )
+
+    rendered_paths = (
+        repr(ctx),
+        str(ctx),
+        json.dumps(dataclasses.asdict(ctx), default=str, sort_keys=True),
+    )
+
+    for rendered in rendered_paths:
+        assert "user-1" not in rendered
+        assert "user@example.test" not in rendered
+        assert "redacted" in rendered
