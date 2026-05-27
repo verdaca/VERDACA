@@ -21,6 +21,15 @@ _REQUIRED_CLAIMS: frozenset[str] = frozenset({"sub", "iss", "aud", "iat", "exp"}
 class AuthClaims:
     _claims: Mapping[str, str]
 
+    def get(self, key: str) -> str | None:
+        return self._claims.get(key)
+
+    def require(self, key: str) -> str:
+        try:
+            return self._claims[key]
+        except KeyError:
+            raise ClaimsValidationError([key]) from None
+
 
 def validate_claims(raw: Mapping[str, str]) -> AuthClaims:
     """Standalone validator for H#1.5 frozen auth-claims shape."""

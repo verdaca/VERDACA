@@ -8,7 +8,7 @@ import secrets
 from dataclasses import dataclass
 from decimal import Decimal
 
-from praxis.kernel.auth import AuthClaims, JwksCache, JwtVerifier
+from praxis.kernel.auth import AuthClaims, JoseError, JwksCache, JwtVerifier
 from praxis.ports.cost_meter import BudgetScope, BudgetStatus, CostMeterPort
 from praxis.ports.gateway import GatewayPort
 from praxis.ports.gateway_dto import AnalysisResult, ChannelContext, StartAnalysisRequest
@@ -21,6 +21,10 @@ _LOGGER = logging.getLogger(__name__)
 
 class UnknownTenantError(ValueError):
     """Raised when no IdP issuer is configured for a tenant."""
+
+
+class InvalidBearerError(ValueError):
+    """Raised when the gateway receives an empty bearer token."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -38,6 +42,8 @@ class GatewayPolicy:
 
     async def authenticate(self, bearer_token: str, tenant_id: str) -> AuthClaims:
         """Validate a tenant-scoped bearer token through kernel auth primitives."""
+        if not bearer_token or bearer_token.strip() == "":
+            raise InvalidBearerError("Bearer token is empty or missing")
         if self.jwks_cache is None or self.expected_audience is None:
             raise RuntimeError("GatewayPolicy auth dependencies are not configured")
         issuer = (self.tenant_idp_map or {}).get(tenant_id)
@@ -48,9 +54,7 @@ class GatewayPolicy:
         verifier = JwtVerifier(metadata, jwks)
         try:
             return verifier.decode(bearer_token, audience=self.expected_audience)
-        except Exception as exc:
-            if not _is_jose_error(exc):
-                raise
+        except JoseError:
             metadata, jwks = await self.jwks_cache.invalidate(issuer)
             verifier = JwtVerifier(metadata, jwks)
             return verifier.decode(bearer_token, audience=self.expected_audience)
@@ -59,7 +63,7 @@ class GatewayPolicy:
         """Enforce virtual-key budget for the authenticated subject."""
         if self.virtual_keys is None:
             raise RuntimeError("GatewayPolicy virtual-key dependency is not configured")
-        await self.virtual_keys.check_budget(claims._claims["sub"])
+        await self.virtual_keys.check_budget(claims.require("sub"))
 
     async def execute(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AnalysisResult:
         """Authenticate, enforce virtual-key budget, then delegate to GatewayPort."""
@@ -169,12 +173,6 @@ def evaluate_gateway_policy(
     return PolicyDecision(allowed=True)
 
 
-def _is_jose_error(exc: Exception) -> bool:
-    module = type(exc).__module__.lower()
-    name = type(exc).__name__
-    return "jose" in module or name.endswith("JoseError")
-
-
 def _evaluate_scope_cap(
     status: BudgetStatus,
     cap_usd: Decimal | None,
@@ -189,6 +187,7 @@ def _evaluate_scope_cap(
 
 __all__ = [
     "GatewayPolicy",
+    "InvalidBearerError",
     "PolicyDecision",
     "UnknownTenantError",
     "evaluate_budget_cap",

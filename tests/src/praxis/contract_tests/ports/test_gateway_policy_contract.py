@@ -13,12 +13,14 @@ from praxis.contract_tests.ports.gateway_contract_fakes import (
     make_gateway_harness,
     make_intent,
 )
-from praxis.kernel.auth import AuthClaims, OidcMetadata
+from praxis.kernel.auth import AuthClaims, JoseError, OidcMetadata
 from praxis.kernel.gateway import GatewayPolicy
-from praxis.kernel.gateway.policy import policy_health_check, verify_bearer_token
+from praxis.kernel.gateway.policy import (
+    InvalidBearerError,
+    policy_health_check,
+    verify_bearer_token,
+)
 from praxis.ports.gateway_errors import GatewayCtxError
-
-JoseError = type("JoseError", (Exception,), {"__module__": "authlib.jose.errors"})
 
 
 class _FakeJwksCache:
@@ -151,7 +153,23 @@ async def test_M_T_AUTH_POLICY_RETRY_ON_JOSE_ERROR_01_invalidates_jwks_once(
 
     claims = await policy.authenticate("bearer-token", "tenant-1")
 
-    assert claims._claims["sub"] == "user-1"
+    assert claims.require("sub") == "user-1"
     assert jwks_cache.get_calls == ["https://issuer.example.invalid"]
     assert jwks_cache.invalidate_calls == ["https://issuer.example.invalid"]
     assert _RetryVerifier.attempts == 2
+
+
+@pytest.mark.asyncio
+async def test_M_T_AUTH_POLICY_EMPTY_BEARER_01_rejects_before_verifier() -> None:
+    jwks_cache = _FakeJwksCache()
+    policy = GatewayPolicy(
+        jwks_cache=jwks_cache,
+        tenant_idp_map={"tenant-1": "https://issuer.example.invalid"},
+        expected_audience="api://verdaca",
+    )
+
+    with pytest.raises(InvalidBearerError, match="empty or missing"):
+        await policy.authenticate("   ", "tenant-1")
+
+    assert jwks_cache.get_calls == []
+    assert jwks_cache.invalidate_calls == []

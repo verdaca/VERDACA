@@ -36,7 +36,7 @@ def test_M_T_AUTH_CLAIMS_SCHEMA_01_missing_required_claim_raises(
     with pytest.raises(ClaimsValidationError) as exc_info:
         validate_claims(raw)
 
-    assert exc_info.value.missing == [missing_claim]
+    assert set(exc_info.value.missing) == {missing_claim}
 
 
 def test_M_T_AUTH_CLAIMS_EXTRA_FIELDS_PASS_01_unknown_claims_are_preserved() -> None:
@@ -45,4 +45,4 @@ def test_M_T_AUTH_CLAIMS_EXTRA_FIELDS_PASS_01_unknown_claims_are_preserved() -> 
 
     claims = validate_claims(raw)
 
-    assert claims._claims["stage12_unknown_claim"] == "opaque"
+    assert claims.require("stage12_unknown_claim") == "opaque"

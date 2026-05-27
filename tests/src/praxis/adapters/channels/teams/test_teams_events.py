@@ -46,12 +46,17 @@ def test_M_T_TEAMS_EVENT_DISPATCH_UNKNOWN_01_unknown_activity_is_noop() -> None:
 
 
 def test_M_T_TEAMS_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_tenant() -> None:
-    event = parse_activity(_activity(), claims=_claims())
+    event = parse_activity(
+        _activity(),
+        claims=_claims(),
+        authorization_header="Bearer teams-token-1",
+    )
 
     assert event is not None
     assert event.ctx.channel is ChannelKind.TEAMS
     assert event.ctx.caller_id == "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
     assert event.ctx.channel_session_id == "19:conversation@example.invalid"
+    assert event.ctx.rate_limit_token == "teams-token-1"
     assert event.intent.metadata is not None
     assert event.intent.metadata["tenant_id"] == "11111111-2222-4333-8444-555555555555"
     assert event.intent.metadata["channel_id"] == "msteams"

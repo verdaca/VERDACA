@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from authlib.jose import JsonWebToken  # type: ignore[import-untyped]
+from authlib.jose.errors import JoseError
 
 from praxis.kernel.auth.claims import AuthClaims, validate_claims
 from praxis.kernel.auth.oidc import OidcMetadata
@@ -41,4 +42,4 @@ class JwtVerifier:
         return validate_claims(raw)
 
 
-__all__ = ["JwtVerifier", "UnsupportedAlgorithmError"]
+__all__ = ["JoseError", "JwtVerifier", "UnsupportedAlgorithmError"]

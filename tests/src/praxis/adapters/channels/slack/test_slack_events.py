@@ -45,12 +45,17 @@ def test_M_T_SLACK_EVENT_DISPATCH_UNKNOWN_01_unknown_event_is_noop() -> None:
 
 
 def test_M_T_SLACK_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_workspace() -> None:
-    event = parse_event(_envelope(), claims=_claims())
+    event = parse_event(
+        _envelope(),
+        claims=_claims(),
+        authorization_header="Bearer slack-token-1",
+    )
 
     assert event is not None
     assert event.ctx.channel is ChannelKind.SLACK
     assert event.ctx.caller_id == "U123STAGE12"
     assert event.ctx.channel_session_id == "1770000000.000099"
+    assert event.ctx.rate_limit_token == "slack-token-1"
     assert event.intent.metadata is not None
     assert event.intent.metadata["channel_id"] == "C123STAGE12"
     assert event.intent.metadata["team_id"] == "T123STAGE12"

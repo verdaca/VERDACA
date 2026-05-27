@@ -18,18 +18,6 @@ ISSUER = "https://login.microsoftonline.com/stage12-tenant/v2.0"
 JWKS_URI = "https://login.microsoftonline.com/stage12-tenant/discovery/v2.0/keys"
 
 
-class _RecordingJsonWebToken:
-    constructed_algorithms: list[list[str]] = []
-
-    def __init__(
-        self,
-        algorithms: list[str],
-        private_headers: dict[str, Any] | None = None,
-    ) -> None:
-        self.private_headers = private_headers
-        self.constructed_algorithms.append(list(algorithms))
-
-
 def _metadata(algorithms: list[str]) -> OidcMetadata:
     return OidcMetadata(
         issuer=ISSUER,
@@ -61,15 +49,25 @@ def test_M_T_AUTH_JWT_ALG_PIN_01_filters_or_rejects_unsafe_algorithms(
     expected_safe: list[str] | None,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    _RecordingJsonWebToken.constructed_algorithms = []
+    constructed_algorithms: list[list[str]] = []
+
+    class _RecordingJsonWebToken:
+        def __init__(
+            self,
+            algorithms: list[str],
+            private_headers: dict[str, Any] | None = None,
+        ) -> None:
+            self.private_headers = private_headers
+            constructed_algorithms.append(list(algorithms))
+
     monkeypatch.setattr(jwt_module, "JsonWebToken", _RecordingJsonWebToken)
 
     if expected_safe is None:
         with pytest.raises(UnsupportedAlgorithmError):
             JwtVerifier(_metadata(algorithms), jwks={"keys": []})
-        assert _RecordingJsonWebToken.constructed_algorithms == []
+        assert constructed_algorithms == []
         return
 
     JwtVerifier(_metadata(algorithms), jwks={"keys": []})
 
-    assert _RecordingJsonWebToken.constructed_algorithms == [expected_safe]
+    assert constructed_algorithms == [expected_safe]
