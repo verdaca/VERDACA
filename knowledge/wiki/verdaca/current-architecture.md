@@ -1,6 +1,6 @@
 # Verdaca — What Is Actually Built
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-24 (Stage 10 RATIFIED via merge `8ae4f87`) | **HEAD (local main):** `8ae4f87` (Stage 10 RATIFIED merge) | **origin/main HEAD:** `e9c0643` (local 5 commits ahead via Stage 10 RATIFIED merge — push pending team-lead authorization); Stage 10 SessionIndex + SkillTelemetry data-plane now in `main` via merge of `da47d67` (close memo) + `3d576a9` (VOC gate marker) + `d2b5670` (Stage 10 impl)
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-26 (Stage 11 RATIFIED on local-only branch `stage-11.0-mcp-gateway` @ `e0aade3`; Stage 12 OPEN — 7 gates) | **HEAD (working branch):** `stage-11.0-mcp-gateway @ e0aade3` (Path A LOCAL-ONLY, never pushed to origin; 20 commits from `a11aa67`, base `f181a7e`) | **local main HEAD:** `f181a7e` (Stage 10 A7-override close, 2026-05-24) | **origin/main HEAD:** `f181a7e` (in sync; 0 ahead) | Stage 11 = Channel-Neutral MCP Gateway atop ratified Stage 10 SessionIndex data-plane
 
 ---
 
@@ -35,6 +35,9 @@ ports/                    Protocol definitions
     cost_meter.py         ✅ COMPLETE (9.4.4) — 7 DTOs (CostRecord, CostSummary, CostQuery, BillingEvent, UsageReport, ThrottleSignal, BudgetAlert)
     llm_proxy.py          ✅ COMPLETE (9.4.5) — 4 DTOs + Message sibling + 2 errors; LLMProxyPort Protocol
     compaction.py         ✅ COMPLETE (9.4.6) — 3 DTOs (CompactionRequest, CompactionResult, CompactionEstimate) + 3 errors (TokenBudgetUnreachable, PreservedSpanEvicted, DeterminismViolation); CompactionPort Protocol; v0.2.6 — no StrategyDowngrade (downgrade-as-return via CompactionResult.strategy_applied); compute_determinism_hash content-derived
+    gateway.py            ✅ COMPLETE (Stage 11) — GatewayPort + ChannelAdapterPort Protocols; canonical import path `praxis.ports.gateway` ONLY (Winston #2); no re-exports via kernel.gateway
+    gateway_dto.py        ✅ COMPLETE (Stage 11) — ChannelContext (frozen, FROZEN_FIELD_ALLOWLIST preserved across REFREEZE-01/02), AuthClaims, CallerKind, ChannelKind {CLI, TEAMS, SLACK, CLAUDE_DESKTOP} (4 MVP adapters per Winston #1), StartAnalysisRequest, AnalysisResult, SessionHandle, ArtifactRef
+    gateway_errors.py     ✅ COMPLETE (Stage 11) — GatewayCtxError, AuthClaimsAccessError
     common.py             Shared DTOs (Message sibling-add at 9.4.5 A.2)
 
 adapters/                 Concrete adapter implementations
@@ -46,6 +49,7 @@ adapters/                 Concrete adapter implementations
   litellm/                ✅ COMPLETE (9.4.5) — LiteLLM PyPI library adapter (litellm==1.83.14 SHA-pinned); 7 M-T-LLM-*; ADR-9.2-V5 v0.6; sole LLMProxyPort substrate (Docker sidecar retired via H2-falsification); DIAL api_base routing landed at Phase 0 P0.3 `40dc556`
   in_tree_compaction_stub/ ✅ COMPLETE (9.4.6) — 5 files, permanent CI fallback; supports `lossless` + `lossy_eviction` (downgrades `lossy_summary`); `UPSTREAM_KIND="in_tree"`
   llmlingua/              ✅ COMPLETE (9.4.6) — LLMLingua PyPI library adapter (llmlingua==0.2.2 SHA-pinned, MIT); wraps `PromptCompressor`; substrate-truth probe PASS-DEGRADED (hard-budget emulated; determinism via hardcoded seed=42); ADR-9.2-V6 v0.7
+  mcp_server/             ✅ COMPLETE (Stage 11) — FastMCP-backed inbound channel adapter; server.py, http.py, stdio.py, tools.py, resources.py, prompts.py, transport.py; 5 tools + 5 resources + 1 prompt + 2 transports (stdio + Streamable HTTP, stateless_http=True PINNED); only Claude-Desktop ChannelAdapter LIVE (Teams/Slack/CLI deferred to Stage 12); adapter-local Protocol `MCPTransportPort` (NOT in praxis.ports layer)
 
 tests/                    20 files — Contract test catalog
   src/praxis/contract_tests/ports/
@@ -56,6 +60,11 @@ tests/                    20 files — Contract test catalog
     test_llm_proxy_contract.py          7 M-T-LLM-* (single-adapter post H2-falsification)
     test_compaction_contract.py         14 M-T-COMP-* (parametrized {in-tree stub, LLMLingua}; OD-2 inverse-downgrade asymmetry coverage; 3 bearers on no_waiver allow-list)
     test_no_waiver_inventory.py         Stage-9 enforcer (added 9.9 `ef401a2`, un-skipped at 9.6 `3e26f48`); STAGE9_NO_WAIVER_ALLOWLIST frozenset cardinality=9
+    test_gateway_contract.py            ✅ NEW (Stage 11) — GatewayPort + ChannelAdapterPort contract tests
+    test_mcp_*.py                       ✅ NEW (Stage 11) — JSON-RPC golden-replay, stdio handshake, port handshake, ChannelCtx PII redaction, SessionIndex bind (38 MAC-Ts Stage 11 delta; 208 contract tests GREEN + 8 skipped env-gated DIAL live + others)
+
+tests/reference/
+  spike-mcp-server-snapshot-d93f71a/    ✅ NEW (Stage 11) — CAI spike snapshot, frozen reference, non-importable per import-linter contract `spike-snapshot-not-importable`
 
 kernel/                   2,802 files — Original implementation (still active)
   compression/src/praxis/kernel/compression/
@@ -69,6 +78,8 @@ kernel/                   2,802 files — Original implementation (still active)
   runtime/                16 BMAD agent loader + spawner + MCP adapter; repo-root pathwalk fixed at 9.5 `e7bd77d` (3 files via `git rev-parse --show-toplevel` + assert sentinels)
   pi-mono/                Cost tracker
   studio/                 Studio workflow template
+  gateway/                ✅ COMPLETE (Stage 11) — port.py, models.py, service.py (VerdacaGatewayService composes LLMProxy + Memory + Cost + Compaction + SessionIndex ports), execution.py, policy.py (MVP bearer token + user allow-list + per-user budget cap + safety; TODO STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 → Stage 12 E2); WAL idempotency store + AsyncSessionIndex wrapper
+  session_index/          ✅ COMPLETE (Stage 10) — port.py (SessionIndexPort + SkillTelemetryPort Protocols — co-located here, NOT in ports/ layer), models.py, sqlite_store.py, skill_telemetry.py, schema/; SessionFilter.source_uri_prefix added at `50fa909` (Stage 11 additive corrigendum)
 
 scripts/
   index-sessions.py       ✅ NEW (9.4.8 `2b7cbf3`) — SQLite FTS5 indexer over knowledge/raw/session-handoffs/*.md → knowledge/sessions.db; stdlib-only (~50 LOC); idempotent; consumed by `/verdaca-wiki-update --index`
@@ -85,23 +96,68 @@ shell/                    POV harness (Next.js UI + API)
 docs/                     Pipeline tracking + stage handovers (untracked since `effa9ad` 2026-05-15)
 ```
 
-### uv workspace members (13 active + 1 deferred, audited at 9.6)
-`ports` · `adapters/beads` · `adapters/tonl` · `adapters/mem0` · `adapters/letta` · `adapters/pi_mono_native` · `adapters/litellm` · `adapters/in_tree_compaction_stub` · `adapters/llmlingua` · `tests` · `kernel/compression` · `kernel/mac` · `kernel/memory` · `kernel/pi-mono/src` · `kernel/runtime` · `kernel/studio`
+### uv workspace members (19 active + 1 deferred — verified against root `pyproject.toml` 2026-05-26)
+`ports` · `adapters/beads` · `adapters/tonl` · `adapters/in_tree_compaction_stub` · `adapters/pi_mono_native` · `adapters/litellm` · **`adapters/mcp_server`** (Stage 11) · `adapters/mem0` · `adapters/letta` · `adapters/llmlingua` · `tests` · `kernel/compression` · `kernel/mac` · **`kernel/gateway`** (Stage 11) · `kernel/memory` · `kernel/pi-mono/src` · `kernel/runtime` · **`kernel/session_index`** (Stage 10) · `kernel/studio`
 
 `shell/` deferred from workspace (pytest-asyncio constraint conflict).
 
+**Stage delta from prior wiki:** wiki previously listed "13 active" but actually enumerated 16 members; canonical `pyproject.toml` count is 19 active. Stage 10 added `kernel/session_index`; Stage 11 added `kernel/gateway` + `adapters/mcp_server`.
+
 9.6 audit added `[tool.uv.sources] workspace = true` entries for the 6 adapter members previously missing from `tests/pyproject.toml`, closing `F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01` and enabling naked `pytest` collection.
 
-**Note:** `docs/` and `_bmad-output/` are **untracked from git** as of commit `effa9ad` (2026-05-15). Only source code under `ports/`, `adapters/`, `kernel/`, `tests/`, `scripts/`, `.github/`, and explicitly committed top-level docs remain git-tracked. Stage-9 cycle handovers since 2026-05-16 live in `docs/stage-*-handover.md` and are NOT in git history — commit bodies + close-commit messages are the canonical substance-of-record (precedent: 9.4.3, 9.4.6 Phase C `--allow-empty` close). `docs/design-system-substrate-v1.0.md` status under new policy [TBD — pending Andrey clarification].
+**Note:** `docs/` and `_bmad-output/` are **untracked from git** as of commit `effa9ad` (2026-05-15). Only source code under `ports/`, `adapters/`, `kernel/`, `tests/`, `scripts/`, `.github/`, and explicitly committed top-level docs remain git-tracked. Stage-9 cycle handovers since 2026-05-16 live in `docs/stage-*-handover.md` and are NOT in git history — commit bodies + close-commit messages are the canonical substance-of-record (precedent: 9.4.3, 9.4.6 Phase C `--allow-empty` close). `docs/design-system-substrate-v1.0.md` status under new policy [TBD — pending Andrey clarification]. Stage 11 close memo (`docs/stage-11-ratified-close-memo.md` committed at `e0aade3`) and the 4 Stage 12 handover drafts (`docs/stage-12-{advisor,implementation-executor,e1-channel-adapters-executor,e2-auth-integration-executor}-handover.md`) live under this gitignored-operational `docs/*.md` rule; commit bodies remain canonical substance-of-record.
+
+**Knowledge graph state (2026-05-26):** `graphify-out/` refreshed to Stage-11 source scope — 592 `.py` files under `ports/`, `kernel/`, `adapters/`, `tests/`, `scripts/`, `shell/` → 6,319 nodes / 10,983 edges / 541 communities; AST-only, 0 token cost. Old full-corpus graph (14,815 nodes including docs/worktrees/reference-repos) preserved at `graph.json.pre-stage11-rescope.bak`. Per CLAUDE.md graphify rules, `graphify-out/GRAPH_REPORT.md` remains the primary map; top god nodes after re-scope: `ContractViolation` (72 edges), `VerdacaDTOMixin` (60), `make_memory()` (60), `GateConfig` (56), `BeadsStore` (53).
 
 ---
 
-## Stage 10 (in-flight on `stage-10.0-port-stubs`)
+## Stage 10: SessionIndex + SkillTelemetry Data-Plane — RATIFIED 2026-05-24
 
-- **Implementation COMPLETE** at `d2b5670` (#42); pre-roundtable reconcile at `50ce68e` (F-10-RECONCILE-PRIOR-PORTS-01)
-- **NOT YET RATIFIED** — gated on Mary's 3 Champion VOC calls + GO/GO-with-amendments outcome
-- New ports landed: `SessionIndexPort` (API_VERSION 1.0.0; SQLite + FTS5 backing; semantic = no-op stub) + `SkillTelemetryPort` (renamed from SkillObserverPort)
+- **RATIFIED** at merge `8ae4f87` (wiki sync `b16e25b`); A7 team-lead override close at `f181a7e` (pushed to origin/main 2026-05-24)
+- Implementation landed at `d2b5670` (#42); pre-roundtable reconcile at `50ce68e` (F-10-RECONCILE-PRIOR-PORTS-01)
+- New ports: `SessionIndexPort` (API_VERSION 1.0.0; SQLite + FTS5 backing; semantic = no-op stub) + `SkillTelemetryPort` (renamed from SkillObserverPort); **Protocols live in `kernel/session_index/`, NOT in `ports/`** (Stage 10 broke Stage-9 ports-consolidation convention)
 - 10 DTOs; CLI `verdaca session list/show <id>`; MAC-T floor ≥18
+- **PROVISIONAL VOC** via HYPOTHETICAL synthesis (zero-margin K1/K2/K3); A7 = hard Stage 11.1 charter precondition CLOSED via team-lead override 2026-05-24
+- HYPOTHETICAL-VOC caveat (Stage 6.0.1 / A7 override) inherited by all downstream Stage 11+12 customer-fit claims
+- F-10-ARCH-AUDIT-02 (shell workspace) reclassified Stage 10.5 debt; F10 PEP-420 RESOLVED at `d2b5670`
+- **Stage 10 additive corrigendum at `50fa909` (Stage 11 cycle):** `SessionFilter.source_uri_prefix` field added (backward-compatible, default None)
+
+---
+
+## Stage 11: Channel-Neutral MCP Gateway — RATIFIED 2026-05-26
+
+**Status:** RATIFIED 2026-05-26 at `e0aade3` on local-only branch `stage-11.0-mcp-gateway` (Path A, NOT yet pushed to origin/main; 20-commit chain from `a11aa67`, base `f181a7e`).
+
+**Scope:** Transport/edge layer for MCP-native inbound. Composes ratified Stage 10 data-plane (SessionIndexPort) with Stage 9 LLMProxy + Memory + Cost + Compaction ports into a single VerdacaGatewayService.
+
+**New ports (`ports/src/praxis/ports/`):** `gateway.py` (GatewayPort + ChannelAdapterPort Protocols); `gateway_dto.py` (ChannelContext frozen with FROZEN_FIELD_ALLOWLIST, AuthClaims, CallerKind, ChannelKind {CLI, TEAMS, SLACK, CLAUDE_DESKTOP} per Winston #1, StartAnalysisRequest, AnalysisResult, SessionHandle, ArtifactRef); `gateway_errors.py` (GatewayCtxError, AuthClaimsAccessError). **Canonical import path:** `praxis.ports.gateway` ONLY (Winston #2).
+
+**New kernel module (`kernel/gateway/`):** port.py, models.py, service.py (`VerdacaGatewayService` composes LLMProxy + Memory + Cost + Compaction + SessionIndex ports), execution.py, policy.py MVP (bearer token + user allow-list + per-user budget cap + safety; carries TODO `STAGE-11-DEBT-AUTH-01` + `STAGE-11-DEBT-LITELLM-VKEY-01` deferred to Stage 12 E2). WAL idempotency store + `AsyncSessionIndex` wrapper added.
+
+**New adapter (`adapters/mcp_server/`):** FastMCP-backed inbound — server.py, http.py, stdio.py, tools.py, resources.py, prompts.py, transport.py. **MCP surface live:** 5 tools (`verdaca_start_analysis`, `verdaca_estimate_cost`, `verdaca_get_result`, `verdaca_list_sessions`, `verdaca_get_artifact`) + 5 resources (`verdaca://methodology`, `verdaca://templates`, `verdaca://sessions/{id}/result/summary` + `/transcript` + `/artifacts/{id}`) + 1 prompt + 2 transports (stdio + Streamable HTTP, `stateless_http=True` PINNED). Only **Claude-Desktop ChannelAdapter is LIVE**; Teams + Slack + CLI deferred to Stage 12.
+
+**Contract tests:** 38 MAC-Ts in Stage 11 delta; **208 contract tests GREEN + 8 skipped** (env-gated DIAL live + others).
+
+**5 new no_waiver entries (strict equality meta-test; Stage 11 sublist cardinality exactly 5):** `M-T-GW-JSONRPC-GOLDEN-REPLAY-01`, `M-T-GW-STDIO-HANDSHAKE-01`, `M-T-GW-PORT-HANDSHAKE-01`, `M-T-GW-CHANNELCTX-PII-REDACTION-01`, `M-T-GW-SESSIONINDEX-BIND-01`.
+
+**REFREEZE history (FROZEN_FIELD_ALLOWLIST preserved in both):** REFREEZE-01 (`9609c29` + `121670a`) added 3 read methods (`get_session_summary`, `get_session_transcript`, `get_session_artifact`); REFREEZE-02 (`af5d4f4` + `14a31f8`) added `list_sessions`.
+
+**Stage 11 RATIFIED outcomes:** 4 BMAD ratifications closed with amendments — Winston charter v0.5 (8), Murat MAC-T v0.2 (5), Mary buyer-language H#7 (3 tool + 2 title), Cleo H#8 V2 CODE-READY (8 findings resolved). HYPOTHETICAL-VOC caveat inherited from A7 team-lead override.
+
+**Reference snapshot:** `tests/reference/spike-mcp-server-snapshot-d93f71a/` — CAI spike, frozen reference, non-importable per import-linter contract `spike-snapshot-not-importable`.
+
+---
+
+## Stage 12: Channel Adapter Expansion + Auth Integration — OPEN (TENTATIVE)
+
+**Status:** OPEN — 7 gates, NOT yet ratified. All Stage 12 claims below are TENTATIVE.
+
+- TENTATIVE scope E1: Teams + Slack channel adapters under `adapters/channels/{teams,slack}/` (TENTATIVE — verify at G1 ratification)
+- TENTATIVE scope E2: OAuth/OIDC + LiteLLM virtual keys, replacing `policy.py` MVP placeholders (`STAGE-11-DEBT-AUTH-01` + `STAGE-11-DEBT-LITELLM-VKEY-01`) (TENTATIVE)
+- 4 handover files drafted (gitignored under `docs/*.md` rule): `docs/stage-12-{advisor, implementation-executor, e1-channel-adapters-executor, e2-auth-integration-executor}-handover.md`
+- **Stage 12 branch `stage-12.0-channel-adapters` does NOT yet exist** (G3 gate open)
+- **Frozen Port surfaces** — NO Stage 12 changes to `GatewayPort` or `ChannelAdapterPort` without a REFREEZE-03 ceremony
+- HYPOTHETICAL-VOC caveat inherited (all Stage 12 customer-fit claims carry the override caveat)
 
 ---
 
@@ -116,6 +172,7 @@ docs/                     Pipeline tracking + stage handovers (untracked since `
 | LLM Proxy adapter | litellm (PyPI) | ==1.83.14 (SHA-pinned); sole LLMProxyPort substrate per ADR-9.2-V5 v0.6 |
 | Compaction adapter | llmlingua (PyPI) | ==0.2.2 (SHA-pinned, MIT) — primary; in_tree_compaction_stub permanent CI fallback |
 | Session index | SQLite FTS5 (stdlib `sqlite3`) | `knowledge/sessions.db` gitignored build artifact |
+| MCP gateway (inbound) | FastMCP / MCP SDK | Stage 11; transports: stdio + Streamable HTTP (`stateless_http=True` PINNED); verify exact MCP SDK version pin at `uv.lock` |
 | Serialization | tree-sitter + TONL in-tree | Python 3.12 |
 | UI | Next.js 15 + Tailwind 4 + shadcn/ui | — |
 | Auth | Clerk | — |
@@ -140,7 +197,7 @@ docs/                     Pipeline tracking + stage handovers (untracked since `
 
 ---
 
-## Stage 7 Debt Ledger (19 items, originally deferred to "Stage 8"; folded into Stage 10/11 debt post-Stage-9 RATIFIED)
+## Stage 7 Debt Ledger (19 items, originally deferred to "Stage 8"; folded into Stage 10/11/12 debt post-Stage-9 RATIFIED; Stage 11 added 2 new debt markers — STAGE-11-DEBT-AUTH-01 (OAuth/OIDC) + STAGE-11-DEBT-LITELLM-VKEY-01 (virtual keys) — both routed to Stage 12 E2)
 
 Not blocking forward work. Key items:
 

@@ -1,24 +1,22 @@
 # Verdaca — Remaining Work to POV-Ready
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-24 (Stage 10 RATIFIED via merge `8ae4f87`) | **Local main HEAD:** `8ae4f87` | **origin/main HEAD:** `e9c0643` (local 5 commits ahead — push gated) | **Stage:** Stage 9 RATIFIED; **Stage 10 RATIFIED 2026-05-24** (VOC PROVISIONAL via HYPOTHETICAL synthesis; close memo at [[docs/stage-10-ratified-close-memo.md]]; memory entry write pending); Stage 11 (planned) opens after A7 real-VOC re-confirmation per [[docs/stage-10-voc-gate.md]]
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-26 (Stage 11 RATIFIED) | **Working branch HEAD:** `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NOT pushed to origin) | **local main = origin/main = `f181a7e`** (Stage 10 RATIFIED in sync via A7 override push 2026-05-24) | **Stage:** Stage 9 RATIFIED 2026-05-20; **Stage 10 RATIFIED 2026-05-24** (VOC PROVISIONAL via HYPOTHETICAL synthesis; A7 closed via team-lead override; close memo at [[docs/stage-10-ratified-close-memo.md]]); **Stage 11 RATIFIED 2026-05-26** (Channel-Neutral MCP Gateway; Path A local-only on `stage-11.0-mcp-gateway`); **Stage 12 OPEN** — 7 gates G1-G7 in-flight (TENTATIVE scope; not yet ratified). A7 HYPOTHETICAL-VOC caveat inherited indefinitely: every customer-fit claim must say "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
 
 ---
 
-## Immediate: Stage 10.1 VOC + Ratification Gate
+## Stage 10 — CLOSED RATIFIED 2026-05-24 (Historical)
 
-Stage 9 RATIFIED 2026-05-20 (`origin/main` merge `76eea26`, CI close `3e26f48`). Stage 10 implementation already landed at `d2b5670` (#42) on branch `stage-10.0-port-stubs` (pre-roundtable reconcile `50ce68e`). Forge substrate retired at 9.4.6 A.1 in favor of LLMLingua — the historic Forge G-1 BLOCKING GATE is moot.
-
-The next ratification work is **Stage 10 VOC gate + ceremony**:
+Stage 9 RATIFIED 2026-05-20 (`origin/main` merge `76eea26`, CI close `3e26f48`). Stage 10 implementation landed at `d2b5670` (#42); merged via `8ae4f87` 2026-05-24; A7 override push to origin completed at `f181a7e` 2026-05-24.
 
 | Item | Status |
 |---|---|
-| Mary's VOC | ✅ COMPLETE-PROVISIONAL 2026-05-24 — HYPOTHETICAL synthesis (3 simulated archetypes: reinsurer-ML / consultancy decision-engineering / industrial-AI); 6 files at `voc-stage10/synthesis-run-hypothetical-2026-05-24/`; verdict **GO-with-amendments, LOW confidence**; fragility flag: K1/K2/K3 each triggered once on 1/3 calls (no 2-of-3 trigger, zero margin); buyer-language HARD audit 0 hits |
-| VOC kill-switch criteria | K1/K2/K3 each fired on 1/3 (no PIVOT); K4 not flagged |
-| Path 1 lock (team-lead 2026-05-24) | Synthesis accepted as provisional; A2/A3/A5 → Stage 11.x scope additions; **A7 = hard Stage 11.1 charter precondition** (real-VOC re-confirmation before Stage 11 locks); A1/A4/A6 forwarded to Stage 11.x ledger |
-| Stage 10 RATIFIED ceremony | ✅ COMPLETE 2026-05-24 — Winston/Murat/Cleo audit cycle ALL READY-WITH-AMENDMENTS/WARNINGS; 134 ports tests passed/7 skipped + mypy clean; 2 amendment commits (`3d576a9` VOC gate marker + `da47d67` close memo); merge `8ae4f87` |
-| `stage-10.0-port-stubs` FF into main | ✅ DONE via merge `8ae4f87` (origin pull from `85bdea1`→`e9c0643` + merge); local now 5 commits ahead of origin |
-| `project_verdaca_stage10_ratified` memory entry | Drafted in close memo §8; **pending team-lead authorization** per `feedback_memory_authorization` |
-| Push to origin | **NOT YET DONE** — explicit team-lead consent required per `feedback_memory_authorization` adjacent risk-action discipline |
+| Mary's VOC | COMPLETE-PROVISIONAL 2026-05-24 — HYPOTHETICAL synthesis (3 simulated archetypes); verdict GO-with-amendments, LOW confidence; K1/K2/K3 each fired 1/3 (zero margin); buyer-language HARD audit 0 hits |
+| Path 1 lock (team-lead 2026-05-24) | Synthesis accepted as provisional; A2/A3/A5 → Stage 11.x scope; A1/A4/A6 → Stage 11.x ledger |
+| Stage 10 RATIFIED ceremony | COMPLETE 2026-05-24 — Winston/Murat/Cleo READY-WITH-AMENDMENTS; merge `8ae4f87` |
+| `stage-10.0-port-stubs` FF into main | DONE via merge `8ae4f87` 2026-05-24 |
+| A7 (real-VOC re-confirmation) | CLOSED via team-lead override 2026-05-24 at `f181a7e`; HYPOTHETICAL-VOC caveat inherited indefinitely to all downstream stages |
+| `project_verdaca_stage10_ratified` memory entry | WRITTEN 2026-05-24 (team-lead authorized save) |
+| Push to origin | DONE 2026-05-24 — `local main = origin/main = f181a7e` (in sync) |
 
 ---
 
@@ -65,42 +63,55 @@ Stage 9 RATIFIED 2026-05-20 — full ports-and-adapters production rebuild
 
 ## Per-Stage Gate Criteria (current)
 
-### Stage 10 RATIFIED when
-- [x] Mary's VOC complete + synthesized — **PROVISIONAL** via HYPOTHETICAL synthesis 2026-05-24; A7 carries real-VOC obligation forward to Stage 11.1
-- [x] VOC readout = GO-with-amendments (no PIVOT; K1/K2/K3 each triggered once — fragility flag noted)
-- [x] `stage-10.0-port-stubs` FF into main — DONE via merge `8ae4f87` 2026-05-24; `git pull` to e9c0643 + merge branch with 3 amendments (`d2b5670` + `3d576a9` + `da47d67`)
-- [x] Close memo with §provenance table per `feedback_provenance_pin` + synthesis VOC provenance + A7 gate — DONE at [[docs/stage-10-ratified-close-memo.md]] (`da47d67`)
-- [ ] Andrey explicit "continue" go to Stage 11 — pending real-VOC re-confirmation per A7
-- [ ] `project_verdaca_stage10_ratified` memory entry authorized + written — draft in close memo §8; team-lead gate per `feedback_memory_authorization`
+### Stage 10 RATIFIED — COMPLETE (Historical)
+- [x] Mary's VOC complete + synthesized — PROVISIONAL via HYPOTHETICAL synthesis 2026-05-24
+- [x] VOC readout = GO-with-amendments (K1/K2/K3 each triggered once — fragility flag noted)
+- [x] `stage-10.0-port-stubs` FF into main — DONE via merge `8ae4f87` 2026-05-24
+- [x] Close memo with §provenance table + A7 gate — DONE at [[docs/stage-10-ratified-close-memo.md]] (`da47d67`)
+- [x] Andrey explicit "continue" go to Stage 11 — DONE (A7 closed via team-lead override 2026-05-24 at `f181a7e`)
+- [x] `project_verdaca_stage10_ratified` memory entry authorized + written — DONE 2026-05-24
 
-### Before Stage 11 charter opens
-- [ ] Stage 10 RATIFIED
-- [ ] 4 substrate-API probes PASS (BLOCKING at §4.0 per Stage-11 advisor handover):
-      - [ ] FastMCP surface (Python `mcp.server.fastmcp.FastMCP` exists with required API)
-      - [ ] JSON-RPC 2.0 golden (request/response shape)
-      - [ ] Stateless HTTP invariant (`stateless_http=True` semantics confirmed in FastMCP)
-      - [ ] Gateway contract (composition of LLMProxy + Memory + Cost + Compaction + SessionIndex)
-- [ ] CAI spike port viable: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` mirror
+### Before Stage 11 charter opens — COMPLETE (Historical)
+- [x] Stage 10 RATIFIED (2026-05-24)
+- [x] 4 substrate-API probes PASS — FastMCP / JSON-RPC 2.0 / stateless HTTP / Gateway contract
+- [x] CAI spike port viable: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` mirror
 
-### Stage 11 RATIFIED when
-- [ ] `adapters/mcp_server/` implements MCPTransportPort + GatewayPort + 1 ChannelAdapterPort (CLI minimum)
-- [ ] 5 MCP tools + 5 resources + 1 prompt working end-to-end against Claude Desktop
-- [ ] M-T-GATEWAY-* (≥8) + M-T-MCP-* (≥10) + M-T-DIAL-EXEC-* (≥2) + M-T-MCP-API-SURFACE-* (≥2) green
-- [ ] No new no_waiver entries beyond +≤5 sublist (target ≤22 Stage-9+10+11 total)
-- [ ] Demo packaging: Champion can install + invoke end-to-end via Claude Desktop within X minutes (X TBD per Stage 11 charter)
+### Stage 11 RATIFIED — COMPLETE (Historical) 2026-05-26
+- [x] `adapters/mcp_server/` implements GatewayPort + ChannelAdapterPort (Claude-Desktop LIVE; Teams/Slack/CLI deferred to Stage 12)
+- [x] 5 MCP tools + 5 resources + 1 prompt working end-to-end against Claude Desktop
+- [x] 38 MAC-Ts (Stage 11 delta) + 5 no_waiver entries strict-equality meta-test
+- [x] 208 contract tests GREEN + 8 skipped (env-gated DIAL live)
+- [x] 4 BMAD ratifications closed with amendments (Winston/Murat/Mary/Cleo); Cleo H#8 V2 substantive close at `1adbecb`
+- [x] Branch tip `e0aade3` (close memo); 20 commits from `a11aa67` to `e0aade3`; Path A local-only (NOT merged to main)
+
+### Before Stage 12 charter opens — IN FLIGHT (TENTATIVE)
+- [ ] **G1** Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) — IN-FLIGHT
+- [ ] **G2** VOC decision — three options: (a) inherit HYPOTHETICAL caveat indefinitely; (b) abbreviated VOC for Stage 12 questions (Teams vs Slack adoption, Entra/Okta/Auth0 distribution); (c) full re-do
+- [ ] **G3** Cut `stage-12.0-channel-adapters` branch from `stage-11.0-mcp-gateway @ e0aade3` (Path A continuation recommended)
+- [ ] **G4** Executor split confirmation (E1 = channels + E2 = auth recommended)
+- [ ] **G5** Stage 11.5 debt scheduling (5 items; pre-Stage-12 or parallel)
+- [ ] **G6** Dispatch fresh executor — BLOCKED on G1+G3+G4
+- [ ] **G7** Merge Stage 11 to main — recommend keep local-only through Stage 12
+
+### Stage 12 RATIFIED when — TENTATIVE (gated on G1 roundtable outcome)
+- [ ] E1 = Teams + Slack `ChannelAdapterPort` impls landed under `adapters/channels/{teams,slack}/`; CLI hardening optional (TENTATIVE per G1)
+- [ ] E2 = OAuth 2.1 + OIDC (Entra/Okta/Auth0) replacing `policy.py` bearer MVP (TENTATIVE per G1)
+- [ ] E2 = LiteLLM virtual keys replacing budget-cap MVP (TENTATIVE per G1)
+- [ ] Cross-window dep honored: E1 BLOCKS on `[E2-H#2-COMPLETE]` for auth_claims wiring
+- [ ] Frozen Port surfaces (GatewayPort + ChannelAdapterPort) — NO Stage 12 changes without REFREEZE-03 ceremony
+- [ ] STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 close as Stage 12 E2 lands
+- [ ] (uncertain — verify) MAC-T floor + no_waiver count for Stage 12 — TBD at G1
 
 ---
 
-## Stage 10 — SessionIndex / Knowledge / Learning (in-flight; gated on VOC)
+## Stage 10 — CLOSED RATIFIED 2026-05-24 (Historical)
 
 Decided at 5-agent roundtable 2026-05-20 (4-1 vote for data-plane / transport split). Hermes Agent self-learning roadmap is preserved; the 2026-05-08 plan was reshaped into the data-plane-first sequence below.
 
-### Implementation status
-- Branch: `stage-10.0-port-stubs`
-- Implementation COMPLETE at `d2b5670` (#42)
-- Pre-roundtable reconcile pass: `50ce68e` (F-10-RECONCILE-PRIOR-PORTS-01)
-- Amendment commits on `stage-10.0-port-stubs`: `3d576a9` (VOC gate marker, F-10-TEST-AUDIT-05 resolution) + `da47d67` (close memo §provenance)
-- **RATIFIED 2026-05-24** at merge `8ae4f87` into `main` (close memo: [[docs/stage-10-ratified-close-memo.md]]; VOC gate: [[docs/stage-10-voc-gate.md]]); VOC PROVISIONAL via HYPOTHETICAL synthesis — A7 = hard Stage 11.1 precondition for real-VOC re-confirmation
+### Implementation status — CLOSED
+- Branch: `stage-10.0-port-stubs` — FF'd into `main` at `8ae4f87` 2026-05-24
+- Implementation: `d2b5670` (#42); amendment commits `3d576a9` + `da47d67`
+- **RATIFIED 2026-05-24** at merge `8ae4f87`; A7 CLOSED via team-lead override 2026-05-24 at `f181a7e` (pushed to origin); HYPOTHETICAL-VOC caveat inherited indefinitely
 
 ### Ports (landed)
 | Port | Methods | Key DTOs |
@@ -135,34 +146,109 @@ The original Stage 10 Phase 2/3 design (`SkillPort` with apply_patch authorizati
 
 ---
 
-## Stage 11 — Channel-Neutral MCP Gateway (planned)
+## Stage 11 — Channel-Neutral MCP Gateway — RATIFIED 2026-05-26
 
-Opens after Stage 10 RATIFIED. Atlas + Mary precedent from CAI spike: populated MCP resources sold the demo, not tool calls — Stage 11 binds to ratified `SessionIndexPort` (NO stubs).
+RATIFIED 2026-05-26 on `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NOT merged to main). 20 commits from `a11aa67` to `e0aade3`; H#8 V2 substantive close at `1adbecb`. Atlas + Mary precedent from CAI spike: populated MCP resources sold the demo, not tool calls — Stage 11 binds to ratified `SessionIndexPort` (NO stubs).
 
-### Ports
+### What shipped
+- **Branch tip:** `stage-11.0-mcp-gateway @ e0aade3` (close memo); H#8 V2 substantive close `1adbecb`; 20 commits from base `a11aa67` (base `f181a7e`)
+- **New kernel module:** `kernel/gateway/` — `VerdacaGatewayService` composes all 5 data-plane ports (LLMProxy + Memory + Cost + Compaction + SessionIndex)
+- **New adapter:** `adapters/mcp_server/` — FastMCP-backed; 5 tools + 5 resources + 1 prompt + 2 transports (stdio + Streamable HTTP)
+- **2 REFREEZE ceremonies:** read API freeze `9609c29` + list_sessions freeze `af5d4f4`
+- **Stage 10 SessionFilter additive corrigendum** applied at `50fa909`
+- **38 MAC-Ts** (Stage 11 delta) + **5 no_waiver** entries strict-equality meta-test
+- **208 contract tests GREEN** + 8 skipped (env-gated DIAL live)
+- **4 BMAD ratifications** closed with amendments (Winston/Murat/Mary/Cleo)
+
+### Ports (landed)
 | Port | Notes |
 |---|---|
-| `GatewayPort` | `execute(intent: StartAnalysisRequest, ctx: ChannelContext) → AnalysisResult`; composes LLMProxy + Memory + Cost + Compaction + SessionIndex |
-| `MCPTransportPort` | stdio + Streamable HTTP; `stateless_http=True` PINNED as contract invariant |
-| `ChannelAdapterPort` | 5 wrappers: Teams, Slack, CLI, UI, Claude-Desktop (Teams/Copilot manifests deferred post-Stage-11) |
+| `GatewayPort` | `execute(intent: StartAnalysisRequest, ctx: ChannelContext) → AnalysisResult`; composes LLMProxy + Memory + Cost + Compaction + SessionIndex; frozen at H#1.5 + REFREEZE-01 + REFREEZE-02 |
+| `ChannelAdapterPort` | 4 MVP adapters per Winston #1; **only Claude-Desktop is LIVE at Stage 11**; Teams/Slack/CLI deferred to Stage 12; frozen at H#1.5 + REFREEZE-01 + REFREEZE-02 |
+| `MCPTransportPort` | adapter-local Protocol under `adapters/mcp_server/transport.py` (NOT in `praxis.ports` layer); stdio + Streamable HTTP; `stateless_http=True` PINNED |
+
+**Frozen Port surfaces** — NO Stage 12 changes to GatewayPort or ChannelAdapterPort without REFREEZE-03 ceremony.
 
 ### MCP surface (5 tools + 5 resources + 1 prompt)
 - Tool language ("buyer-language"): "defensible recommendation with cited tradeoffs"
-- Resources: `verdaca://sessions/{id}/result/{summary,transcript,artifacts}` + 2 others
-- Mirror CAI spike: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` (line-for-line port to Python `mcp.server.fastmcp.FastMCP`)
+- 5 tools: `verdaca_start_analysis`, `verdaca_estimate_cost`, `verdaca_get_result`, `verdaca_list_sessions`, `verdaca_get_artifact`
+- Resources: `verdaca://methodology`, `verdaca://templates`, `verdaca://sessions/{id}/result/{summary,transcript,artifacts}`
+- Mirror CAI spike: `spike-mcp-server/src/http.ts` → `adapters/mcp_server/http.py` (Python `mcp.server.fastmcp.FastMCP`); reference snapshot frozen at `tests/reference/spike-mcp-server-snapshot-d93f71a/`
 
-### VOC-10 amendment carry-forward (2026-05-24 Path 1 lock)
-- **A2** — Word/PPT export surface (firm-template-friendly); load-bearing for consultancy senior-partner→client path
-- **A3** — 3 procurement gates (data-residency / client-data SOP / Microsoft-stack-fit); Stage 10 charter covers via charter-clauses + architecture invariants; Stage 11 inherits and extends to channel-adapter manifests
-- **A5** — Forwardable-link surface (stable URL inside channel thread; distinct from Shape A and Shape B)
-- **A7** — **HARD CHARTER PRECONDITION** — real-VOC re-confirmation MUST happen before Stage 11.1 locks
-- **A1 / A4 / A6** — latency-mode positioning / multi-LLM contract wording / post-mortem-survivability → Stage 11.x ledger
+### VOC-10 amendment carry-forward (Stage 11 inherited)
+- **A2** — Word/PPT export surface — carried into Stage 11.x debt
+- **A3** — 3 procurement gates — Stage 11 channel-adapter manifests partially address; full closure in Stage 12 channel work
+- **A5** — Forwardable-link surface — carried into Stage 11.x debt
+- **A7** — CLOSED via team-lead override 2026-05-24 at `f181a7e`; HYPOTHETICAL-VOC caveat inherited indefinitely
+- **A1 / A4 / A6** — carried into Stage 11.x ledger
 
-### Post-Stage-11 explicit defers
-- Teams/Copilot manifests
-- UI rewire to be a gateway client
-- OAuth 2.1 auth stage
-- Learning/feedback ports beyond SkillTelemetry
+### Post-Stage-11 explicit defers (routed to Stage 12 or 11.x)
+- Teams + Slack ChannelAdapter impls — Stage 12 E1 TENTATIVE
+- CLI hardening — Stage 12 E1 optional TENTATIVE
+- UI rewire to be a gateway client — Stage 11.x or later
+- OAuth 2.1 + OIDC (Entra/Okta/Auth0) — Stage 12 E2 TENTATIVE (STAGE-11-DEBT-AUTH-01)
+- LiteLLM virtual keys — Stage 12 E2 TENTATIVE (STAGE-11-DEBT-LITELLM-VKEY-01)
+- Learning/feedback ports beyond SkillTelemetry — Stage 12+ or later
+- Teams/Copilot manifests — Stage 12 E1 surface
+
+---
+
+## Stage 12 — OPEN (TENTATIVE; 7 gates G1-G7 in flight)
+
+Stage 12 is **OPEN — not yet ratified**. Scope is TENTATIVE pending G1 roundtable confirmation. All claims below carry TENTATIVE flag until G1 closes.
+
+### Gates G1-G7
+
+| Gate | Description | Status |
+|---|---|---|
+| **G1** | Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) | IN-FLIGHT |
+| **G2** | VOC decision — (a) inherit HYPOTHETICAL caveat indefinitely; (b) abbreviated VOC for Stage 12 questions (Teams vs Slack adoption, Entra/Okta/Auth0 distribution); (c) full re-do | OPEN |
+| **G3** | Cut `stage-12.0-channel-adapters` from `stage-11.0-mcp-gateway @ e0aade3` (Path A continuation recommended; branch does NOT yet exist) | OPEN |
+| **G4** | Executor split confirmation — E1 = channels + E2 = auth recommended | OPEN |
+| **G5** | Stage 11.5 debt scheduling (5 items; pre-Stage-12 or parallel) | OPEN |
+| **G6** | Dispatch fresh executor — BLOCKED on G1+G3+G4 | BLOCKED |
+| **G7** | Merge Stage 11 to main — recommend keep local-only through Stage 12 | OPEN |
+
+### TENTATIVE scope (gated on G1)
+
+- **E1 (channels):** Teams + Slack `ChannelAdapterPort` impls under `adapters/channels/{teams,slack}/`; CLI hardening optional
+- **E2 (auth):** OAuth 2.1 + OIDC (Entra/Okta/Auth0) replacing `policy.py` bearer MVP + LiteLLM virtual keys replacing budget-cap MVP
+- **Cross-window dep:** E1 BLOCKS on `[E2-H#2-COMPLETE]` for auth_claims wiring
+- **Frozen Port surfaces:** GatewayPort + ChannelAdapterPort — NO Stage 12 changes without REFREEZE-03 ceremony
+- **4 handover files drafted** (gitignored): `docs/stage-12-*.md`
+
+### Stage 11 RATIFIED inheritance
+
+- HYPOTHETICAL-VOC caveat inherited indefinitely (A7 closed via override 2026-05-24)
+- STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 are Stage 12 E2 candidate scope — they'd close as Stage 12 E2 lands
+
+---
+
+## Debt Tiers Post-Stage-11
+
+### Stage 11.5 — pre-Stage-12 or parallel (5 items)
+- JSONRPC-FIXTURE-REGEN
+- RUFF-CLEANUP
+- DIAL-LIVE-SMOKE
+- SESSION-ID-WIDTH
+- WAL-CONCURRENCY
+
+### Stage 11.x — deferred features (6 items)
+- **STAGE-11-DEBT-AUTH-01** — OAuth 2.1 + OIDC (candidate Stage 12 E2 scope)
+- **STAGE-11-DEBT-LITELLM-VKEY-01** — LiteLLM virtual keys (candidate Stage 12 E2 scope)
+- Compose order
+- WAL mid-exec crash
+- Channel detection
+- Cited tradeoffs stub
+
+### Stage 10.5 — carried from Stage 10 (4 items)
+- F-10-ARCH-AUDIT-02 — shell workspace pytest conflict
+- F-10-EDGE-04 — max payload
+- F-10-ARCH-AUDIT-04 + W-10-Cleo-6 — DRY `_DEFAULT_DB_PATH`
+- F-10-TEST-AUDIT-02 — tighten allow-list bounds
+
+### Stage 7 cosmetic (6 INFO)
+- F-11-CLEO-13 through F-11-CLEO-18
 
 ---
 
@@ -170,31 +256,34 @@ Opens after Stage 10 RATIFIED. Atlas + Mary precedent from CAI spike: populated 
 
 | Work block | Sessions estimate |
 |---|---|
-| ~~9.4.4 → 9.4.6 (Pi-Mono, LiteLLM, Compaction)~~ | ✅ DONE through 2026-05-17 |
-| ~~9.4.7 ‖ 9.4.8 Pair 1~~ | ✅ DONE 2026-05-18 (~0.5 session — concurrent) |
-| ~~9.5 ‖ 9.9 Pair 2~~ | ✅ DONE 2026-05-19 (~1 session — concurrent) |
-| ~~9.6 Cleo supply-chain + Stage 9 RATIFIED~~ | ✅ DONE 2026-05-19 → 2026-05-20 |
-| Stage 10 — 3 VOC calls + synthesis + ratification | 1–2 sessions (depends on call cadence) |
-| Stage 11 — substrate probes + Gateway + MCP transport + 1 ChannelAdapter | 4–6 sessions |
-| Stage 11 — demo packaging + Champion onboarding | 1–2 sessions |
-| **Total to POV-ready (post-Stage-11)** | **~6–10 sessions** |
-| Post-Stage-11 (Teams/Copilot, UI rewire, OAuth) | deferred |
+| ~~9.4.4 → 9.4.6 (Pi-Mono, LiteLLM, Compaction)~~ | DONE through 2026-05-17 |
+| ~~9.4.7 ‖ 9.4.8 Pair 1~~ | DONE 2026-05-18 (~0.5 session — concurrent) |
+| ~~9.5 ‖ 9.9 Pair 2~~ | DONE 2026-05-19 (~1 session — concurrent) |
+| ~~9.6 Cleo supply-chain + Stage 9 RATIFIED~~ | DONE 2026-05-19 → 2026-05-20 |
+| ~~Stage 10 — VOC + ratification~~ | DONE 2026-05-24 (HYPOTHETICAL synthesis; A7 override push at `f181a7e`) |
+| ~~Stage 11 — Gateway + MCP transport + Claude-Desktop ChannelAdapter~~ | DONE 2026-05-26 (`stage-11.0-mcp-gateway @ e0aade3`; Path A local-only) |
+| Stage 11.5 debt (5 items) | ~0.5–1 session (pre-Stage-12 or parallel) |
+| Stage 12 — G1 roundtable + scope lock | TBD (unknown until G1 closes) |
+| Stage 12 — E1 channels (Teams + Slack) + E2 auth (OAuth/OIDC + LiteLLM vkeys) | (uncertain — verify; TENTATIVE per G1) |
+| Stage 12 — demo packaging + Champion onboarding | TBD per G1 |
+| **Total to POV-ready (post-Stage-12)** | unknown until G1 |
+| Post-Stage-12 (UI rewire, learning ports) | deferred |
 
 ---
 
 ## Quick Reference: What the Next Executor Needs
 
-**For Stage 10 VOC ratification (next ratification work):**
-- Local main HEAD = `85bdea1`; origin/main HEAD = `e9c0643` (14 commits ahead; consider `git pull` before VOC ceremony)
-- Stage 10 implementation already landed at `d2b5670` on `stage-10.0-port-stubs` branch
-- Run 3 Champion VOC calls (Andrey owns) per `voc-stage10-call-script.md`
-- Mary synthesizes per `voc-stage10-scoring-rubric.md` (4 kill-switch criteria K1-K4)
-- Halt discipline per `feedback_preload_first_gating`, memory writes gated per `feedback_memory_authorization`
-
-**For Stage 11 (after Stage 10 RATIFIED):**
-- 4 substrate-API probes BLOCKING before charter (FastMCP, JSON-RPC, stateless HTTP, gateway contract)
-- Reference: CAI spike at `spike-mcp-server/src/http.ts` for the Python port pattern
-- Stage 11 binds to ratified `SessionIndexPort` — NO stubs allowed
+**For Stage 12 entry (next ratification work; G1 in flight):**
+- Working branch: `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NOT pushed to origin)
+- `local main = origin/main = f181a7e` (Stage 10 RATIFIED; in sync via A7 override push 2026-05-24)
+- Stage 11 RATIFIED 2026-05-26 — close memo at branch tip `e0aade3`
+- **G1 roundtable IN-FLIGHT** — Winston + Mary + Murat + Vera + advisor confirming Stage 12 scope (TENTATIVE: E1 channels + E2 auth)
+- **G2 VOC decision OPEN** — 3 options: (a) inherit HYPOTHETICAL caveat; (b) abbreviated VOC; (c) full re-do
+- **G3 OPEN** — cut `stage-12.0-channel-adapters` from `e0aade3` once G1+G4 close
+- 4 Stage 12 handover files drafted (gitignored): `docs/stage-12-*.md`
+- HYPOTHETICAL-VOC caveat inherited indefinitely: append "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)" to every customer-fit claim
+- Frozen Port surfaces (GatewayPort + ChannelAdapterPort) — NO Stage 12 changes without REFREEZE-03 ceremony
+- Halt discipline per `feedback_preload_first_gating`; memory writes gated per `feedback_memory_authorization`
 
 ---
 
