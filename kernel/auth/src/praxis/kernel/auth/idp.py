@@ -2,21 +2,24 @@
 
 from __future__ import annotations
 
-import httpx
+from typing import Any as _Any
+from typing import cast as _cast
 
-from praxis.kernel.auth.oidc import OidcMetadata
+import httpx as _httpx
+
+from praxis.kernel.auth.oidc import OidcMetadata as _OidcMetadata
 
 _DISCOVERY_SUFFIX = "/.well-known/openid-configuration"
 
 
-async def discover(issuer: str) -> OidcMetadata:
+async def discover(issuer: str) -> _OidcMetadata:
     """SOLE public API. Caller determines which issuer to pass."""
     url = issuer.rstrip("/") + _DISCOVERY_SUFFIX
-    async with httpx.AsyncClient() as client:
+    async with _httpx.AsyncClient() as client:
         resp = await client.get(url, follow_redirects=True, timeout=10.0)
         resp.raise_for_status()
-        doc = resp.json()
-    return OidcMetadata(
+        doc = _cast(dict[str, _Any], resp.json())
+    return _OidcMetadata(
         issuer=doc["issuer"],
         jwks_uri=doc["jwks_uri"],
         id_token_signing_alg_values_supported=doc.get(

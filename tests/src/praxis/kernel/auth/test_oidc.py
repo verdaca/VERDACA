@@ -85,7 +85,7 @@ async def test_M_T_AUTH_OIDC_DISCOVERY_HAPPY_01_parses_metadata(
 ) -> None:
     payload = _cassette_payload("oidc_discovery_entra.yaml")
     client = _QueuedAsyncClient([payload])
-    monkeypatch.setattr(idp.httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(idp._httpx, "AsyncClient", lambda: client)
 
     metadata = await idp.discover(ISSUER)
 
