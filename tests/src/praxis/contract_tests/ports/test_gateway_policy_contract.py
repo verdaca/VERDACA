@@ -58,7 +58,7 @@ def _metadata(issuer: str) -> OidcMetadata:
     return OidcMetadata(
         issuer=issuer,
         jwks_uri=f"{issuer}/keys",
-        id_token_signing_alg_values_supported=["RS256"],
+        id_token_signing_alg_values_supported=("RS256",),
     )
 
 

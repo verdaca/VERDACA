@@ -22,7 +22,7 @@ def _metadata(algorithms: list[str]) -> OidcMetadata:
     return OidcMetadata(
         issuer=ISSUER,
         jwks_uri=JWKS_URI,
-        id_token_signing_alg_values_supported=algorithms,
+        id_token_signing_alg_values_supported=tuple(algorithms),
     )
 
 

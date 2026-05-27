@@ -14,7 +14,7 @@ import httpx
 class OidcMetadata:
     issuer: str
     jwks_uri: str
-    id_token_signing_alg_values_supported: list[str]
+    id_token_signing_alg_values_supported: tuple[str, ...]
     extra: dict[str, Any] = field(default_factory=dict)
 
 

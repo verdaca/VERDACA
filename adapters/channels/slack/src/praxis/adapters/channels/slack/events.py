@@ -135,6 +135,7 @@ def _response_url(envelope: Mapping[str, Any]) -> str | None:
 
 
 def _fallback_claims(*, user_id: str, team_id: str) -> dict[str, str]:
+    # exp/iat=0 marks a synthetic testing fallback, not a verified token lifetime.
     return {
         "aud": "verdaca-channel-adapter",
         "exp": "0",

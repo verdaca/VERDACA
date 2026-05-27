@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from authlib.jose import JsonWebToken  # type: ignore[import-untyped]
-from authlib.jose.errors import JoseError
+from authlib.jose.errors import JoseError  # type: ignore[import-untyped]
 
 from praxis.kernel.auth.claims import AuthClaims, validate_claims
 from praxis.kernel.auth.oidc import OidcMetadata

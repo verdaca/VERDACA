@@ -140,6 +140,7 @@ def _extract_bearer_token(value: str | None) -> str | None:
 
 
 def _fallback_claims(*, caller_id: str, tenant_id: str) -> dict[str, str]:
+    # exp/iat=0 marks a synthetic testing fallback, not a verified token lifetime.
     return {
         "aud": "verdaca-channel-adapter",
         "exp": "0",

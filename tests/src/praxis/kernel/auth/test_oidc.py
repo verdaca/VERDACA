@@ -68,7 +68,7 @@ def _metadata() -> OidcMetadata:
     return OidcMetadata(
         issuer=ISSUER,
         jwks_uri=JWKS_URI,
-        id_token_signing_alg_values_supported=["RS256"],
+        id_token_signing_alg_values_supported=("RS256",),
     )
 
 
@@ -85,14 +85,14 @@ async def test_M_T_AUTH_OIDC_DISCOVERY_HAPPY_01_parses_metadata(
 ) -> None:
     payload = _cassette_payload("oidc_discovery_entra.yaml")
     client = _QueuedAsyncClient([payload])
-    monkeypatch.setattr(idp._httpx, "AsyncClient", lambda: client)
+    monkeypatch.setattr(idp.httpx, "AsyncClient", lambda: client)
 
     metadata = await idp.discover(ISSUER)
 
     assert client.requests == [f"{ISSUER}/.well-known/openid-configuration"]
     assert metadata.issuer == ISSUER
     assert metadata.jwks_uri == JWKS_URI
-    assert metadata.id_token_signing_alg_values_supported == ["RS256"]
+    assert metadata.id_token_signing_alg_values_supported == ("RS256",)
     assert metadata.extra["token_endpoint"].endswith("/oauth2/v2.0/token")
 
 

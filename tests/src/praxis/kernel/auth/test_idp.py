@@ -25,6 +25,10 @@ def _public_alias(alias: ast.alias) -> str | None:
 
 
 def _public_names(tree: ast.Module) -> set[str]:
+    exported = _explicit_all(tree)
+    if exported is not None:
+        return exported
+
     names: set[str] = set()
     for node in tree.body:
         if isinstance(node, ast.ImportFrom) and node.module == "__future__":
@@ -46,6 +50,25 @@ def _public_names(tree: ast.Module) -> set[str]:
             if not node.target.id.startswith("_"):
                 names.add(node.target.id)
     return names
+
+
+def _explicit_all(tree: ast.Module) -> set[str] | None:
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(
+            isinstance(target, ast.Name) and target.id == "__all__" for target in node.targets
+        ):
+            continue
+        if not isinstance(node.value, ast.List):
+            return None
+        names = {
+            element.value
+            for element in node.value.elts
+            if isinstance(element, ast.Constant) and isinstance(element.value, str)
+        }
+        return set(names)
+    return None
 
 
 def test_M_T_AUTH_IDP_DISCOVER_SOLE_EXPORT_01_idp_module_has_one_public_name() -> None:
