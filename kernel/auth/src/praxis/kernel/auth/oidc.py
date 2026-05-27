@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -39,7 +39,7 @@ class JwksCache:
 
     async def get_or_fetch(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
         entry = self._store.get(issuer)
-        if entry and (time.monotonic() - entry.fetched_at) < self._ttl:
+        if entry is not None and self._is_fresh(entry):
             return entry.metadata, entry.jwks
         return await self._refresh(issuer)
 
@@ -64,17 +64,28 @@ class JwksCache:
         from praxis.kernel.auth.idp import discover
 
         async with self._lock:
+            entry = self._store.get(issuer)
+            if entry is not None and self._is_fresh(entry):
+                return entry.metadata, entry.jwks
+
             metadata = await discover(issuer)
-            async with httpx.AsyncClient() as client:
-                resp = await client.get(metadata.jwks_uri, timeout=10.0)
-                resp.raise_for_status()
-                jwks = resp.json()
+            jwks = await self._fetch_jwks(metadata.jwks_uri)
             self._store[issuer] = _CacheEntry(
                 metadata=metadata,
                 jwks=jwks,
                 fetched_at=time.monotonic(),
             )
             return metadata, jwks
+
+    async def _fetch_jwks(self, jwks_uri: str) -> dict[str, Any]:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(jwks_uri, timeout=10.0)
+            resp.raise_for_status()
+            jwks = cast(dict[str, Any], resp.json())
+        return jwks
+
+    def _is_fresh(self, entry: _CacheEntry) -> bool:
+        return (time.monotonic() - entry.fetched_at) < self._ttl
 
 
 def _find_key(jwks: dict[str, Any], kid: str) -> dict[str, Any] | None:
