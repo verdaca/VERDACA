@@ -44,9 +44,18 @@ class JwksCache:
         return await self._refresh(issuer)
 
     async def invalidate(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
+        from praxis.kernel.auth.idp import discover
+
         async with self._lock:
             self._store.pop(issuer, None)
-        return await self._refresh(issuer)
+            metadata = await discover(issuer)
+            jwks = await self._fetch_jwks(metadata.jwks_uri)
+            self._store[issuer] = _CacheEntry(
+                metadata=metadata,
+                jwks=jwks,
+                fetched_at=time.monotonic(),
+            )
+            return metadata, jwks
 
     async def get_key(self, issuer: str, kid: str) -> dict[str, Any]:
         metadata, jwks = await self.get_or_fetch(issuer)

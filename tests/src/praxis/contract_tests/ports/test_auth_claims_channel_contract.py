@@ -14,7 +14,7 @@ from praxis.kernel.auth.claims import ClaimsValidationError, validate_claims
 
 FIXTURES_DIR = Path(__file__).parents[4] / "fixtures" / "auth_claims"
 
-FIXTURE_FILES: tuple[tuple[str, Callable[[dict[str, object]], dict[str, str]]], ...] = (
+FIXTURE_FILES: tuple[tuple[str, Callable[..., dict[str, str]]], ...] = (
     ("entra_basic.json", teams_extract_claims),
     ("okta_basic.json", slack_extract_claims),
     ("auth0_basic.json", teams_extract_claims),
@@ -28,7 +28,7 @@ def test_M_T_AUTH_E1_CONSUMES_E2_IDP_FIXTURE_01_channel_claims_validate(
 ) -> None:
     raw_jwt_payload = json.loads((FIXTURES_DIR / fixture_file).read_text(encoding="utf-8"))
 
-    claims = extract_fn(raw_jwt_payload)
+    claims = extract_fn(raw_jwt_payload, verifier=None)
 
     assert isinstance(claims, dict)
     for key, value in claims.items():

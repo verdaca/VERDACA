@@ -73,6 +73,8 @@ def receive_webhook(
     dispatch: Callable[[Mapping[str, Any]], WebhookResponse],
     now: float | None = None,
 ) -> WebhookResponse:
+    # TODO(Stage 13): thread a JwtVerifier from the gateway composition root
+    # into Slack event parsing; Stage 12 validates channel HMAC only here.
     normalized_headers = {key.lower(): value for key, value in headers.items()}
     try:
         timestamp = normalized_headers[TIMESTAMP_HEADER]
