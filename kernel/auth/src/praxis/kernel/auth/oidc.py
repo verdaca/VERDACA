@@ -1,0 +1,87 @@
+"""OIDC metadata and JWKS cache primitives."""
+
+from __future__ import annotations
+
+import asyncio
+import time
+from dataclasses import dataclass, field
+from typing import Any
+
+import httpx
+
+
+@dataclass(frozen=True)
+class OidcMetadata:
+    issuer: str
+    jwks_uri: str
+    id_token_signing_alg_values_supported: list[str]
+    extra: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class _CacheEntry:
+    metadata: OidcMetadata
+    jwks: dict[str, Any]
+    fetched_at: float
+
+
+class UnknownKeyError(KeyError):
+    """Raised when a JWKS does not contain a requested key id."""
+
+
+class JwksCache:
+    """TTL-based JWKS cache with explicit invalidation for rotation."""
+
+    def __init__(self, ttl_seconds: int = 3600) -> None:
+        self._ttl = ttl_seconds
+        self._store: dict[str, _CacheEntry] = {}
+        self._lock = asyncio.Lock()
+
+    async def get_or_fetch(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
+        entry = self._store.get(issuer)
+        if entry and (time.monotonic() - entry.fetched_at) < self._ttl:
+            return entry.metadata, entry.jwks
+        return await self._refresh(issuer)
+
+    async def invalidate(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
+        async with self._lock:
+            self._store.pop(issuer, None)
+        return await self._refresh(issuer)
+
+    async def get_key(self, issuer: str, kid: str) -> dict[str, Any]:
+        metadata, jwks = await self.get_or_fetch(issuer)
+        key = _find_key(jwks, kid)
+        if key is not None:
+            return key
+
+        metadata, jwks = await self.invalidate(metadata.issuer)
+        key = _find_key(jwks, kid)
+        if key is None:
+            raise UnknownKeyError(kid)
+        return key
+
+    async def _refresh(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
+        from praxis.kernel.auth.idp import discover
+
+        async with self._lock:
+            metadata = await discover(issuer)
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(metadata.jwks_uri, timeout=10.0)
+                resp.raise_for_status()
+                jwks = resp.json()
+            self._store[issuer] = _CacheEntry(
+                metadata=metadata,
+                jwks=jwks,
+                fetched_at=time.monotonic(),
+            )
+            return metadata, jwks
+
+
+def _find_key(jwks: dict[str, Any], kid: str) -> dict[str, Any] | None:
+    for key in jwks.get("keys", []):
+        if isinstance(key, dict) and key.get("kid") == kid:
+            return key
+    return None
+
+
+__all__ = ["JwksCache", "OidcMetadata", "UnknownKeyError"]

@@ -24,6 +24,7 @@ members = [
     "kernel/compression",
     "kernel/mac",
     "kernel/gateway",
+    "kernel/auth",
     "kernel/memory",
     "kernel/pi-mono/src",
     "kernel/runtime",
