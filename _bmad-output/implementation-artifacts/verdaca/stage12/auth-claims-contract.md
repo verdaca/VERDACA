@@ -46,9 +46,9 @@ Stage 11 freeze is sufficient for Stage 12 H#1.5. No Stage 12 `AuthClaims` DTO a
 
 ## §2 SHA Freeze Stamp
 
-H#1.5 freeze commit SHA: `PENDING_BACKFILL_AFTER_COMMIT`
+H#1.5 freeze commit SHA: `3257304`
 
-Back-fill commit SHA: `PENDING_BACKFILL_AFTER_COMMIT`
+The following commit back-fills this stamp into the contract doc.
 
 ## §3 Fixture Inventory
 
@@ -124,4 +124,3 @@ The future test should bind E1 and E2 by loading the three fixtures in `tests/fi
 | Pre-freeze branch | `stage-12.0-channel-adapters` |
 | Pre-freeze HEAD | `57fd348` |
 | Memory loaded | `project_verdaca_stage12_scope`, `project_verdaca_strategic_sequencing`, `feedback_escalation_criticality_threshold`, `feedback_no_waiver_discipline`, `feedback_memory_authorization`, `feedback_handover_template_discipline`, `feedback_corrigendum_paired_sweep`, `feedback_provenance_pin` |
-
