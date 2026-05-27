@@ -6,7 +6,12 @@ import pytest
 
 from praxis.adapters.channels.teams.adapter import TeamsAdapter
 from praxis.adapters.channels.teams.events import parse_activity
-from praxis.adapters.channels.teams.manifest import BOT_ID_ENV, SCOPES, SUPPORTS_FILES, manifest_template
+from praxis.adapters.channels.teams.manifest import (
+    BOT_ID_ENV,
+    SCOPES,
+    SUPPORTS_FILES,
+    manifest_template,
+)
 from praxis.ports.gateway import ChannelAdapterPort
 from praxis.ports.gateway_dto import AnalysisResult, ArtifactRef, SessionHandle
 

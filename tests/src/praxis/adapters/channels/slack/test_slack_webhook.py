@@ -5,8 +5,8 @@ import json
 import pytest
 
 from praxis.adapters.channels.slack.webhook import (
-    ConfigurationError,
     REPLAY_WINDOW_SECONDS,
+    ConfigurationError,
     WebhookResponse,
     load_signing_secret,
     receive_webhook,
@@ -23,7 +23,13 @@ def _body(event_type: str = "event_callback") -> bytes:
     return json.dumps(payload).encode("utf-8")
 
 
-def _headers(body: bytes, *, timestamp: int, secret: str, signature: str | None = None) -> dict[str, str]:
+def _headers(
+    body: bytes,
+    *,
+    timestamp: int,
+    secret: str,
+    signature: str | None = None,
+) -> dict[str, str]:
     return {
         "X-Slack-Request-Timestamp": str(timestamp),
         "X-Slack-Signature": signature or sign_body(body, timestamp=str(timestamp), secret=secret),
@@ -46,7 +52,9 @@ def test_M_T_SLACK_WEBHOOK_SIGNING_VALID_01_valid_signature_dispatches() -> None
 
     assert response.status_code == 200
     assert response.payload == {"ok": True}
-    assert dispatched == [{"type": "event_callback", "event": {"type": "app_mention", "text": "Run analysis"}}]
+    assert dispatched == [
+        {"type": "event_callback", "event": {"type": "app_mention", "text": "Run analysis"}}
+    ]
 
 
 @pytest.mark.no_waiver

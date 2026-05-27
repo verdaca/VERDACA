@@ -12,7 +12,12 @@ from praxis.ports.gateway_dto import AnalysisResult, ChannelContext, StartAnalys
 class TeamsAdapter:
     API_VERSION = "1.0.0"
 
-    def __init__(self, *, http_client: httpx.Client | None = None, post_results: bool = False) -> None:
+    def __init__(
+        self,
+        *,
+        http_client: httpx.Client | None = None,
+        post_results: bool = False,
+    ) -> None:
         self._http_client = http_client
         self._post_results = post_results
 

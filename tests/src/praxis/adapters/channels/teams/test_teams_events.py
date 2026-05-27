@@ -6,7 +6,6 @@ from pathlib import Path
 from praxis.adapters.channels.teams.events import extract_claims, parse_activity
 from praxis.ports.gateway_dto import ChannelKind
 
-
 FIXTURES_DIR = Path(__file__).parents[5] / "fixtures" / "auth_claims"
 
 

@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any
 
-
 SIGNATURE_HEADER = "x-slack-signature"
 TIMESTAMP_HEADER = "x-slack-request-timestamp"
 REPLAY_WINDOW_SECONDS = 300
@@ -84,5 +83,8 @@ def receive_webhook(
 
     envelope = json.loads(body.decode("utf-8"))
     if envelope.get("type") == "url_verification":
-        return WebhookResponse(status_code=200, payload={"challenge": envelope.get("challenge", "")})
+        return WebhookResponse(
+            status_code=200,
+            payload={"challenge": envelope.get("challenge", "")},
+        )
     return dispatch(envelope)

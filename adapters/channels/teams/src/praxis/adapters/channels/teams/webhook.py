@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any
 
-
 SIGNATURE_HEADER = "x-teams-signature"
 TIMESTAMP_HEADER = "x-teams-request-timestamp"
 REPLAY_WINDOW_SECONDS = 300

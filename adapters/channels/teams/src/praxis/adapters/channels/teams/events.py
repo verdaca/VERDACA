@@ -50,7 +50,9 @@ def parse_activity(
     activity_id = str(activity.get("id") or uuid.uuid4())
     text = str(activity.get("text") or "").strip()
 
-    auth_claims = extract_claims(claims or _fallback_claims(caller_id=caller_id, tenant_id=tenant_id))
+    auth_claims = extract_claims(
+        claims or _fallback_claims(caller_id=caller_id, tenant_id=tenant_id)
+    )
     intent = StartAnalysisRequest(
         question=text,
         requester_user_id=caller_id,

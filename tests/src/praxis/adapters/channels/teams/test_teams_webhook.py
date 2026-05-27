@@ -5,8 +5,8 @@ import json
 import pytest
 
 from praxis.adapters.channels.teams.webhook import (
-    ConfigurationError,
     REPLAY_WINDOW_SECONDS,
+    ConfigurationError,
     WebhookResponse,
     load_webhook_secret,
     receive_webhook,
@@ -18,7 +18,13 @@ def _body() -> bytes:
     return json.dumps({"type": "message", "text": "Run analysis"}).encode("utf-8")
 
 
-def _headers(body: bytes, *, timestamp: int, secret: str, signature: str | None = None) -> dict[str, str]:
+def _headers(
+    body: bytes,
+    *,
+    timestamp: int,
+    secret: str,
+    signature: str | None = None,
+) -> dict[str, str]:
     return {
         "X-Teams-Request-Timestamp": str(timestamp),
         "X-Teams-Signature": signature or sign_body(body, timestamp=str(timestamp), secret=secret),

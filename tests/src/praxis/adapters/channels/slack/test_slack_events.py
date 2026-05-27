@@ -6,7 +6,6 @@ from pathlib import Path
 from praxis.adapters.channels.slack.events import extract_claims, parse_event
 from praxis.ports.gateway_dto import ChannelKind
 
-
 FIXTURES_DIR = Path(__file__).parents[5] / "fixtures" / "auth_claims"
 
 
