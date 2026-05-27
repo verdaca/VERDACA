@@ -91,7 +91,10 @@ def verify_bearer_token(token: str | None) -> bool:
 def policy_health_check() -> bool:
     """Warn at startup when deployment bearer auth is not configured."""
     if os.environ.get(_DEPLOYMENT_TOKEN_ENV) is None:
-        _LOGGER.warning("auth misconfigured - all requests will reject")
+        _LOGGER.warning(
+            "Bearer auth not configured (%s unset): all requests will be rejected",
+            _DEPLOYMENT_TOKEN_ENV,
+        )
         return False
     return True
 

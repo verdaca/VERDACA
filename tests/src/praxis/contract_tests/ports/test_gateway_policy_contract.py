@@ -130,7 +130,10 @@ def test_policy_health_check_warns_when_bearer_token_unset(monkeypatch, caplog) 
     monkeypatch.delenv("VERDACA_GATEWAY_BEARER_TOKEN", raising=False)
 
     assert policy_health_check() is False
-    assert "auth misconfigured - all requests will reject" in caplog.text
+    assert (
+        "Bearer auth not configured (VERDACA_GATEWAY_BEARER_TOKEN unset): "
+        "all requests will be rejected"
+    ) in caplog.text
 
 
 @pytest.mark.asyncio

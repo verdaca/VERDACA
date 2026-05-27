@@ -19,7 +19,7 @@ class NonceStore:
     async def check_and_mark(self, nonce: str) -> None:
         async with self._lock:
             if nonce in self._seen:
-                raise NonceReplayError(nonce)
+                raise NonceReplayError("Token replay detected: nonce has already been used")
             self._seen.add(nonce)
 
 
