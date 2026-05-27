@@ -8,10 +8,11 @@ one entry; trailing [param] variants are normalized in the inventory match.
 Cross-regime summing is forbidden: the MAC 16-entry regime is separate.
 """
 
-import pytest
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 # Pytest node IDs are relative to the praxis-contract-tests root (`tests/`),
 # so this lock intentionally uses `src/...` paths.
@@ -90,6 +91,14 @@ STAGE10_NO_WAIVER_ALLOWLIST: frozenset[str] = frozenset(
     {*STAGE9_NO_WAIVER_ALLOWLIST, *STAGE10_DELTA_NO_WAIVER_ALLOWLIST}
 )
 
+STAGE10_INVENTORY_CONTRACTS: tuple[str, ...] = (
+    MEMORY_CONTRACT,
+    SERIALIZATION_CONTRACT,
+    COMPACTION_CONTRACT,
+    SESSION_INDEX_CONTRACT,
+    SKILL_TELEMETRY_CONTRACT,
+)
+
 EXPECTED_PARAM_VARIANTS: dict[str, frozenset[str]] = {
     PROMO_02: frozenset(
         {
@@ -131,6 +140,10 @@ def strip_param(nodeid: str) -> str:
     return nodeid.rsplit("[", 1)[0]
 
 
+def is_stage10_inventory_nodeid(nodeid: str) -> bool:
+    return any(nodeid.startswith(contract) for contract in STAGE10_INVENTORY_CONTRACTS)
+
+
 def test_stage9_no_waiver_allowlist_cardinality() -> None:
     assert len(STAGE9_NO_WAIVER_ALLOWLIST) == 9
 
@@ -159,7 +172,9 @@ def test_stage9_no_waiver_inventory_matches_allowlist(request: pytest.FixtureReq
         for item in request.session.items
         if item.get_closest_marker("no_waiver") is not None
     } or collect_no_waiver_nodeids()
-    normalized = {strip_param(nodeid) for nodeid in observed}
+    normalized = {
+        strip_param(nodeid) for nodeid in observed if is_stage10_inventory_nodeid(nodeid)
+    }
 
     assert normalized & STAGE9_NO_WAIVER_ALLOWLIST == STAGE9_NO_WAIVER_ALLOWLIST
 
@@ -176,7 +191,9 @@ def test_stage10_no_waiver_inventory_matches_allowlist(request: pytest.FixtureRe
         for item in request.session.items
         if item.get_closest_marker("no_waiver") is not None
     } or collect_no_waiver_nodeids()
-    normalized = {strip_param(nodeid) for nodeid in observed}
+    normalized = {
+        strip_param(nodeid) for nodeid in observed if is_stage10_inventory_nodeid(nodeid)
+    }
 
     assert len(STAGE10_NO_WAIVER_ALLOWLIST) <= 13
     assert len(STAGE10_DELTA_NO_WAIVER_ALLOWLIST) <= 4
