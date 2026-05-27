@@ -16,10 +16,18 @@ from praxis.ports.virtual_key import (
 class LiteLLMProxyError(Exception):
     """Raised when the LiteLLM proxy returns a non-2xx HTTP status."""
 
-    def __init__(self, operation: str, status_code: int) -> None:
+    def __init__(
+        self,
+        operation: str,
+        status_code: int | None,
+        detail: str | None = None,
+    ) -> None:
         self.operation = operation
         self.status_code = status_code
-        super().__init__(f"{operation} failed: {status_code}")
+        message = f"{operation} failed: {status_code}" if status_code is not None else operation
+        if detail is not None:
+            message = f"{message}: {detail}"
+        super().__init__(message)
 
 
 class LiteLLMVirtualKeyAdapter:
@@ -46,9 +54,16 @@ class LiteLLMVirtualKeyAdapter:
             )
             self._raise_for_error("create_virtual_key", resp.status_code)
             data = cast(dict[str, Any], resp.json())
+        token = data.get("key")
+        if token is None:
+            raise LiteLLMProxyError(
+                "create_virtual_key",
+                None,
+                "LiteLLM response missing required field 'key'",
+            )
         return VirtualKeyInfo(
             key_alias=spec.key_alias,
-            token=str(data["key"]),
+            token=str(token),
             spend=float(data.get("spend", 0.0)),
             max_budget=spec.max_budget,
             is_over_budget=False,

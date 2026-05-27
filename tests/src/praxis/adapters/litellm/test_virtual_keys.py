@@ -100,6 +100,21 @@ async def test_M_T_VKEY_CREATE_HAPPY_01_returns_virtual_key_info(
 
 
 @pytest.mark.asyncio
+async def test_M_T_VKEY_CREATE_MISSING_KEY_01_raises_proxy_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _QueuedAsyncClient([_HttpResponse(status_code=200, payload={"spend": 0.0})])
+    adapter = _adapter_with_client(monkeypatch, client)
+
+    with pytest.raises(LiteLLMProxyError) as exc_info:
+        await adapter.create_virtual_key(_spec())
+
+    assert exc_info.value.operation == "create_virtual_key"
+    assert exc_info.value.status_code is None
+    assert "missing required field 'key'" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
 async def test_M_T_VKEY_INFO_HAPPY_01_parses_spend_and_budget(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

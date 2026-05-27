@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import logging
 import os
 import time
 from collections.abc import Callable, Mapping
@@ -12,6 +13,7 @@ from typing import Any
 SIGNATURE_HEADER = "x-teams-signature"
 TIMESTAMP_HEADER = "x-teams-request-timestamp"
 REPLAY_WINDOW_SECONDS = 300
+_LOGGER = logging.getLogger(__name__)
 
 
 class ConfigurationError(RuntimeError):
@@ -78,7 +80,11 @@ def receive_webhook(
         timestamp = normalized_headers[TIMESTAMP_HEADER]
         signature = normalized_headers[SIGNATURE_HEADER]
         verify_signature(body, timestamp=timestamp, signature=signature, secret=secret, now=now)
-    except (KeyError, WebhookAuthError):
+    except KeyError as exc:
+        _LOGGER.warning("Missing required webhook header: %s", exc)
+        return WebhookResponse(status_code=401, payload={"error": "unauthorized"})
+    except WebhookAuthError as exc:
+        _LOGGER.info("Webhook auth failed: %s", exc)
         return WebhookResponse(status_code=401, payload={"error": "unauthorized"})
 
     activity = json.loads(body.decode("utf-8"))

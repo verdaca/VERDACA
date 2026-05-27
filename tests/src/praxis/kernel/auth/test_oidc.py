@@ -72,8 +72,8 @@ def _metadata() -> OidcMetadata:
     )
 
 
-def _discover_factory(metadata: OidcMetadata) -> Callable[[str], Any]:
-    async def _discover(_issuer: str) -> OidcMetadata:
+def _discover_factory(metadata: OidcMetadata) -> Callable[..., Any]:
+    async def _discover(_issuer: str, **_kwargs: object) -> OidcMetadata:
         return metadata
 
     return _discover

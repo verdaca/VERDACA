@@ -32,8 +32,14 @@ class UnknownKeyError(KeyError):
 class JwksCache:
     """TTL-based JWKS cache with explicit invalidation for rotation."""
 
-    def __init__(self, ttl_seconds: int = 3600) -> None:
+    def __init__(
+        self,
+        ttl_seconds: int = 3600,
+        httpx_client: httpx.AsyncClient | None = None,
+    ) -> None:
         self._ttl = ttl_seconds
+        self._httpx_client = httpx_client
+        self._owned_httpx_client: httpx.AsyncClient | None = None
         self._store: dict[str, _CacheEntry] = {}
         self._lock = asyncio.Lock()
 
@@ -48,7 +54,7 @@ class JwksCache:
 
         async with self._lock:
             self._store.pop(issuer, None)
-            metadata = await discover(issuer)
+            metadata = await discover(issuer, httpx_client=self._client())
             jwks = await self._fetch_jwks(metadata.jwks_uri)
             self._store[issuer] = _CacheEntry(
                 metadata=metadata,
@@ -77,7 +83,7 @@ class JwksCache:
             if entry is not None and self._is_fresh(entry):
                 return entry.metadata, entry.jwks
 
-            metadata = await discover(issuer)
+            metadata = await discover(issuer, httpx_client=self._client())
             jwks = await self._fetch_jwks(metadata.jwks_uri)
             self._store[issuer] = _CacheEntry(
                 metadata=metadata,
@@ -87,14 +93,20 @@ class JwksCache:
             return metadata, jwks
 
     async def _fetch_jwks(self, jwks_uri: str) -> dict[str, Any]:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(jwks_uri, timeout=10.0)
-            resp.raise_for_status()
-            jwks = cast(dict[str, Any], resp.json())
+        resp = await self._client().get(jwks_uri, timeout=10.0)
+        resp.raise_for_status()
+        jwks = cast(dict[str, Any], resp.json())
         return jwks
 
     def _is_fresh(self, entry: _CacheEntry) -> bool:
         return (time.monotonic() - entry.fetched_at) < self._ttl
+
+    def _client(self) -> httpx.AsyncClient:
+        if self._httpx_client is not None:
+            return self._httpx_client
+        if self._owned_httpx_client is None:
+            self._owned_httpx_client = httpx.AsyncClient()
+        return self._owned_httpx_client
 
 
 def _find_key(jwks: dict[str, Any], kid: str) -> dict[str, Any] | None:

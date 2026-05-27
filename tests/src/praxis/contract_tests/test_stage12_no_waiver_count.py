@@ -5,6 +5,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+ROOT = Path(__file__).parents[4]
+
 STAGE_12_NO_WAIVER_IDS = frozenset(
     {
         "M-T-TEAMS-WEBHOOK-HMAC-TAMPERED-01",
@@ -25,10 +27,10 @@ _EXPECTED_PREFIXES = {
 }
 
 _STAGE12_TEST_ROOTS = (
-    Path("tests/src/praxis/adapters/channels"),
-    Path("tests/src/praxis/adapters/litellm"),
-    Path("tests/src/praxis/kernel/auth"),
-    Path("tests/src/praxis/contract_tests/test_stage12_ast_gates.py"),
+    ROOT / "tests" / "src" / "praxis" / "adapters" / "channels",
+    ROOT / "tests" / "src" / "praxis" / "adapters" / "litellm",
+    ROOT / "tests" / "src" / "praxis" / "kernel" / "auth",
+    ROOT / "tests" / "src" / "praxis" / "contract_tests" / "test_stage12_ast_gates.py",
 )
 
 
@@ -50,7 +52,7 @@ def _canonical_stage12_id(function_name: str) -> str | None:
 
 
 def _is_stage12_test_path(path: Path) -> bool:
-    normalized = Path(path.as_posix())
+    normalized = path.resolve()
     for root in _STAGE12_TEST_ROOTS:
         if root.suffix:
             if normalized == root:
@@ -64,7 +66,7 @@ def _is_stage12_test_path(path: Path) -> bool:
 def collect_stage12_no_waiver_ids() -> set[str]:
     collected: set[str] = set()
     unknown: list[str] = []
-    for path in Path("tests/src/praxis").rglob("test_*.py"):
+    for path in (ROOT / "tests" / "src" / "praxis").rglob("test_*.py"):
         if not _is_stage12_test_path(path):
             continue
         module = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -75,7 +77,7 @@ def collect_stage12_no_waiver_ids() -> set[str]:
                 continue
             mac_t_id = _canonical_stage12_id(node.name)
             if mac_t_id is None:
-                unknown.append(f"{path.as_posix()}::{node.name}")
+                unknown.append(f"{path.relative_to(ROOT).as_posix()}::{node.name}")
             else:
                 collected.add(mac_t_id)
     if unknown:
