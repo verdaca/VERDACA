@@ -321,7 +321,7 @@ class VerdacaGatewayService:
     def _session_id(intent: StartAnalysisRequest) -> str:
         digest = hashlib.sha256(
             f"{intent.workspace_id}:{intent.idempotency_key}".encode("utf-8")
-        ).hexdigest()[:16]
+        ).hexdigest()[:32]
         return f"gw-{digest}"
 
     @staticmethod
