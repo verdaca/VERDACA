@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any
 
+from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
+from praxis.ports.gateway_dto import ChannelKind
+
 SIGNATURE_HEADER = "x-teams-signature"
 TIMESTAMP_HEADER = "x-teams-request-timestamp"
 REPLAY_WINDOW_SECONDS = 300
@@ -32,10 +35,12 @@ class WebhookResponse:
 
 def load_webhook_secret(env: Mapping[str, str] | None = None) -> str:
     source = os.environ if env is None else env
-    secret = source.get("TEAMS_WEBHOOK_SECRET")
-    if not secret:
-        raise ConfigurationError("TEAMS_WEBHOOK_SECRET is required")
-    return secret
+    try:
+        return WebhookSigningKeyResolver(
+            secrets={ChannelKind.TEAMS: source.get("TEAMS_WEBHOOK_SECRET", "")}
+        ).resolve(ChannelKind.TEAMS)
+    except ValueError as exc:
+        raise ConfigurationError("TEAMS_WEBHOOK_SECRET is required") from exc
 
 
 def sign_body(body: bytes, *, timestamp: str, secret: str) -> str:

@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any
 
+from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
+from praxis.ports.gateway_dto import ChannelKind
+
 SIGNATURE_HEADER = "x-slack-signature"
 TIMESTAMP_HEADER = "x-slack-request-timestamp"
 REPLAY_WINDOW_SECONDS = 300
@@ -33,10 +36,12 @@ class WebhookResponse:
 
 def load_signing_secret(env: Mapping[str, str] | None = None) -> str:
     source = os.environ if env is None else env
-    secret = source.get("SLACK_SIGNING_SECRET")
-    if not secret:
-        raise ConfigurationError("SLACK_SIGNING_SECRET is required")
-    return secret
+    try:
+        return WebhookSigningKeyResolver(
+            secrets={ChannelKind.SLACK: source.get("SLACK_SIGNING_SECRET", "")}
+        ).resolve(ChannelKind.SLACK)
+    except ValueError as exc:
+        raise ConfigurationError("SLACK_SIGNING_SECRET is required") from exc
 
 
 def sign_body(body: bytes, *, timestamp: str, secret: str) -> str:

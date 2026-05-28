@@ -6,11 +6,13 @@ import asyncio
 import hashlib
 import json
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import ClassVar, Coroutine, TypeVar
 
+from praxis.kernel.auth import JwtVerifier, NonceStore, OidcPolicy
+from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
 from praxis.kernel.gateway.dial import DIAL_LITELLM_MODEL, DIAL_LITELLM_PROVIDER
 from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
 from praxis.kernel.gateway.wal import AsyncSessionIndex, GatewayWalStore
@@ -19,10 +21,12 @@ from praxis.kernel.session_index.port import SessionIndexPort
 from praxis.ports.common import Message
 from praxis.ports.compaction import CompactionPort, CompactionRequest
 from praxis.ports.cost_meter import BudgetScope, CostEvent, CostMeterPort
+from praxis.ports.gateway import ChannelAdapterPort
 from praxis.ports.gateway_dto import (
     AnalysisResult,
     ArtifactRef,
     ChannelContext,
+    ChannelKind,
     SessionHandle,
     StartAnalysisRequest,
 )
@@ -46,8 +50,13 @@ class VerdacaGatewayService:
     cost_meter: CostMeterPort
     compaction: CompactionPort
     session_index: SessionIndexPort
+    channel_adapters: dict[ChannelKind, ChannelAdapterPort]
+    jwt_verifier: JwtVerifier
+    oidc_policy: OidcPolicy
+    nonce_store: NonceStore
+    webhook_resolver: WebhookSigningKeyResolver
     wal_store: GatewayWalStore | None = None
-    policy: GatewayPolicy = GatewayPolicy()
+    policy: GatewayPolicy = field(default_factory=GatewayPolicy)
 
     @property
     def is_wired(self) -> bool:
