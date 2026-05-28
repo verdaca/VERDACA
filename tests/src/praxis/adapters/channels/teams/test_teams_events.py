@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from praxis.adapters.channels.teams.events import extract_claims, parse_activity
+from praxis.adapters.channels.teams.events import parse_activity
 from praxis.ports.gateway_dto import ChannelKind
 
 FIXTURES_DIR = Path(__file__).parents[5] / "fixtures" / "auth_claims"
@@ -63,7 +63,9 @@ def test_M_T_TEAMS_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_tenant() -
 
 
 def test_M_T_TEAMS_AUTH_CLAIMS_EXTRACT_01_extracts_claims_as_strings() -> None:
-    claims = extract_claims(_claims())
+    event = parse_activity(_activity(), claims=_claims())
+    assert event is not None
+    claims = event.ctx.auth_claims.unwrap()
 
     assert claims["iss"].startswith("https://login.microsoftonline.com/")
     assert claims["sub"] == "entra-subject-stage12-fixture"

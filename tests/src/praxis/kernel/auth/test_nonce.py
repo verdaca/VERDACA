@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from praxis.kernel.auth.nonce import NonceReplayError, NonceStore
+from praxis.kernel.auth.nonce import InMemoryNonceStore, NonceReplayError, NonceStore
 
 
 async def _check(store: NonceStore, nonce: str) -> type[BaseException] | None:
@@ -19,14 +19,17 @@ async def _check(store: NonceStore, nonce: str) -> type[BaseException] | None:
 
 @pytest.mark.no_waiver
 @pytest.mark.asyncio
-async def test_M_T_AUTH_NONCE_REPLAY_BLOCK_01_blocks_replay_and_concurrent_duplicates() -> None:
-    sequential = NonceStore()
+async def test_M_T_AUTH_NONCE_REPLAY_BLOCK_01_blocks_replay_and_concurrent_duplicates(
+    tmp_path,
+) -> None:
+    sequential = NonceStore(db_path=tmp_path / "sequential-nonces.db")
 
     await sequential.check_and_mark("nonce-001")
     with pytest.raises(NonceReplayError):
         await sequential.check_and_mark("nonce-001")
+    await sequential.close()
 
-    concurrent = NonceStore()
+    concurrent = NonceStore(db_path=tmp_path / "concurrent-nonces.db")
     results = await asyncio.gather(
         _check(concurrent, "nonce-002"),
         _check(concurrent, "nonce-002"),
@@ -36,3 +39,13 @@ async def test_M_T_AUTH_NONCE_REPLAY_BLOCK_01_blocks_replay_and_concurrent_dupli
         "NonceReplayError",
         "ok",
     ]
+    await concurrent.close()
+
+
+@pytest.mark.asyncio
+async def test_in_memory_nonce_store_marks_non_persistent() -> None:
+    store = InMemoryNonceStore()
+
+    await store.check_and_mark("nonce-memory")
+
+    assert InMemoryNonceStore.persistent is False

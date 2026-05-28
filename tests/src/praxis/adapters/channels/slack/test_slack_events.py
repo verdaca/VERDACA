@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from praxis.adapters.channels.slack.events import extract_claims, parse_event
+from praxis.adapters.channels.slack.events import parse_event
 from praxis.ports.gateway_dto import ChannelKind
 
 FIXTURES_DIR = Path(__file__).parents[5] / "fixtures" / "auth_claims"
@@ -62,7 +62,9 @@ def test_M_T_SLACK_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_workspace(
 
 
 def test_M_T_SLACK_AUTH_CLAIMS_EXTRACT_01_extracts_claims_as_strings() -> None:
-    claims = extract_claims(_claims())
+    event = parse_event(_envelope(), claims=_claims())
+    assert event is not None
+    claims = event.ctx.auth_claims.unwrap()
 
     assert claims["iss"].startswith("https://dev-12345678.okta")
     assert claims["sub"] == "00u123stage12fixture"

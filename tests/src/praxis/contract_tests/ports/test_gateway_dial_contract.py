@@ -13,6 +13,7 @@ from praxis.contract_tests.ports.gateway_contract_fakes import (
     FakeCompaction,
     FakeCostMeter,
     FakeMemory,
+    make_auth_quartet,
     make_ctx,
     make_intent,
 )
@@ -43,16 +44,22 @@ def _completion_response() -> MagicMock:
 
 
 def _dial_gateway(tmp_path, *, api_key: str | None = "test-key") -> VerdacaGatewayService:
+    jwt_verifier, oidc_policy, nonce_store, webhook_resolver = make_auth_quartet()
     return VerdacaGatewayService(
         llm_proxy=create_dial_llm_proxy(api_key=api_key),
         memory=FakeMemory(),
         cost_meter=FakeCostMeter(consumed_usd=Decimal("0")),
         compaction=FakeCompaction(),
         session_index=CountingSqliteSessionIndex(tmp_path / "session-index.sqlite3"),
+        channel_adapters={},
+        jwt_verifier=jwt_verifier,
+        oidc_policy=oidc_policy,
+        nonce_store=nonce_store,
+        webhook_resolver=webhook_resolver,
         wal_store=GatewayWalStore(
             GatewayWalConfig(database_path=tmp_path / "gateway-idempotency.sqlite3")
         ),
-        policy=GatewayPolicy(allowed_user_ids=frozenset({"user-1"})),
+        policy=GatewayPolicy(allowed_user_ids=frozenset({"user-1"}), oidc_policy=oidc_policy),
     )
 
 

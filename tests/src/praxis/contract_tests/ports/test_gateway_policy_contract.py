@@ -3,17 +3,15 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any
 
 import pytest
 
-import praxis.kernel.gateway.policy as policy_module
 from praxis.contract_tests.ports.gateway_contract_fakes import (
     make_ctx,
     make_gateway_harness,
     make_intent,
 )
-from praxis.kernel.auth import AuthClaims, JoseError, OidcMetadata
+from praxis.kernel.auth import AuthClaims
 from praxis.kernel.gateway import GatewayPolicy
 from praxis.kernel.gateway.policy import (
     InvalidBearerError,
@@ -23,43 +21,13 @@ from praxis.kernel.gateway.policy import (
 from praxis.ports.gateway_errors import GatewayCtxError
 
 
-class _FakeJwksCache:
+class _FakeOidcPolicy:
     def __init__(self) -> None:
-        self.get_calls: list[str] = []
-        self.invalidate_calls: list[str] = []
+        self.tokens: list[str] = []
 
-    async def get_or_fetch(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
-        self.get_calls.append(issuer)
-        return _metadata(issuer), {"keys": ["stale"]}
-
-    async def invalidate(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
-        self.invalidate_calls.append(issuer)
-        return _metadata(issuer), {"keys": ["fresh"]}
-
-
-class _RetryVerifier:
-    attempts = 0
-
-    def __init__(self, metadata: OidcMetadata, jwks: dict[str, Any]) -> None:
-        self.metadata = metadata
-        self.jwks = jwks
-
-    def decode(self, token: str, audience: str) -> AuthClaims:
-        _RetryVerifier.attempts += 1
-        if _RetryVerifier.attempts == 1:
-            raise JoseError("stale key")
-        assert token == "bearer-token"
-        assert audience == "api://verdaca"
-        assert self.jwks == {"keys": ["fresh"]}
-        return AuthClaims(_claims={"sub": "user-1", "iss": self.metadata.issuer, "aud": audience})
-
-
-def _metadata(issuer: str) -> OidcMetadata:
-    return OidcMetadata(
-        issuer=issuer,
-        jwks_uri=f"{issuer}/keys",
-        id_token_signing_alg_values_supported=("RS256",),
-    )
+    async def authenticate(self, bearer_token: str) -> AuthClaims:
+        self.tokens.append(bearer_token)
+        return AuthClaims(_claims={"sub": "user-1", "iss": "issuer", "aud": "api://verdaca"})
 
 
 def test_M_T_GW_POLICY_USER_ALLOWLIST_01_default_empty_rejects_pre_call(tmp_path) -> None:
@@ -139,37 +107,22 @@ def test_policy_health_check_warns_when_bearer_token_unset(monkeypatch, caplog) 
 
 
 @pytest.mark.asyncio
-async def test_M_T_AUTH_POLICY_RETRY_ON_JOSE_ERROR_01_invalidates_jwks_once(
-    monkeypatch,
-) -> None:
-    jwks_cache = _FakeJwksCache()
-    _RetryVerifier.attempts = 0
-    monkeypatch.setattr(policy_module, "JwtVerifier", _RetryVerifier)
-    policy = GatewayPolicy(
-        jwks_cache=jwks_cache,
-        tenant_idp_map={"tenant-1": "https://issuer.example.invalid"},
-        expected_audience="api://verdaca",
-    )
+async def test_M_T_AUTH_POLICY_OIDC_DELEGATE_01_authenticate_delegates_to_oidc_policy() -> None:
+    oidc_policy = _FakeOidcPolicy()
+    policy = GatewayPolicy(oidc_policy=oidc_policy)
 
     claims = await policy.authenticate("bearer-token", "tenant-1")
 
     assert claims.require("sub") == "user-1"
-    assert jwks_cache.get_calls == ["https://issuer.example.invalid"]
-    assert jwks_cache.invalidate_calls == ["https://issuer.example.invalid"]
-    assert _RetryVerifier.attempts == 2
+    assert oidc_policy.tokens == ["bearer-token"]
 
 
 @pytest.mark.asyncio
 async def test_M_T_AUTH_POLICY_EMPTY_BEARER_01_rejects_before_verifier() -> None:
-    jwks_cache = _FakeJwksCache()
-    policy = GatewayPolicy(
-        jwks_cache=jwks_cache,
-        tenant_idp_map={"tenant-1": "https://issuer.example.invalid"},
-        expected_audience="api://verdaca",
-    )
+    oidc_policy = _FakeOidcPolicy()
+    policy = GatewayPolicy(oidc_policy=oidc_policy)
 
     with pytest.raises(InvalidBearerError, match="empty or missing"):
         await policy.authenticate("   ", "tenant-1")
 
-    assert jwks_cache.get_calls == []
-    assert jwks_cache.invalidate_calls == []
+    assert oidc_policy.tokens == []

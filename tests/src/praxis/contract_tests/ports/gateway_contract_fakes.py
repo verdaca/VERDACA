@@ -15,6 +15,8 @@ from praxis.kernel.gateway import (
     GatewayWalStore,
     VerdacaGatewayService,
 )
+from praxis.kernel.auth import InMemoryNonceStore, JwtVerifier, OidcMetadata, OidcPolicy
+from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
 from praxis.kernel.session_index.models import (
     ArtifactRef as SessionIndexArtifactRef,
 )
@@ -276,6 +278,26 @@ class GatewayHarness:
     session_index: CountingSqliteSessionIndex
 
 
+def make_auth_quartet() -> tuple[JwtVerifier, OidcPolicy, InMemoryNonceStore, WebhookSigningKeyResolver]:
+    verifier = JwtVerifier(
+        OidcMetadata(
+            issuer="https://issuer.example.invalid",
+            jwks_uri="https://issuer.example.invalid/keys",
+            id_token_signing_alg_values_supported=("RS256",),
+        ),
+        jwks={"keys": []},
+    )
+    oidc_policy = OidcPolicy(verifier=verifier, audience="api://verdaca")
+    nonce_store = InMemoryNonceStore()
+    webhook_resolver = WebhookSigningKeyResolver(
+        secrets={
+            ChannelKind.TEAMS: "teams-secret",
+            ChannelKind.SLACK: "slack-secret",
+        }
+    )
+    return verifier, oidc_policy, nonce_store, webhook_resolver
+
+
 def make_intent(
     idempotency_key: str = "idem-1",
     *,
@@ -312,16 +334,23 @@ def make_gateway_harness(
     cost = FakeCostMeter(consumed_usd=consumed_usd)
     compaction = FakeCompaction()
     session_index = CountingSqliteSessionIndex(tmp_path / "session-index.sqlite3")
+    jwt_verifier, oidc_policy, nonce_store, webhook_resolver = make_auth_quartet()
     gateway = VerdacaGatewayService(
         llm_proxy=llm,
         memory=memory,
         cost_meter=cost,
         compaction=compaction,
         session_index=session_index,
+        channel_adapters={},
+        jwt_verifier=jwt_verifier,
+        oidc_policy=oidc_policy,
+        nonce_store=nonce_store,
+        webhook_resolver=webhook_resolver,
         wal_store=GatewayWalStore(
             GatewayWalConfig(database_path=tmp_path / "gateway-idempotency.sqlite3")
         ),
-        policy=policy or GatewayPolicy(allowed_user_ids=frozenset({"user-1"})),
+        policy=policy
+        or GatewayPolicy(allowed_user_ids=frozenset({"user-1"}), oidc_policy=oidc_policy),
     )
     return GatewayHarness(
         gateway=gateway,
@@ -342,5 +371,6 @@ __all__ = [
     "GatewayHarness",
     "make_ctx",
     "make_gateway_harness",
+    "make_auth_quartet",
     "make_intent",
 ]
