@@ -1,6 +1,6 @@
 # Verdaca — Remaining Work to POV-Ready
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-26 (Stage 11 RATIFIED) | **Working branch HEAD:** `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NOT pushed to origin) | **local main = origin/main = `f181a7e`** (Stage 10 RATIFIED in sync via A7 override push 2026-05-24) | **Stage:** Stage 9 RATIFIED 2026-05-20; **Stage 10 RATIFIED 2026-05-24** (VOC PROVISIONAL via HYPOTHETICAL synthesis; A7 closed via team-lead override; close memo at [[docs/stage-10-ratified-close-memo.md]]); **Stage 11 RATIFIED 2026-05-26** (Channel-Neutral MCP Gateway; Path A local-only on `stage-11.0-mcp-gateway`); **Stage 12 OPEN** — 7 gates G1-G7 in-flight (TENTATIVE scope; not yet ratified). A7 HYPOTHETICAL-VOC caveat inherited indefinitely: every customer-fit claim must say "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-27 (Stage 12 RATIFIED + Stage 13 G1 RATIFIED) | **Working branch HEAD:** `stage-12.0-channel-adapters @ 43f57ba` (Path A local-only; NOT pushed to origin) | **local main = origin/main = `f181a7e`** (Stage 10 RATIFIED in sync via A7 override push 2026-05-24; Stages 11+12+13 local-only per D13) | **Stage:** Stage 9 RATIFIED 2026-05-20; **Stage 10 RATIFIED 2026-05-24**; **Stage 11 RATIFIED 2026-05-26**; **Stage 12 RATIFIED 2026-05-27** (Teams + Slack channels + kernel/auth/ + VirtualKeyPort; 281 tests; Path A local-only on `stage-12.0-channel-adapters @ 43f57ba`; close memo at `docs/stage-12-ratified-close-memo.md`); **Stage 13 OPEN** — G1 RATIFIED 2026-05-27 (production hardening Option A; G3+G6 OPEN). A7 HYPOTHETICAL-VOC caveat inherited indefinitely: every customer-fit claim must say "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
 
 ---
 
@@ -84,23 +84,41 @@ Stage 9 RATIFIED 2026-05-20 — full ports-and-adapters production rebuild
 - [x] 4 BMAD ratifications closed with amendments (Winston/Murat/Mary/Cleo); Cleo H#8 V2 substantive close at `1adbecb`
 - [x] Branch tip `e0aade3` (close memo); 20 commits from `a11aa67` to `e0aade3`; Path A local-only (NOT merged to main)
 
-### Before Stage 12 charter opens — IN FLIGHT (TENTATIVE)
-- [ ] **G1** Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) — IN-FLIGHT
-- [ ] **G2** VOC decision — three options: (a) inherit HYPOTHETICAL caveat indefinitely; (b) abbreviated VOC for Stage 12 questions (Teams vs Slack adoption, Entra/Okta/Auth0 distribution); (c) full re-do
-- [ ] **G3** Cut `stage-12.0-channel-adapters` branch from `stage-11.0-mcp-gateway @ e0aade3` (Path A continuation recommended)
-- [ ] **G4** Executor split confirmation (E1 = channels + E2 = auth recommended)
-- [ ] **G5** Stage 11.5 debt scheduling (5 items; pre-Stage-12 or parallel)
-- [ ] **G6** Dispatch fresh executor — BLOCKED on G1+G3+G4
-- [ ] **G7** Merge Stage 11 to main — recommend keep local-only through Stage 12
+### Before Stage 12 charter opens — COMPLETE (Historical) 2026-05-27
+- [x] **G1** Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) — CLOSED 2026-05-27 (14 amendments D1–D11; E1=channels + E2=auth + uv 19→22)
+- [x] **G2** VOC decision — CLOSED: option (a) inherit HYPOTHETICAL caveat indefinitely
+- [x] **G3** Cut `stage-12.0-channel-adapters` from `stage-11.0-mcp-gateway @ e0aade3` — DONE (Path A continuation)
+- [x] **G4** Executor split confirmed — E1 = channels, E2 = auth
+- [x] **G5** Stage 11.5 debt scheduled — DIAL-LIVE-SMOKE resolved in-cycle; AUTH-01 + LITELLM-VKEY-01 closed by E2; JSONRPC-FIXTURE-REGEN + RUFF-CLEANUP + SESSION-ID-WIDTH + WAL-CONCURRENCY carry to Stage 13
+- [x] **G6** Executor dispatched + closed (E1 + E2 + 1 E2 redispatch after DIAL_API_KEY env export fix)
+- [x] **G7** Local-only maintained — Stages 11+12 still NOT merged to main (Path A; D13)
 
-### Stage 12 RATIFIED when — TENTATIVE (gated on G1 roundtable outcome)
-- [ ] E1 = Teams + Slack `ChannelAdapterPort` impls landed under `adapters/channels/{teams,slack}/`; CLI hardening optional (TENTATIVE per G1)
-- [ ] E2 = OAuth 2.1 + OIDC (Entra/Okta/Auth0) replacing `policy.py` bearer MVP (TENTATIVE per G1)
-- [ ] E2 = LiteLLM virtual keys replacing budget-cap MVP (TENTATIVE per G1)
-- [ ] Cross-window dep honored: E1 BLOCKS on `[E2-H#2-COMPLETE]` for auth_claims wiring
-- [ ] Frozen Port surfaces (GatewayPort + ChannelAdapterPort) — NO Stage 12 changes without REFREEZE-03 ceremony
-- [ ] STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 close as Stage 12 E2 lands
-- [ ] (uncertain — verify) MAC-T floor + no_waiver count for Stage 12 — TBD at G1
+### Stage 12 RATIFIED — COMPLETE (Historical) 2026-05-27
+- [x] E1 = Teams + Slack `ChannelAdapterPort` impls landed under `adapters/channels/{teams,slack}/` — DONE (HMAC-SHA256; X-Slack-Signature v0)
+- [x] E2 = OAuth 2.1 + OIDC via `kernel/auth/` (claims.py, oidc.py, jwt.py, idp.py, nonce.py) — DONE; `policy.py` refactored to thin orchestrator
+- [x] E2 = LiteLLM virtual keys via `adapters/litellm/virtual_keys.py` (HTTP-client; no Python SDK) + `ports/virtual_key.py` — DONE; STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 CLOSED
+- [x] Cross-window dep honored — DONE
+- [x] Frozen Port surfaces respected — no REFREEZE-03 triggered
+- [x] 281 tests pass / 8 skipped / 0 failed; 47 MAC-Ts; 9 no_waiver strict-equality; 6 AST gates green
+- [x] Mary buyer-language audit PASS-WITH-AMENDMENTS (H#7); Cleo adversarial FAIL→PASS post-V2 (H#8)
+- [x] Close memo: `docs/stage-12-ratified-close-memo.md` at `43f57ba`; 5 findings → Stage 13
+
+### Before Stage 13 charter opens — IN FLIGHT
+- [x] **G1** Stage 13 scope confirmation roundtable (Winston + Murat + Cleo + Vera + Amelia, advisor-reconciled) — RATIFIED 2026-05-27 (R1–R14 advisor-reconciled + R15-V2 7-amendment patch folded pre-dispatch via Path α; production hardening Option A)
+- [x] **G2** VOC — CLOSED: inherits HYPOTHETICAL caveat per project_verdaca_strategic_sequencing
+- [ ] **G3** Cut `stage-13.0-production-hardening` from `43f57ba` — OPEN (master executor Phase 0)
+- [x] **G4** Executor split — CLOSED via R11: E1 (auth/channel hardening) ‖ E2 (hygiene/data-plane); E2 commits land first
+- [x] **G5** Debt scheduling — CLOSED via R1+R2 (7 scope IN items; WAL-CONCURRENCY DEFERRED per R6)
+- [ ] **G6** Dispatch master executor — OPEN
+- [x] **G7** Path A local-only — CLOSED via D13 (Stages 11+12+13 all local-only)
+
+### Stage 13 RATIFIED when — TENTATIVE
+- [ ] 7 scope IN items closed via E1 + E2 (F-12-CLEO-C2 JwtVerifier composition root; F-12-CLEO-M3 NonceStore SQLite persistence + lazy TTL + startup sweep; F-12-CLEO-W2 async post_result; D4/Q1 WebhookSigningKeyResolver dataclass; JSONRPC-FIXTURE-REGEN; SESSION-ID-WIDTH ≥128-bit entropy; WAL-CONCURRENCY DEFERRED per R6)
+- [ ] 25 MAC-T floor + 13-entry no_waiver strict-equality (9 → 13: +M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01, +M-T-AUTH-NONCE-PERSISTENCE-RESTART-01, +M-T-SESSION-ID-ENTROPY-FLOOR-01, +M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01) + 5 AST gates (claims-extraction ban; NonceStore persistent ClassVar; sync httpx in async ban; session-id entropy floor 128 bits; bare-except auth/crypto ban)
+- [ ] 281+ tests still passing (Stage 12 baseline + Stage 13 additions)
+- [ ] H#7 Mary buyer-language audit PASS (HARD-constraint grep zero hits — strategic analysis, seamless, enterprise-grade)
+- [ ] H#8 Cleo adversarial review = PASS or PASS-WITH-AMENDMENTS
+- [ ] Pre-charter: `/verdaca-wiki-update` + `graphify update .` BEFORE H#1 (Vera load-bearing — kernel/auth/ not yet in wiki/graph)
 
 ---
 
@@ -193,49 +211,118 @@ RATIFIED 2026-05-26 on `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NO
 
 ---
 
-## Stage 12 — OPEN (TENTATIVE; 7 gates G1-G7 in flight)
+## Stage 12 — Channel Adapters + Auth — RATIFIED 2026-05-27
 
-Stage 12 is **OPEN — not yet ratified**. Scope is TENTATIVE pending G1 roundtable confirmation. All claims below carry TENTATIVE flag until G1 closes.
+RATIFIED 2026-05-27 at `43f57ba` on `stage-12.0-channel-adapters` (29 commits from base `e0aade3`). Path A local-only; NOT merged to main. Close memo: `docs/stage-12-ratified-close-memo.md`.
+
+### Gates G1-G7 — ALL CLOSED
+
+| Gate | Description | Status |
+|---|---|---|
+| **G1** | Scope roundtable (Winston + Mary + Murat + Vera + advisor) — E1=channels + E2=auth + uv 19→22; 14 amendments D1–D11 | CLOSED 2026-05-27 |
+| **G2** | VOC — option (a): inherit HYPOTHETICAL caveat indefinitely | CLOSED |
+| **G3** | Branch `stage-12.0-channel-adapters` cut from `e0aade3` | CLOSED |
+| **G4** | Executor split — E1 (channels) ‖ E2 (auth) | CLOSED |
+| **G5** | Debt scheduling — DIAL-LIVE-SMOKE resolved in-cycle; AUTH-01 + LITELLM-VKEY-01 closed by E2; 4 items carry to Stage 13 | CLOSED |
+| **G6** | Executors dispatched + closed (E1 + E2 + 1 E2 redispatch) | CLOSED |
+| **G7** | Path A maintained — Stages 11+12 local-only NOT merged to main (D13) | CLOSED |
+
+### What shipped
+
+- **Branch tip:** `stage-12.0-channel-adapters @ 43f57ba`; 29 commits from `e0aade3`; 4 cycle commits H#7→H#8.V2.D
+- **kernel/auth/** (workspace member #22): `claims.py`, `oidc.py`, `jwt.py`, `idp.py`, `nonce.py`
+- **adapters/channels/teams/** + **adapters/channels/slack/** — HMAC-SHA256; X-Slack-Signature v0
+- **adapters/litellm/virtual_keys.py** — HTTP-client; no Python LiteLLM SDK
+- **ports/virtual_key.py** — `VirtualKeyPort` + `VirtualKeySpec` + `VirtualKeyInfo` + `BudgetExhaustedError`
+- **kernel/gateway/policy.py** — refactored to thin orchestrator
+- **DIAL-LIVE-SMOKE RESOLVED** via Azure-style gpt-4o probe (in-cycle)
+- **281 tests pass** / 8 skipped / 0 failed; 47 MAC-Ts; 9 no_waiver strict-equality; 6 AST gates green
+- Mary buyer-language audit PASS-WITH-AMENDMENTS (H#7); Cleo adversarial FAIL→PASS post-V2 (H#8)
+
+### Channel adapter live status (post-Stage-12)
+
+| Channel | Status |
+|---|---|
+| Claude-Desktop | LIVE (Stage 11) |
+| Teams | LIVE NEW (Stage 12) — HMAC-SHA256 |
+| Slack | LIVE NEW (Stage 12) — X-Slack-Signature v0 |
+| CLI hardening | Deferred |
+
+### Stage 12 carry-forward findings → Stage 13
+
+| Finding | Severity | Route |
+|---|---|---|
+| F-12-CLEO-C2-COMPOSITION-PENDING-01 — JwtVerifier wiring at composition root | CRITICAL | Stage 13 E1 |
+| F-12-CLEO-M3-NONCE-RESTART-DEFER-01 — NonceStore SQLite persistence + TTL | MEDIUM | Stage 13 E1 |
+| F-12-CLEO-W2-SYNC-HTTPX-01 — TeamsAdapter + SlackAdapter post_result → AsyncClient | LOW | Stage 13 E1 |
+| F-12-OIDC-LIVE-DEFERRED-01 — Champion-gated live IdP smoke | DEFERRED | Champion-gated |
+| F-12-CLEO-M5-FALSE-POSITIVE-01 — informational | INFO | informational |
+
+### Inheritance
+- HYPOTHETICAL-VOC caveat inherited indefinitely (A7 closed via override 2026-05-24)
+- STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 CLOSED in-cycle by E2
+
+---
+
+## Stage 13 — Production Hardening — OPEN (G1 RATIFIED 2026-05-27)
+
+Stage 13 is **OPEN**. G1 RATIFIED 2026-05-27 (R1–R14 advisor-reconciled + R15-V2 7-amendment patch folded pre-dispatch via Path α). Cycle = production hardening Option A — NO new feature surface. Continues local-only Path A from `43f57ba`. Branch `stage-13.0-production-hardening` not yet cut (G3 OPEN).
 
 ### Gates G1-G7
 
 | Gate | Description | Status |
 |---|---|---|
-| **G1** | Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) | IN-FLIGHT |
-| **G2** | VOC decision — (a) inherit HYPOTHETICAL caveat indefinitely; (b) abbreviated VOC for Stage 12 questions (Teams vs Slack adoption, Entra/Okta/Auth0 distribution); (c) full re-do | OPEN |
-| **G3** | Cut `stage-12.0-channel-adapters` from `stage-11.0-mcp-gateway @ e0aade3` (Path A continuation recommended; branch does NOT yet exist) | OPEN |
-| **G4** | Executor split confirmation — E1 = channels + E2 = auth recommended | OPEN |
-| **G5** | Stage 11.5 debt scheduling (5 items; pre-Stage-12 or parallel) | OPEN |
-| **G6** | Dispatch fresh executor — BLOCKED on G1+G3+G4 | BLOCKED |
-| **G7** | Merge Stage 11 to main — recommend keep local-only through Stage 12 | OPEN |
+| **G1** | Scope roundtable (Winston + Murat + Cleo + Vera + Amelia, advisor-reconciled) — R1–R14 + R15-V2 7-amendment pre-dispatch patch (Path α) | RATIFIED 2026-05-27 |
+| **G2** | VOC — inherits HYPOTHETICAL caveat per project_verdaca_strategic_sequencing | CLOSED |
+| **G3** | Cut `stage-13.0-production-hardening` from `43f57ba` | OPEN (master executor Phase 0) |
+| **G4** | Executor split — E1 (auth/channel hardening) ‖ E2 (hygiene/data-plane); E2 commits land first (no behavioral delta) | CLOSED via R11 |
+| **G5** | Debt scheduling — 7 scope IN; WAL-CONCURRENCY DEFERRED per R6 | CLOSED via R1+R2 |
+| **G6** | Dispatch master executor | OPEN |
+| **G7** | Path A local-only — Stages 11+12+13 all local-only | CLOSED via D13 |
 
-### TENTATIVE scope (gated on G1)
+### Scope IN (7 items)
 
-- **E1 (channels):** Teams + Slack `ChannelAdapterPort` impls under `adapters/channels/{teams,slack}/`; CLI hardening optional
-- **E2 (auth):** OAuth 2.1 + OIDC (Entra/Okta/Auth0) replacing `policy.py` bearer MVP + LiteLLM virtual keys replacing budget-cap MVP
-- **Cross-window dep:** E1 BLOCKS on `[E2-H#2-COMPLETE]` for auth_claims wiring
-- **Frozen Port surfaces:** GatewayPort + ChannelAdapterPort — NO Stage 12 changes without REFREEZE-03 ceremony
-- **4 handover files drafted** (gitignored): `docs/stage-12-*.md`
+| # | Item | Executor | Severity |
+|---|---|---|---|
+| 1 | F-12-CLEO-C2 — JwtVerifier wiring at composition root; `OidcPolicy.__init__(verifier: JwtVerifier)` REQUIRED, no None default | E1 | CRITICAL |
+| 2 | F-12-CLEO-M3 — NonceStore SQLite separate file + lazy TTL + startup sweep + WAL mode | E1 | MEDIUM |
+| 3 | F-12-CLEO-W2 — async `post_result` via `httpx.AsyncClient` (Teams + Slack) | E1 | LOW |
+| 4 | D4/Q1 — WebhookSigningKeyResolver dataclass per channel; fail-fast on missing env-var; manual restart-rotation (HYBRID, not port; promotable at 3rd channel) | E1 | CRITICAL-class |
+| 5 | JSONRPC-FIXTURE-REGEN — regenerate Stage 11 golden fixtures | E2 | LOW |
+| 6 | SESSION-ID-WIDTH — entropy floor ≥128 bits | E2 | MEDIUM |
+| 7 | WAL-CONCURRENCY — DEFERRED per R6 (NonceStore on separate SQLite file; no shared writers) | — | DEFERRED |
 
-### Stage 11 RATIFIED inheritance
+### Scope OUT (5 items)
+- F-10-ARCH-AUDIT-02 (shell workspace) → Stage 14
+- F-12-OIDC-LIVE-DEFERRED-01 (Champion-gated)
+- F-12-CLEO-M5-FALSE-POSITIVE-01 (informational)
+- RUFF-CLEANUP → fold to CI baseline (not stage item)
+- Cleo Q3 pre-existing sweep → Stage 14 candidates
 
-- HYPOTHETICAL-VOC caveat inherited indefinitely (A7 closed via override 2026-05-24)
-- STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01 are Stage 12 E2 candidate scope — they'd close as Stage 12 E2 lands
+### Test discipline
+- MAC-T floor: 25 binding (distribution per Murat; exact breakdown uncertain — verify at H#3)
+- no_waiver: 9 → **13** strict-equality (additions: `M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01`, `M-T-AUTH-NONCE-PERSISTENCE-RESTART-01`, `M-T-SESSION-ID-ENTROPY-FLOOR-01`, `M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01`)
+- 5 AST gates A–E: claims-extraction ban + NonceStore persistent ClassVar + sync httpx in async ban + session-id entropy floor 128 bits + bare-except auth/crypto ban
+- R10 mitigation: composition-root test must import + invoke canonical `shell/.../build_gateway()` factory via canonical-module-path reference
+- 281+ tests still passing (Stage 12 baseline + Stage 13 additions)
+
+### Pre-charter requirement
+`/verdaca-wiki-update` + `graphify update .` BEFORE H#1 — kernel/auth/ not yet in wiki/graph (Vera load-bearing).
 
 ---
 
 ## Debt Tiers Post-Stage-11
 
-### Stage 11.5 — pre-Stage-12 or parallel (5 items)
-- JSONRPC-FIXTURE-REGEN
-- RUFF-CLEANUP
-- DIAL-LIVE-SMOKE
-- SESSION-ID-WIDTH
-- WAL-CONCURRENCY
+### Stage 11.5 — post-Stage-12 status (5 items → 2 closed in-cycle; 3 routed)
+- ~~DIAL-LIVE-SMOKE~~ — CLOSED IN-CYCLE (Stage 12; Azure-style gpt-4o probe)
+- JSONRPC-FIXTURE-REGEN — → Stage 13 E2 scope IN
+- SESSION-ID-WIDTH — → Stage 13 E2 scope IN
+- WAL-CONCURRENCY — → Stage 13 DEFERRED per R6 (separate SQLite file; no shared writers)
+- ~~RUFF-CLEANUP~~ — folded to CI baseline (not a stage item per Stage 13 R14)
 
-### Stage 11.x — deferred features (6 items)
-- **STAGE-11-DEBT-AUTH-01** — OAuth 2.1 + OIDC (candidate Stage 12 E2 scope)
-- **STAGE-11-DEBT-LITELLM-VKEY-01** — LiteLLM virtual keys (candidate Stage 12 E2 scope)
+### Stage 11.x — deferred features (6 items; 2 closed)
+- ~~**STAGE-11-DEBT-AUTH-01**~~ — CLOSED IN-CYCLE (Stage 12 E2; kernel/auth/ landed)
+- ~~**STAGE-11-DEBT-LITELLM-VKEY-01**~~ — CLOSED IN-CYCLE (Stage 12 E2; adapters/litellm/virtual_keys.py landed)
 - Compose order
 - WAL mid-exec crash
 - Channel detection
@@ -262,27 +349,27 @@ Stage 12 is **OPEN — not yet ratified**. Scope is TENTATIVE pending G1 roundta
 | ~~9.6 Cleo supply-chain + Stage 9 RATIFIED~~ | DONE 2026-05-19 → 2026-05-20 |
 | ~~Stage 10 — VOC + ratification~~ | DONE 2026-05-24 (HYPOTHETICAL synthesis; A7 override push at `f181a7e`) |
 | ~~Stage 11 — Gateway + MCP transport + Claude-Desktop ChannelAdapter~~ | DONE 2026-05-26 (`stage-11.0-mcp-gateway @ e0aade3`; Path A local-only) |
-| Stage 11.5 debt (5 items) | ~0.5–1 session (pre-Stage-12 or parallel) |
-| Stage 12 — G1 roundtable + scope lock | TBD (unknown until G1 closes) |
-| Stage 12 — E1 channels (Teams + Slack) + E2 auth (OAuth/OIDC + LiteLLM vkeys) | (uncertain — verify; TENTATIVE per G1) |
-| Stage 12 — demo packaging + Champion onboarding | TBD per G1 |
-| **Total to POV-ready (post-Stage-12)** | unknown until G1 |
-| Post-Stage-12 (UI rewire, learning ports) | deferred |
+| ~~Stage 12 — E1 channels (Teams + Slack) + E2 auth (kernel/auth/ + VirtualKeyPort)~~ | DONE 2026-05-27 (`stage-12.0-channel-adapters @ 43f57ba`; 281 tests; Path A local-only) |
+| Stage 13 — G1 RATIFIED; production hardening (7 scope IN, E1‖E2) | IN-FLIGHT (~1–2 sessions; branch cut + dispatch OPEN) |
+| Stage 13 — demo packaging + Champion onboarding | TBD post-Stage-13 |
+| **Total to POV-ready (post-Stage-13)** | unknown until Stage 13 closes |
+| Post-Stage-13 (UI rewire, Stage 14 shell workspace, learning ports) | deferred |
 
 ---
 
 ## Quick Reference: What the Next Executor Needs
 
-**For Stage 12 entry (next ratification work; G1 in flight):**
-- Working branch: `stage-11.0-mcp-gateway @ e0aade3` (Path A local-only; NOT pushed to origin)
-- `local main = origin/main = f181a7e` (Stage 10 RATIFIED; in sync via A7 override push 2026-05-24)
-- Stage 11 RATIFIED 2026-05-26 — close memo at branch tip `e0aade3`
-- **G1 roundtable IN-FLIGHT** — Winston + Mary + Murat + Vera + advisor confirming Stage 12 scope (TENTATIVE: E1 channels + E2 auth)
-- **G2 VOC decision OPEN** — 3 options: (a) inherit HYPOTHETICAL caveat; (b) abbreviated VOC; (c) full re-do
-- **G3 OPEN** — cut `stage-12.0-channel-adapters` from `e0aade3` once G1+G4 close
-- 4 Stage 12 handover files drafted (gitignored): `docs/stage-12-*.md`
+**For Stage 13 entry (next ratification work; G1 RATIFIED; G3+G6 OPEN):**
+- Working branch: `stage-12.0-channel-adapters @ 43f57ba` (Path A local-only; NOT pushed to origin) — Stage 13 branch NOT yet cut
+- `local main = origin/main = f181a7e` (Stage 10 RATIFIED; in sync via A7 override push 2026-05-24; Stages 11+12+13 local-only per D13)
+- Stage 12 RATIFIED 2026-05-27 — close memo at `docs/stage-12-ratified-close-memo.md` (`43f57ba`)
+- **G3 OPEN** — cut `stage-13.0-production-hardening` from `43f57ba` (master executor Phase 0)
+- **G6 OPEN** — dispatch master executor (blocked on G3)
+- **Pre-charter requirement:** run `/verdaca-wiki-update` + `graphify update .` BEFORE H#1 (Vera load-bearing; kernel/auth/ not yet in wiki/graph)
+- 5 carry-forward findings from Stage 12 → Stage 13 scope IN (`docs/stage-12-ratified-close-memo.md` §findings)
+- no_waiver strict-equality gate: **13** (was 9; +4 new markers; R10 composition-root test required)
 - HYPOTHETICAL-VOC caveat inherited indefinitely: append "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)" to every customer-fit claim
-- Frozen Port surfaces (GatewayPort + ChannelAdapterPort) — NO Stage 12 changes without REFREEZE-03 ceremony
+- Frozen Port surfaces (GatewayPort + ChannelAdapterPort) — NO Stage 13 changes without REFREEZE-03 ceremony
 - Halt discipline per `feedback_preload_first_gating`; memory writes gated per `feedback_memory_authorization`
 
 ---

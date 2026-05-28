@@ -1,8 +1,8 @@
 # Stage 9 — Ports-and-Adapters State
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-26 (Stage 11 RATIFIED + Stage 12 OPEN) | **Source:** session handoffs 2026-04-12 → 2026-05-13 + `docs/stage-*-handover.md` 2026-05-16 → 2026-05-22 + in-session VOC synthesis 2026-05-24 + Stage 11 handoffs 2026-05-25 → 2026-05-26
-**Working-branch HEAD (Stage 11 ratification authority):** `e0aade3` on `stage-11.0-mcp-gateway` (close memo commit); substantive H#8 V2 close at `1adbecb`; 20 commits total from `a11aa67` base (19 substantive + 1 close memo). **Branch is LOCAL-ONLY (Path A — never pushed to origin).** | **origin/main HEAD:** `f181a7e` (Stage 10 A7 team-lead override close 2026-05-24); local now diverged via Path A — push gated through Stage 12 close per `feedback_memory_authorization` adjacent risk-action discipline.
-**Branch:** `stage-11.0-mcp-gateway` (Path A local-only; base = Stage-10 close `f181a7e` on origin/main; never merged to main pending Stage 12 close)
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-27 (Stage 12 RATIFIED + Stage 13 OPEN) | **Source:** session handoffs 2026-04-12 → 2026-05-13 + `docs/stage-*-handover.md` 2026-05-16 → 2026-05-22 + in-session VOC synthesis 2026-05-24 + Stage 11 handoffs 2026-05-25 → 2026-05-26 + Stage 12 close memo `docs/stage-12-ratified-close-memo.md` 2026-05-27
+**Working-branch HEAD (Stage 12 ratification authority):** `43f57ba` on `stage-12.0-channel-adapters` (Path A local-only; 29 commits from base `e0aade3`). H#8.V2 WARNING close at `43f57ba`; H#8.V2 MEDIUM at `16a147a`; H#8.V2 HIGH at `06bcb8a`; H#8.V2 CRITICAL at `c48d3ce`. **Branch is LOCAL-ONLY (Path A — never pushed to origin).** | **origin/main HEAD:** `f181a7e` (Stage 10 A7 team-lead override close 2026-05-24); local now diverged via Path A — push gated through Stage 13 close (or explicit team-lead merge authorization) per `feedback_memory_authorization` adjacent risk-action discipline.
+**Branch:** `stage-12.0-channel-adapters` (Path A local-only; base = Stage-11 close `e0aade3`; never merged to main)
 
 ---
 
@@ -14,13 +14,14 @@
 - **ADR-9.2-V6 v0.7:** CompactionPort substrate re-anchor Forge → LLMLingua (9.4.6 A.1 `127f43c`)
 - **ADR-9.1.2-4 v0.2.6:** CompactionPort contract — `StrategyDowngrade` removed; downgrade-as-return via `CompactionResult.strategy_applied`; `compute_determinism_hash()` content-derived shared constructor
 - **Path convention:** `adapters/{name}/src/praxis/adapters/{name}/` (NOT `src/verdaca/adapters/`)
-- **uv workspace:** 13 active members at 9.4.6 close + 9.6 registration audit — ports, tests, kernel/{compression,mac,memory,pi-mono/src,runtime,studio}, adapters/{beads,tonl,mem0,letta,pi_mono_native,litellm,in_tree_compaction_stub,llmlingua}; `shell/` deferred (pytest-asyncio conflict). 9.6 audit closed `F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01` via `tests/pyproject.toml` `[tool.uv.sources]` fixes for the 6 adapter members previously unregistered.
+- **uv workspace:** 13 active members at 9.4.6 close + 9.6 registration audit — ports, tests, kernel/{compression,mac,memory,pi-mono/src,runtime,studio}, adapters/{beads,tonl,mem0,letta,pi_mono_native,litellm,in_tree_compaction_stub,llmlingua}; `shell/` deferred (pytest-asyncio conflict). 9.6 audit closed `F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01` via `tests/pyproject.toml` `[tool.uv.sources]` fixes for the 6 adapter members previously unregistered. **Stage 12 extended to 22 members** (19→22): adds `adapters/channels/teams/`, `adapters/channels/slack/`, `kernel/auth/`.
 - **`_bmad-output/` and `docs/` are gitignored** (`.gitignore:29`; `effa9ad` 2026-05-15 chore commit untracked `docs/`) — commit bodies + close-commit messages are canonical authority, not local sandbox files
 - **`praxis.__path__`:** expanded namespace package (pi_mono_native + litellm at 9.4.4/9.4.5; in_tree_compaction_stub + llmlingua at 9.4.6); all `praxis/__init__.py` markers deleted at C.2 `3fe343f`, residual 12 namespace markers cleaned at 9.4.7 `c466049`; legacy `_bmad-output/praxis/` tree archived to `_bmad-output/planning-artifacts/Verdaca/_archive/`
-- **`ports/` now includes:** `memory.py`, `serialization.py`, `versioned_state.py`, `cost_meter.py`, `llm_proxy.py`, `compaction.py` (9.4.6 A.2 `72b7beb` + v0.2.6 corrigendum at B.1-W1 `e98a25b`), `common.py` (Message sibling-add at 9.4.5 A.2), `gateway.py` + `gateway_dto.py` + `gateway_errors.py` (Stage 11 — H#1.5 + REFREEZE-01 `9609c29`/`121670a` + REFREEZE-02 `af5d4f4`/`14a31f8`; FROZEN_FIELD_ALLOWLIST invariant preserved across both ceremonies)
+- **`ports/` now includes:** `memory.py`, `serialization.py`, `versioned_state.py`, `cost_meter.py`, `llm_proxy.py`, `compaction.py` (9.4.6 A.2 `72b7beb` + v0.2.6 corrigendum at B.1-W1 `e98a25b`), `common.py` (Message sibling-add at 9.4.5 A.2), `gateway.py` + `gateway_dto.py` + `gateway_errors.py` (Stage 11 — H#1.5 + REFREEZE-01 `9609c29`/`121670a` + REFREEZE-02 `af5d4f4`/`14a31f8`; FROZEN_FIELD_ALLOWLIST invariant preserved across both ceremonies) + `virtual_key.py` (Stage 12 — `VirtualKeySpec`, `VirtualKeyInfo`, `BudgetExhaustedError`; VirtualKeyPort)
+- **Stage 12 additions (RATIFIED 2026-05-27 at `43f57ba`):** new kernel module `kernel/auth/` (claims.py, oidc.py — `JwksCache`, jwt.py — `JwtVerifier` + alg-pin, idp.py — `discover`, nonce.py — `NonceStore`); new adapters `adapters/channels/teams/` (HMAC-SHA256, replay window) + `adapters/channels/slack/` (X-Slack-Signature v0); `adapters/litellm/virtual_keys.py` (HTTP-client vkeys, no Python LiteLLM SDK); `kernel/gateway/policy.py` refactored to thin orchestrator consuming `kernel.auth` + VirtualKeyPort. AST gate: M-T-AUTH-KERNEL-NO-ADAPTER-IMPORT-01 — `kernel/auth/` must have NO adapter import.
 - **Stage 11 additions (RATIFIED 2026-05-26 at `e0aade3`):** new kernel module `kernel/gateway/` (port.py, models.py, service.py = `VerdacaGatewayService`, execution.py, policy.py MVP — bearer-token + user-allow-list + per-user-budget + safety); new adapter `adapters/mcp_server/` (FastMCP-backed inbound — server.py, http.py, stdio.py, tools.py, resources.py, prompts.py, transport.py); adapter-local Protocol `MCPTransportPort` (NOT in `praxis.ports` layer); new infrastructure: WAL idempotency store + AsyncSessionIndex wrapper. **Canonical import path:** `praxis.ports.gateway` ONLY (Winston #2 corrigendum) — no re-exports through `kernel.gateway`.
 - **Stage 10 additions (carried forward):** `kernel/session_index/` module (port.py = SessionIndexPort + SkillTelemetryPort Protocols co-located with their kernel module; models.py; sqlite_store.py; schema/) — note: Stage 10 broke Stage-9 convention of consolidating Protocol definitions in `ports/`; SessionIndexPort lives in `kernel/session_index/`, NOT in `ports/`.
-- **HARD constraint extended (Stage 11):** `\bstrategic analysis\b` (2-word phrase, word-boundary grep) — zero hits across tools/server/resources/prompts (advisor-disposed at F-11-CLEO-10; "strategic decision" remains acceptable per dual-context citation discipline).
+- **HARD constraint extended (Stage 11):** `\bstrategic analysis\b` (2-word phrase, word-boundary grep) — zero hits across tools/server/resources/prompts (advisor-disposed at F-11-CLEO-10; "strategic decision" remains acceptable per dual-context citation discipline). **HARD constraint further extended (Stage 12 — Mary amendments):** `\bseamless\b` + `\benterprise-grade\b` (word-boundary, case-sensitive grep) — zero hits across source + tests at Stage 12 close. All three forbidden tokens carry forward to Stage 13.
 - **Stateless HTTP pinned (Stage 11):** `stateless_http=True` PINNED at contract level for `MCPTransportPort`.
 - **Stage 10 additive corrigendum:** `SessionFilter.source_uri_prefix` added at `50fa909` (backward-compatible, default `None`) — landed during Stage 11 H#8 V2 to support gateway tenant-scoping.
 
@@ -46,6 +47,8 @@
 | 9.6 Supply-Chain | ✅ CLOSED 2026-05-19 | `3e26f48` (#40 CI close); merge into main `76eea26` | `uv.lock` SHA-pinned (mem0ai==1.0.11, letta-client==1.10.3, litellm==1.83.14, llmlingua==0.2.2); 4 adapter `version_pin.py` with hashes; `.github/{renovate.json, workflows/contract-tests.yml, workflows/audit.yml}`; `tests/pyproject.toml` registers 6 adapter members; runtime fixture `kernel/runtime/tests/runtime/fixtures/agent-manifest.csv`; 9.9 enforcer un-skipped + green; F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01 CLOSED; 22 CVE deferrals + 2 carry-forward |
 | **Stage 9** | ✅ **RATIFIED 2026-05-20** | merge `76eea26` on origin/main; CI close `3e26f48` | Full Stage 9 ports-and-adapters production-grade rebuild complete; 9.4.2 TONL remains deferred-work (authorized separate launch) |
 | **Stage 11** | ✅ **RATIFIED 2026-05-26** | close memo `e0aade3` on `stage-11.0-mcp-gateway` (Path A local-only); H#8 V2 substantive close `1adbecb`; H#7 buyer-language `1501454`; H#1.5 list_sessions freeze `14a31f8`; REFREEZE-02 substantive `af5d4f4`; REFREEZE-01 substantive `9609c29` (read API stamp `121670a`); base `a11aa67` (off Stage-10 close `f181a7e`) | Channel-Neutral MCP Gateway; GatewayPort + ChannelAdapterPort + ChannelContext (FROZEN_FIELD_ALLOWLIST); `kernel/gateway/` + `adapters/mcp_server/` (FastMCP); 5 tools + 5 resources + 1 prompt + 2 transports (stdio + Streamable HTTP); 38 MAC-Ts delta; 208 contract tests GREEN + 8 skipped (env-gated DIAL live + others); 8 Cleo findings closed at H#8 V2; 4 MVP ChannelKinds (CLI, TEAMS, SLACK, CLAUDE_DESKTOP — UI/WEB deferred); only Claude-Desktop ChannelAdapter ships LIVE; HYPOTHETICAL-VOC caveat inherited from A7 override |
+| **Stage 12** | ✅ **RATIFIED 2026-05-27** | close at `43f57ba` on `stage-12.0-channel-adapters` (Path A local-only); 29 commits from base `e0aade3`; H#8.V2 chain: CRITICAL `c48d3ce` → HIGH `06bcb8a` → MEDIUM `16a147a` → WARNING `43f57ba`; Mary H#7 `4608a52`; VirtualKeyPort H#2 `2c68f12`; auth_claims H#1.5 `3257304`+`43036f4` | Teams + Slack `ChannelAdapterPort` (E1); `kernel/auth/` OIDC+JWKS+JWT+claims+nonce + VirtualKeyPort + LiteLLM HTTP-client vkeys (E2); `kernel/gateway/policy.py` thin-orchestrator refactor; uv 19→22; 281 tests / 9 no_waiver / 6 AST gates; Mary PASS-WITH-AMENDMENTS + Cleo FAIL→PASS post-V2; 5 findings → Stage 13; DIAL-LIVE-SMOKE RESOLVED; HYPOTHETICAL-VOC inherited |
+| **Stage 13** | 🔲 **OPEN** (G1 RATIFIED 2026-05-27) | branch not yet cut (G3 pending); Path A continuation from `43f57ba` | Production hardening Option A (no new feature surface); scope: F-12 composition root + NonceStore persistence + async post_result + D4/Q1 WebhookSigningKeyResolver + JSONRPC-FIXTURE-REGEN + SESSION-ID-WIDTH entropy floor; WAL-CONCURRENCY DEFERRED per R6; 25 binding MAC-Ts floor; 13 no_waiver (Stage 12 9 + 4 new); 5 AST gates (A–E); E1‖E2 2-window; pre-charter: `/verdaca-wiki-update` + `graphify update .` BEFORE H#1 |
 
 ⚠ Memory entry `[[project_verdaca_stage9_ratified]]` cites SHA `45e1fd8 #41`. That commit exists only on feature branches (`stage-9.4.7-namespace-cleanup`, `stage-9.6-cleo-supply-chain`, `stage-10.0-port-stubs`) and is a 9.6 corrigendum that did not merge into `origin/main`. The Stage-9 close on `origin/main` is `3e26f48` (#40 CI close) + `76eea26` (Stage 9 ratification merge). Memory SHA correction pending team-lead authorization.
 
@@ -87,9 +90,38 @@ Stage 11 sublist binding cardinality at Stage-11 RATIFIED is **5 entries** (stri
 
 **Cross-stage totals:** Stage 9 sublist (9) + Stage 10 sublist (4 entries; indices uncertain — verify against Stage 10 close artifacts) + Stage 11 sublist (5) = **~18 across stages**; Stage 11 sublist cardinality is **strict equality at exactly 5** per Murat's MAC-T v0.2 ratification.
 
+### Stage 12 sublist — 9 entries (strict equality)
+
+Stage 12 sublist binding cardinality at Stage-12 RATIFIED is **9 entries** (strict equality meta-test at `tests/src/praxis/contract_tests/test_stage12_no_waiver_count.py`).
+
+| # | MAC-T ID | Reason |
+|---|---|---|
+| 31 | M-T-TEAMS-WEBHOOK-HMAC-TAMPERED-01 | Teams HMAC-SHA256 webhook signature tamper rejection (E1) |
+| 32 | M-T-SLACK-WEBHOOK-SIGNING-TAMPERED-01 | Slack X-Slack-Signature v0 tamper rejection (E1) |
+| 33 | M-T-TEAMS-CHANNEL-ADAPTER-PORT-CONTRACT-01 | Teams adapter ChannelAdapterPort contract (E1) |
+| 34 | M-T-SLACK-CHANNEL-ADAPTER-PORT-CONTRACT-01 | Slack adapter ChannelAdapterPort contract (E1) |
+| 35 | M-T-AUTH-JWT-ALG-PIN-01 | JWT algorithm pinning — rejects unexpected alg header (E2) |
+| 36 | M-T-AUTH-NONCE-REPLAY-BLOCK-01 | Nonce replay blocked (E2) |
+| 37 | M-T-AUTH-CLAIMS-SCHEMA-01 | AuthClaims schema validation (E2) |
+| 38 | M-T-VKEY-BUDGET-EXHAUSTED-01 | VirtualKeyPort BudgetExhaustedError path (E2) |
+| 39 | M-T-AUTH-KERNEL-NO-ADAPTER-IMPORT-01 | AST gate: kernel/auth has NO adapter import (E2) |
+
+**Cross-stage totals (post-Stage-12):** Stage 9 (9) + Stage 10 (4; verify) + Stage 11 (5) + Stage 12 (9) = **~27 across stages**. Stage 12 sublist cardinality strict equality = 9.
+
+### Stage 13 planned additions — 4 entries (PLANNED; not yet binding)
+
+Stage 13 G1 ratified 2026-05-27 plans to add **4 new no_waiver entries** (Stage 12 9 → Stage 13 13 strict equality total). Not binding until Stage 13 RATIFIED.
+
+| # (planned) | MAC-T ID (planned) | Reason |
+|---|---|---|
+| 40 | M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01 | JwtVerifier injected at composition root (no None default) |
+| 41 | M-T-AUTH-NONCE-PERSISTENCE-RESTART-01 | NonceStore persists across restarts (SQLite) |
+| 42 | M-T-SESSION-ID-ENTROPY-FLOOR-01 | Session ID entropy floor ≥128 bits |
+| 43 | M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01 | No bare-except in auth/crypto code paths |
+
 ---
 
-## Open Findings Carried Forward (to Stage 10 / 11 / debt)
+## Open Findings Carried Forward (to Stage 10 / 11 / 12 / 13 / debt)
 
 | Finding | Severity | Status / Routed to |
 |---|---|---|
@@ -112,26 +144,36 @@ Stage 11 sublist binding cardinality at Stage-11 RATIFIED is **5 entries** (stri
 - F-11-CLEO-08 (test rename) → resolved `50fa909`
 - F-11-CLEO-12 (URI template parameter validation) → resolved `1adbecb`
 
-### Stage 11.5 debt (5 LOW–MEDIUM items, pre-Stage-12)
+### Stage 11.5 debt — dispositions at Stage 12 close
+
+| Finding | Severity | Stage 12 disposition |
+|---|---|---|
+| JSONRPC-FIXTURE-REGEN | Low–Medium | Carries to Stage 13 IN SCOPE |
+| RUFF-CLEANUP | Low | Folded to CI baseline (Stage 12 close); scope OUT of Stage 13 |
+| DIAL-LIVE-SMOKE | Medium | **RESOLVED** — Azure-style gpt-4o probe completed in Stage 12 |
+| SESSION-ID-WIDTH | Low | Carries to Stage 13 IN SCOPE (entropy floor ≥128 bits per Cleo ranking) |
+| WAL-CONCURRENCY | Medium | DEFERRED per Stage 13 R6 — separate SQLite file, no shared writers confirmed |
+
+### Stage 11.x debt (6 HIGH–MEDIUM deferred features; 2 closed at Stage 12)
 
 | Finding | Severity | Status |
 |---|---|---|
-| JSONRPC-FIXTURE-REGEN | Low–Medium | Stage 11.5 debt |
-| RUFF-CLEANUP | Low | Stage 11.5 debt |
-| DIAL-LIVE-SMOKE | Medium | Stage 11.5 debt — env-gated live smoke |
-| SESSION-ID-WIDTH | Low | Stage 11.5 debt |
-| WAL-CONCURRENCY | Medium | Stage 11.5 debt — schedule pre-Stage-12 if DIAL/WAL surfaces blocking |
-
-### Stage 11.x debt (6 HIGH–MEDIUM deferred features)
-
-| Finding | Severity | Status |
-|---|---|---|
-| STAGE-11-DEBT-AUTH-01 | High | Stage 11.x — OAuth/OIDC replaces policy.py bearer-token MVP; candidate Stage 12 E2 scope (TENTATIVE) |
-| STAGE-11-DEBT-LITELLM-VKEY-01 | High | Stage 11.x — LiteLLM virtual keys replace per-user-budget MVP; candidate Stage 12 E2 scope (TENTATIVE) |
+| STAGE-11-DEBT-AUTH-01 | High | **CLOSED at Stage 12** — `kernel/auth/` (OIDC+JWKS+JWT+claims+nonce) shipped at Stage 12 E2; F-12-CLEO-C2 composition root wiring carries to Stage 13 |
+| STAGE-11-DEBT-LITELLM-VKEY-01 | High | **CLOSED at Stage 12** — VirtualKeyPort + `adapters/litellm/virtual_keys.py` HTTP-client shipped at Stage 12 E2 |
 | COMPOSE-ORDER | Medium | Stage 11.x |
 | WAL-MID-EXEC-CRASH | Medium | Stage 11.x |
 | CHANNEL-DETECTION | Medium | Stage 11.x |
 | CITED-TRADEOFFS-STUB | Medium | Stage 11.x |
+
+### Stage 12 carry-forward to Stage 13 (5 findings)
+
+| Finding | Severity | Stage 13 disposition |
+|---|---|---|
+| F-12-CLEO-C2-COMPOSITION-PENDING-01 | CRITICAL | IN SCOPE Stage 13 — JwtVerifier injection at gateway startup (composition root wiring) |
+| F-12-CLEO-M3-NONCE-RESTART-DEFER-01 | MEDIUM | IN SCOPE Stage 13 — NonceStore SQLite persistence + TTL; Redis re-evaluation gated to multi-host |
+| F-12-CLEO-W2-SYNC-HTTPX-01 | LOW | IN SCOPE Stage 13 — TeamsAdapter + SlackAdapter `post_result` async migration |
+| F-12-OIDC-LIVE-DEFERRED-01 | Champion-gated | OUT OF SCOPE Stage 13 — live IdP smoke deferred until Champion available |
+| F-12-CLEO-M5-FALSE-POSITIVE-01 | Informational | OUT OF SCOPE Stage 13 — `GatewayPort.execute` is sync; Cleo finding acknowledged as false positive |
 
 ### Stage 7 cosmetic debt (Stage 11 — 6 INFO items)
 
@@ -195,30 +237,81 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 
 **Reference snapshot:** `tests/reference/spike-mcp-server-snapshot-d93f71a/` — CAI spike, frozen reference, non-importable.
 
-## Stage 12 OPEN — TENTATIVE charter pending roundtable ratification
+## Stage 12 — Channel Adapters + Auth Kernel (RATIFIED 2026-05-27)
 
-**Status:** OPEN — Stage 12 scope is **TENTATIVE** and **NOT yet ratified**. Charter pending roundtable confirmation (G1). Do not cite Stage 12 scope as binding.
+**Branch tip (ratification authority):** `43f57ba` on `stage-12.0-channel-adapters` (Path A local-only; never pushed to origin). 29 commits from base `e0aade3` (Stage-11 close). Branch is LOCAL-ONLY.
 
-**7 gates (G1–G7):**
+**Ratification chain:** Phase 0 open (`015240d` + `4bc4cba`); H#1 substrate probes (`57fd348`); H#1.5 auth_claims surface freeze (`3257304` + `43036f4`); E2-H#2 VirtualKeyPort + `kernel/auth/` (`2c68f12`); E1 Teams/Slack adapters (`0a060dd` → `7a8e5ff`); E2 kernel/auth modules (`a398c91` → `bfd94c6`); E2-H#4 LiteLLM vkeys (`01654ff`); E2-H#5 policy.py orchestrator (`58fe467`); E1-H#4 D2 cross-window + meta-test (`355f516` + `0457944`); H#7 Mary amendments (`4608a52`); H#8.V2 Cleo CRITICAL (`c48d3ce`) → HIGH (`06bcb8a`) → MEDIUM (`16a147a`) → WARNING close (`43f57ba`).
+
+**Scope shipped:**
+- **E1:** Teams `ChannelAdapterPort` impl under `adapters/channels/teams/` (HMAC-SHA256 webhook signature, replay window) + Slack impl under `adapters/channels/slack/` (X-Slack-Signature v0). Teams + Slack now **LIVE** (was deferred in Stage 11). Claude-Desktop remains LIVE. CLI deferred to Stage 13 or later.
+- **E2:** `kernel/auth/` — claims.py, oidc.py (`JwksCache`), jwt.py (`JwtVerifier` + alg-pin RS256/ES256/PS256), idp.py (`discover`), nonce.py (`NonceStore` in-memory); `ports/virtual_key.py` (`VirtualKeySpec`, `VirtualKeyInfo`, `BudgetExhaustedError`); `adapters/litellm/virtual_keys.py` (HTTP-client vkeys, no Python LiteLLM SDK). `kernel/gateway/policy.py` refactored to thin orchestrator consuming `kernel.auth` + VirtualKeyPort.
+- **uv workspace:** 19 → 22 members (adds `adapters/channels/teams/`, `adapters/channels/slack/`, `kernel/auth/`).
+
+**Ports added:**
+- `virtual_key.py` — `VirtualKeyPort`, `VirtualKeySpec`, `VirtualKeyInfo`, `BudgetExhaustedError`
+
+**No-waiver additions:** 9 entries (Stage 12 sublist, strict equality) — see allow-list section above.
+
+**Contract tests:** 47 MAC-Ts delta (12 Teams + 12 Slack + 10 kernel/auth + 5 LiteLLM + 7 AST gates + 1 D2 cross-window); **281 tests PASS / 8 skipped / 0 failed**; 6 AST gates green; 12 VCR cassettes; 3 IdP fixtures (entra/okta/auth0). *(uncertain: memo says "47 MAC-Ts delta" using 7 AST gates in the breakdown but also "6 AST gates green" — verify against close artifacts)*
+
+**HARD constraint extension (Mary H#7):** `\bseamless\b` + `\benterprise-grade\b` added (word-boundary, case-sensitive); `\bstrategic analysis\b` carried forward. Zero hits across source + tests.
+
+**REFREEZE-03:** No GatewayPort / ChannelAdapterPort / ChannelContext surface changes landed in Stage 12 (policy.py refactor is internal; no REFREEZE-03 ceremony was needed). REFREEZE-03 ceremony remains required for any future surface changes.
+
+**Carry-forward to Stage 13:** 5 findings — F-12-CLEO-C2 (CRITICAL), F-12-CLEO-M3 (MEDIUM), F-12-CLEO-W2 (LOW), F-12-OIDC-LIVE-DEFERRED-01 (Champion-gated; OUT of Stage 13), F-12-CLEO-M5-FALSE-POSITIVE-01 (informational; OUT of Stage 13).
+
+**Inherited caveat:** HYPOTHETICAL-VOC (Stage 6.0.1 / A7 team-lead override 2026-05-24 at `f181a7e`) — every Stage 12 customer-fit claim carries: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
+
+**Stage 11.5 debt closures:** DIAL-LIVE-SMOKE RESOLVED; STAGE-11-DEBT-AUTH-01 CLOSED; STAGE-11-DEBT-LITELLM-VKEY-01 CLOSED. Carries to Stage 13: JSONRPC-FIXTURE-REGEN, SESSION-ID-WIDTH. WAL-CONCURRENCY DEFERRED per R6.
+
+---
+
+## Stage 13 — Production Hardening (OPEN — G1 RATIFIED 2026-05-27)
+
+**Status:** OPEN — G1 scope confirmation roundtable RATIFIED 2026-05-27. Branch NOT yet cut (G3 pending). Path A continuation from `43f57ba`.
+
+**Cycle:** Production hardening Option A — no new feature surface. R1–R14 advisor-reconciled + R15-V2 7-amendment patch folded pre-dispatch via Path α (Cleo C-1/C-2/C-3 + Amelia B1/B2 + Vera R13-A-1/R13-A-3).
+
+**Scope IN (6 active items + 1 deferred):**
+1. F-12-CLEO-C2 composition root — `OidcPolicy.__init__(verifier: JwtVerifier)` REQUIRED; no `None` default; no synthetic-fallback in production
+2. F-12-CLEO-M3 NonceStore SQLite persistence + TTL — separate SQLite file from `session_index`; lazy TTL on read + startup sweep; WAL mode; Redis re-evaluation gated to multi-host
+3. F-12-CLEO-W2 async `post_result` migration — TeamsAdapter + SlackAdapter
+4. D4/Q1 hybrid `WebhookSigningKeyResolver` — dataclass per channel (NOT a port; promotable to port at 3rd channel); fail-fast on missing env-var; manual restart-rotation
+5. JSONRPC-FIXTURE-REGEN
+6. SESSION-ID-WIDTH — entropy floor ≥128 bits (Cleo entropy ranking: MEDIUM)
+7. WAL-CONCURRENCY — DEFERRED per R6 (separate SQLite file confirmed; no shared writers)
+
+**Scope OUT:** F-10-ARCH-AUDIT-02 (→ Stage 14), F-12-OIDC-LIVE-DEFERRED-01 (Champion-gated), F-12-CLEO-M5-FALSE-POSITIVE-01 (informational), RUFF-CLEANUP (folded to CI baseline), Cleo Q3 pre-existing sweep (→ Stage 14 candidates).
+
+**MAC-T floor:** 25 binding (distribution per Murat; exact breakdown uncertain — verify at H#3).
+
+**No-waiver planned:** 9 (Stage 12) → **13** total at Stage 13 close (strict equality). 4 additions: M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01, M-T-AUTH-NONCE-PERSISTENCE-RESTART-01, M-T-SESSION-ID-ENTROPY-FLOOR-01, M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01.
+
+**5 AST gates (Cleo A–E):**
+- A: `extract_claims(verifier=None)` ban outside `tests/`
+- B: NonceStore `persistent: ClassVar[bool]` required
+- C: sync httpx ban in async adapter bodies
+- D: session-id entropy floor 128 bits
+- E: bare-except ban in auth/crypto code paths
+
+**Executor split:** E1 (auth/channel hardening) ‖ E2 (hygiene/data-plane); 2-window concurrent pattern. Sequencing: E2 commits land first (no behavioral delta), E1 second.
+
+**Pre-charter gate (HARD):** `/verdaca-wiki-update` + `graphify update .` MUST run BEFORE H#1 (Vera load-bearing).
+
+**7 gates:**
 
 | Gate | Description | Status |
 |---|---|---|
-| G1 | Stage 12 scope confirmation roundtable (Winston + Mary + Murat + Vera + advisor) | OPEN — in-flight via `/bmad-party-mode` |
-| G2 | VOC question — HYPOTHETICAL caveat inheritance vs abbreviated VOC vs full re-do | OPEN |
-| G3 | Cut `stage-12.0-channel-adapters` from `stage-11.0-mcp-gateway @ e0aade3` (Path A continuation recommended) | OPEN |
-| G4 | Executor split (E1 = channels + E2 = auth recommended; concurrent 2-window pattern per `feedback_concurrent_executor_orchestration`) | OPEN |
-| G5 | Stage 11.5 debt scheduling (5 items; recommend post-Stage-12 unless DIAL/WAL surfaces blocking) | OPEN |
-| G6 | Dispatch fresh executor — blocked on G1 + G3 + G4 | OPEN (blocked) |
-| G7 | Merge Stage 11 → main — recommend keep local-only through Stage 12 close | OPEN |
+| G1 | Stage 13 scope confirmation roundtable | ✅ RATIFIED 2026-05-27 |
+| G2 | VOC — HYPOTHETICAL caveat inherited; no new VOC gate for Stage 13 hardening cycle | RESOLVED per finish-then-demo sequencing lock |
+| G3 | Cut `stage-13.0-production-hardening` from `stage-12.0-channel-adapters @ 43f57ba` | OPEN |
+| G4 | Executor dispatch — E1 ‖ E2; E2 commits land first | CLOSED via R11 |
+| G5 | Stage 11.5 debt scheduling — JSONRPC-FIXTURE-REGEN + SESSION-ID-WIDTH in scope; WAL/RUFF deferred | CLOSED at G1 |
+| G6 | Dispatch master executor | OPEN (blocked on G3) |
+| G7 | Merge Stage 11+12+13 → main | OPEN (Path A; deferred through Stage 13 close minimum) |
 
-**TENTATIVE scope (NOT binding until G1 ratifies):**
-- **E1 (TENTATIVE):** Teams + Slack `ChannelAdapterPort` impls under `adapters/channels/{teams,slack}/` (CLI hardening optional). Closes the 3 deferred ChannelKinds (TEAMS, SLACK, CLI) from Stage 11 Winston #1 corrigendum.
-- **E2 (TENTATIVE):** OAuth 2.1 + OIDC (Entra / Okta / Auth0) replacing `policy.py` bearer-token MVP + LiteLLM virtual keys replacing per-user budget-cap MVP. Closes STAGE-11-DEBT-AUTH-01 + STAGE-11-DEBT-LITELLM-VKEY-01.
-- **Cross-window dependency (TENTATIVE):** E1 BLOCKS on `[E2-H#2-COMPLETE]` for `auth_claims` wiring.
-
-**Inherited caveat:** HYPOTHETICAL-VOC (Stage 6.0.1 / A7 team-lead override 2026-05-24 at `f181a7e`) — every Stage 12 customer-fit claim must carry: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
-
-**REFREEZE-03 ceremony required:** Any Stage 12 change to GatewayPort / ChannelAdapterPort / ChannelContext / FROZEN_FIELD_ALLOWLIST requires a REFREEZE-03 ceremony (mirroring REFREEZE-01 / REFREEZE-02 from Stage 11).
+**Inherited caveat:** HYPOTHETICAL-VOC (A7 team-lead override 2026-05-24 at `f181a7e`) — every Stage 13 customer-fit claim must carry: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
 
 ---
 
@@ -254,11 +347,11 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 - `feedback_provenance_pin` — close memos require §provenance table
 - `feedback_session_surface_audit` — declare session ID/model/JSONL/working-dir at preload
 - `feedback_advisor_executor_model_effort` — advisor = Opus 4.7 1M max; executor effort advisor-set
-- `feedback_hard_constraint_word_boundary` — UPDATED 2026-05-13: dual-context citation discipline (R8-binding docs cite by clause-ordinal; R8-non-binding cite by token-name)
+- `feedback_hard_constraint_word_boundary` — UPDATED 2026-05-13: dual-context citation discipline (R8-binding docs cite by clause-ordinal; R8-non-binding cite by token-name). **UPDATED 2026-05-27 (Stage 12):** active forbidden tokens = `\bseamless\b` + `\benterprise-grade\b` + `\bstrategic analysis\b` (all word-boundary, case-sensitive grep; zero hits at Stage 12 close; carry forward to Stage 13).
 - `feedback_go_with_amendments_tracked` — UPDATED 2026-05-13: executor surfaces compositional extensions BEFORE applying, even when substrate-conformant
 - `feedback_concurrent_executor_orchestration` — load-bearing through Pair-1 (9.4.7‖9.4.8) and Pair-2 (9.5‖9.9); 2-window hard cap; halt-class disjointness verification at dispatch; path-scoped `git commit <pathspec>` at H#4; per-executor git worktree isolation (post F-9.4.6-B.1-W3-COMMIT-CONTAM-01 lesson)
 - `feedback_preload_tracking_status_verification` — re-confirmed at 9.4.6, 9.4.7/9.4.8, 9.6 — verify cited SHAs / paths / tracking status at preload (gitignored docs/, sessions.db, etc.)
 - `feedback_handover_template_discipline` — verify paths / §-refs / SHAs at H#1; surface drift as F-{stage}-HANDOVER-*
 - `feedback_preload_api_surface_verification` — substrate-truth probes (9.4.6 LLMLingua PASS-DEGRADED precedent); Stage-11 FastMCP probes BLOCKING before charter
 - **REFREEZE ceremony discipline (Stage 11 precedent, binding through Stage 12):** Any change to a FROZEN Port surface (GatewayPort, ChannelAdapterPort, ChannelContext, FROZEN_FIELD_ALLOWLIST) requires a REFREEZE-{N} ceremony (substantive commit + freeze SHA stamp commit, FROZEN_FIELD_ALLOWLIST invariant preserved). Stage 11 set this precedent with REFREEZE-01 (read API `9609c29`/`121670a`) and REFREEZE-02 (list_sessions `af5d4f4`/`14a31f8`). Stage 12 inherits: REFREEZE-03 required for any Port surface changes.
-- **HYPOTHETICAL-VOC caveat inheritance (binding through Stage 12):** Every customer-fit claim in Stage 11 close memos AND Stage 12 work must carry the inherited caveat string: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)" — inherited from A7 team-lead override on Stage 10 close `f181a7e`. Caveat carries forward until a real-Champion VOC pass replaces the HYPOTHETICAL synthesis substrate.
+- **HYPOTHETICAL-VOC caveat inheritance (binding through Stage 13+):** Every customer-fit claim in Stage 11/12/13 close memos AND all downstream work must carry the inherited caveat string: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)" — inherited from A7 team-lead override on Stage 10 close `f181a7e`. Caveat carries forward until a real-Champion VOC pass replaces the HYPOTHETICAL synthesis substrate. Per `project_verdaca_strategic_sequencing` memory: VOC re-do gate fires post-impl+test only; advisor MUST NOT propose VOC as a stage-close blocker until then.
