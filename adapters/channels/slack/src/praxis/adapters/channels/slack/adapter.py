@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any
 
 import httpx
 
 from praxis.ports.gateway import GatewayPort
 from praxis.ports.gateway_dto import AnalysisResult, ChannelContext, StartAnalysisRequest
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class SlackAdapter:
@@ -20,6 +23,7 @@ class SlackAdapter:
     ) -> None:
         self._http_client = http_client
         self._post_results = post_results
+        self._post_tasks: set[asyncio.Task[None]] = set()
 
     def execute(
         self,
@@ -77,4 +81,13 @@ class SlackAdapter:
         except RuntimeError:
             asyncio.run(self.post_result(response_url, result))
             return
-        loop.create_task(self.post_result(response_url, result))
+        task = loop.create_task(self.post_result(response_url, result))
+        self._post_tasks.add(task)
+        task.add_done_callback(self._post_result_done)
+
+    def _post_result_done(self, task: asyncio.Task[None]) -> None:
+        self._post_tasks.discard(task)
+        try:
+            task.result()
+        except Exception:
+            _LOGGER.exception("Slack post_result failed")
