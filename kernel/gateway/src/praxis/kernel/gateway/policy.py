@@ -47,7 +47,13 @@ class GatewayPolicy:
         return await self.oidc_policy.authenticate(bearer_token)
 
     async def enforce_budget(self, claims: AuthClaims) -> None:
-        """Enforce virtual-key budget for the authenticated subject."""
+        """Enforce virtual-key budget for the authenticated subject.
+
+        Stage 13 V3.A contract: invoked unconditionally by
+        VerdacaGatewayService._auth_first; production deployments MUST
+        configure virtual_keys. Fail-closed RuntimeError surfaces
+        operational misconfiguration on the first request.
+        """
         if self.virtual_keys is None:
             raise RuntimeError("GatewayPolicy virtual-key dependency is not configured")
         await self.virtual_keys.check_budget(claims.require("sub"))

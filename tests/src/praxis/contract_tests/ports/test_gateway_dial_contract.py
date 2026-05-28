@@ -14,6 +14,7 @@ from praxis.contract_tests.ports.gateway_contract_fakes import (
     FakeCostMeter,
     FakeMemory,
     FakeOidcPolicy,
+    FakeVirtualKeys,
     make_auth_quartet,
     make_ctx,
     make_intent,
@@ -61,7 +62,11 @@ def _dial_gateway(tmp_path, *, api_key: str | None = "test-key") -> VerdacaGatew
         wal_store=GatewayWalStore(
             GatewayWalConfig(database_path=tmp_path / "gateway-idempotency.sqlite3")
         ),
-        policy=GatewayPolicy(allowed_user_ids=frozenset({"user-1"}), oidc_policy=oidc_policy),
+        policy=GatewayPolicy(
+            allowed_user_ids=frozenset({"user-1"}),
+            oidc_policy=oidc_policy,
+            virtual_keys=FakeVirtualKeys(),
+        ),
     )
 
 

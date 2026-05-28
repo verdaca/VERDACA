@@ -6,7 +6,7 @@ import asyncio
 import hashlib
 import json
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import ClassVar, Coroutine, TypeVar
@@ -55,8 +55,8 @@ class VerdacaGatewayService:
     oidc_policy: OidcPolicy
     nonce_store: NonceStore
     webhook_resolver: WebhookSigningKeyResolver
+    policy: GatewayPolicy
     wal_store: GatewayWalStore | None = None
-    policy: GatewayPolicy = field(default_factory=GatewayPolicy)
 
     @property
     def is_wired(self) -> bool:
@@ -198,8 +198,7 @@ class VerdacaGatewayService:
         bearer_token = self._bearer_token(ctx)
         verified_claims = await self.oidc_policy.authenticate(bearer_token)
         await self.nonce_store.check_and_mark(self._nonce_value(ctx, verified_claims))
-        if self.policy.virtual_keys is not None:
-            await self.policy.enforce_budget(verified_claims)
+        await self.policy.enforce_budget(verified_claims)
         return verified_claims
 
     @staticmethod

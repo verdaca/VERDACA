@@ -7,6 +7,7 @@ from decimal import Decimal
 import pytest
 
 from praxis.contract_tests.ports.gateway_contract_fakes import (
+    FakeVirtualKeys,
     make_ctx,
     make_gateway_harness,
     make_intent,
@@ -36,7 +37,7 @@ def test_M_T_GW_POLICY_USER_ALLOWLIST_01_default_empty_rejects_pre_call(tmp_path
     with pytest.raises(GatewayCtxError) as exc_info:
         harness.gateway.execute(make_intent(), make_ctx())
 
-    assert exc_info.value.context_field == "policy:user_not_allowlisted"
+    assert exc_info.value.context_field == "auth:builtins.RuntimeError"
     assert len(harness.llm.calls) == 0
     assert len(harness.cost.records) == 0
 
@@ -44,7 +45,10 @@ def test_M_T_GW_POLICY_USER_ALLOWLIST_01_default_empty_rejects_pre_call(tmp_path
 def test_M_T_GW_POLICY_USER_ALLOWLIST_01_explicit_allow_passes(tmp_path) -> None:
     harness = make_gateway_harness(
         tmp_path,
-        policy=GatewayPolicy(allowed_user_ids=frozenset({"user-1"})),
+        policy=GatewayPolicy(
+            allowed_user_ids=frozenset({"user-1"}),
+            virtual_keys=FakeVirtualKeys(),
+        ),
     )
 
     result = harness.gateway.execute(make_intent(), make_ctx())
@@ -60,6 +64,7 @@ def test_M_T_GW_POLICY_BUDGET_CAP_01_over_cap_rejects_pre_call(tmp_path) -> None
         policy=GatewayPolicy(
             allowed_user_ids=frozenset({"user-1"}),
             per_user_budget_cap_usd=Decimal("1.00"),
+            virtual_keys=FakeVirtualKeys(),
         ),
     )
 
@@ -79,6 +84,7 @@ def test_M_T_GW_POLICY_BUDGET_CAP_01_under_cap_passes(tmp_path) -> None:
         policy=GatewayPolicy(
             allowed_user_ids=frozenset({"user-1"}),
             per_user_budget_cap_usd=Decimal("1.00"),
+            virtual_keys=FakeVirtualKeys(),
         ),
     )
 

@@ -260,6 +260,16 @@ class FakeOidcPolicy:
         )
 
 
+class FakeVirtualKeys:
+    """VirtualKeyPort fake that records check_budget calls without rejection."""
+
+    def __init__(self) -> None:
+        self.checked: list[str] = []
+
+    async def check_budget(self, key_alias: str) -> None:
+        self.checked.append(key_alias)
+
+
 class CountingSqliteSessionIndex(SqliteSessionIndex):
     def __init__(self, db_path: Path) -> None:
         self.index_calls = 0
@@ -389,7 +399,11 @@ def make_gateway_harness(
             GatewayWalConfig(database_path=tmp_path / "gateway-idempotency.sqlite3")
         ),
         policy=policy
-        or GatewayPolicy(allowed_user_ids=frozenset({"user-1"}), oidc_policy=oidc_policy),
+        or GatewayPolicy(
+            allowed_user_ids=frozenset({"user-1"}),
+            oidc_policy=oidc_policy,
+            virtual_keys=FakeVirtualKeys(),
+        ),
     )
     return GatewayHarness(
         gateway=gateway,
@@ -408,6 +422,7 @@ __all__ = [
     "FakeLLMProxy",
     "FakeMemory",
     "FakeOidcPolicy",
+    "FakeVirtualKeys",
     "GatewayHarness",
     "make_ctx",
     "make_gateway_harness",

@@ -14,6 +14,7 @@ from praxis.contract_tests.ports.gateway_contract_fakes import (
     FakeCostMeter,
     FakeLLMProxy,
     FakeMemory,
+    FakeVirtualKeys,
     make_auth_quartet,
     make_ctx,
     make_intent,
@@ -47,6 +48,7 @@ def _deps(tmp_path):
         "policy": GatewayPolicy(
             allowed_user_ids=frozenset({"user-1"}),
             oidc_policy=oidc_policy,
+            virtual_keys=FakeVirtualKeys(),
         ),
     }
 
@@ -93,6 +95,16 @@ class _TracingMemory(FakeMemory):
         return super().query(q)
 
 
+class _TracingVirtualKeys:
+    def __init__(self, order: list[str]) -> None:
+        self.order = order
+        self.checked: list[str] = []
+
+    async def check_budget(self, key_alias: str) -> None:
+        self.order.append("budget")
+        self.checked.append(key_alias)
+
+
 @pytest.mark.no_waiver
 def test_M_T_GATEWAY_EXECUTE_AUTH_FIRST_01_canonical_factory_invokes_auth_before_downstream(
     tmp_path,
@@ -104,12 +116,14 @@ def test_M_T_GATEWAY_EXECUTE_AUTH_FIRST_01_canonical_factory_invokes_auth_before
     oidc_policy = _TracingOidcPolicy(order)
     nonce_store = _TracingNonceStore(order)
     memory = _TracingMemory(order)
+    virtual_keys = _TracingVirtualKeys(order)
     deps["oidc_policy"] = oidc_policy
     deps["nonce_store"] = nonce_store
     deps["memory"] = memory
     deps["policy"] = GatewayPolicy(
         allowed_user_ids=frozenset({"user-1"}),
         oidc_policy=oidc_policy,
+        virtual_keys=virtual_keys,
     )
     gateway = build_gateway(**deps)
 
@@ -118,11 +132,12 @@ def test_M_T_GATEWAY_EXECUTE_AUTH_FIRST_01_canonical_factory_invokes_auth_before
     result = gateway.execute(make_intent(), make_ctx())
 
     assert result.session.status == "completed"
-    assert order[:2] == ["auth", "nonce"]
+    assert order[:3] == ["auth", "nonce", "budget"]
     assert "memory" in order
-    assert order.index("nonce") < order.index("memory")
+    assert order.index("budget") < order.index("memory")
     assert oidc_policy.tokens == ["token-req-1"]
     assert nonce_store.nonces == ["nonce:token-req-1"]
+    assert virtual_keys.checked == ["user-1"]
 
     missing_bearer_ctx = replace(make_ctx("req-missing"), rate_limit_token=None)
     order.clear()
@@ -159,6 +174,7 @@ def test_M_T_GATEWAY_COMPOSITION_POLICY_CONFIGURED_01_factory_uses_supplied_poli
     deps["policy"] = GatewayPolicy(
         allowed_user_ids=frozenset({"user-1"}),
         oidc_policy=oidc_policy,
+        virtual_keys=FakeVirtualKeys(),
     )
     gateway = build_gateway(**deps)
 
