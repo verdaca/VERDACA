@@ -55,7 +55,9 @@ def _hexdigest_width(function: ast.FunctionDef) -> int:
             node.slice.upper.value,
             int,
         ):
-            raise AssertionError("gateway _session_id() hexdigest slice upper bound must be literal")
+            raise AssertionError(
+                "gateway _session_id() hexdigest slice upper bound must be literal"
+            )
         return node.slice.upper.value
 
     if saw_hexdigest:
