@@ -31,7 +31,7 @@ def _envelope(event_type: str = "app_mention") -> dict[str, object]:
 
 
 def test_M_T_SLACK_EVENT_DISPATCH_APP_MENTION_01_app_mention_maps_to_request() -> None:
-    event = parse_event(_envelope(), claims=_claims())
+    event = parse_event(_envelope(), claims=_claims(), verifier=object())
 
     assert event is not None
     assert event.intent.question == "<@BOT> compare the options"
@@ -41,7 +41,7 @@ def test_M_T_SLACK_EVENT_DISPATCH_APP_MENTION_01_app_mention_maps_to_request() -
 
 
 def test_M_T_SLACK_EVENT_DISPATCH_UNKNOWN_01_unknown_event_is_noop() -> None:
-    assert parse_event(_envelope("message"), claims=_claims()) is None
+    assert parse_event(_envelope("message"), claims=_claims(), verifier=object()) is None
 
 
 def test_M_T_SLACK_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_workspace() -> None:
@@ -49,6 +49,7 @@ def test_M_T_SLACK_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_workspace(
         _envelope(),
         claims=_claims(),
         authorization_header="Bearer slack-token-1",
+        verifier=object(),
     )
 
     assert event is not None
@@ -62,7 +63,7 @@ def test_M_T_SLACK_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_workspace(
 
 
 def test_M_T_SLACK_AUTH_CLAIMS_EXTRACT_01_extracts_claims_as_strings() -> None:
-    event = parse_event(_envelope(), claims=_claims())
+    event = parse_event(_envelope(), claims=_claims(), verifier=object())
     assert event is not None
     claims = event.ctx.auth_claims.unwrap()
 

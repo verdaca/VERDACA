@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from praxis.kernel.auth import JwtVerifier, NonceStore, OidcPolicy
 from praxis.kernel.gateway.composition import build_gateway
 from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
+from praxis.kernel.gateway.policy import GatewayPolicy
 from praxis.kernel.session_index.port import SessionIndexPort
 from praxis.ports.compaction import CompactionPort
 from praxis.ports.cost_meter import CostMeterPort
@@ -28,6 +29,7 @@ def create_gateway(
     oidc_policy: OidcPolicy,
     nonce_store: NonceStore,
     webhook_resolver: WebhookSigningKeyResolver,
+    policy: GatewayPolicy,
 ) -> GatewayPort:
     """Delegate shell startup to the canonical kernel composition root."""
     return build_gateway(
@@ -41,6 +43,7 @@ def create_gateway(
         oidc_policy=oidc_policy,
         nonce_store=nonce_store,
         webhook_resolver=webhook_resolver,
+        policy=policy,
     )
 
 

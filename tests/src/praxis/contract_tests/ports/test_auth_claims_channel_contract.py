@@ -21,6 +21,46 @@ FIXTURE_FILES: tuple[tuple[str, Callable[[Mapping[str, object]], dict[str, str]]
 )
 
 
+@pytest.mark.parametrize(
+    ("channel", "parse_fn", "payload"),
+    (
+        (
+            "teams",
+            parse_activity,
+            {
+                "type": "message",
+                "from": {"aadObjectId": "user-1"},
+                "conversation": {"id": "conversation-1"},
+                "channelData": {"tenant": {"id": "tenant-1"}},
+                "id": "activity-1",
+                "text": "hello",
+            },
+        ),
+        (
+            "slack",
+            parse_event,
+            {
+                "team_id": "team-1",
+                "event": {
+                    "type": "app_mention",
+                    "user": "user-1",
+                    "channel": "channel-1",
+                    "event_ts": "1700000000.000100",
+                    "text": "hello",
+                },
+            },
+        ),
+    ),
+)
+def test_M_T_CHANNEL_EVENT_VERIFIER_REQUIRED_01_bearer_without_verifier_rejects(
+    channel: str,
+    parse_fn: Callable[..., object],
+    payload: Mapping[str, object],
+) -> None:
+    with pytest.raises(ValueError, match=f"{channel.capitalize()} bearer token requires"):
+        parse_fn(payload, authorization_header="Bearer token-1", verifier=None)
+
+
 def _teams_claims(payload: Mapping[str, object]) -> dict[str, str]:
     event = parse_activity(
         {
@@ -32,6 +72,7 @@ def _teams_claims(payload: Mapping[str, object]) -> dict[str, str]:
             "text": "hello",
         },
         claims=payload,
+        verifier=object(),
     )
     assert event is not None
     return dict(event.ctx.auth_claims.unwrap())
@@ -50,6 +91,7 @@ def _slack_claims(payload: Mapping[str, object]) -> dict[str, str]:
             },
         },
         claims=payload,
+        verifier=object(),
     )
     assert event is not None
     return dict(event.ctx.auth_claims.unwrap())

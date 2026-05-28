@@ -54,7 +54,17 @@ def _event():
         "channelData": {"tenant": {"id": "tenant-1"}},
         "serviceUrl": "https://smba.example.invalid/apis/",
     }
-    event = parse_activity(activity)
+    event = parse_activity(
+        activity,
+        claims={
+            "aud": "api://verdaca",
+            "exp": "1790784000",
+            "iat": "1767225600",
+            "iss": "https://issuer.example.invalid",
+            "sub": "user-1",
+        },
+        verifier=object(),
+    )
     assert event is not None
     return event
 

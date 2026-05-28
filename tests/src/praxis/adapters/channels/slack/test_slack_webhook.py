@@ -45,7 +45,8 @@ def test_M_T_SLACK_WEBHOOK_SIGNING_VALID_01_valid_signature_dispatches() -> None
         body,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda envelope: dispatched.append(dict(envelope))
+        verifier=object(),
+        dispatch=lambda envelope, verifier: dispatched.append(dict(envelope))
         or WebhookResponse(status_code=200, payload={"ok": True}),
         now=timestamp,
     )
@@ -68,7 +69,8 @@ def test_M_T_SLACK_WEBHOOK_SIGNING_TAMPERED_01_tampered_body_is_rejected() -> No
         tampered,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda envelope: dispatched.append(dict(envelope))
+        verifier=object(),
+        dispatch=lambda envelope, verifier: dispatched.append(dict(envelope))
         or WebhookResponse(status_code=200, payload={"ok": True}),
         now=timestamp,
     )
@@ -87,7 +89,8 @@ def test_M_T_SLACK_URL_VERIFICATION_01_returns_challenge_without_dispatching() -
         body,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda envelope: dispatched.append(dict(envelope))
+        verifier=object(),
+        dispatch=lambda envelope, verifier: dispatched.append(dict(envelope))
         or WebhookResponse(status_code=200, payload={"ok": True}),
         now=timestamp,
     )
@@ -116,7 +119,8 @@ def test_M_T_SLACK_WEBHOOK_REPLAY_WINDOW_01_rejects_stale_timestamp(
         body,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda envelope: WebhookResponse(status_code=200, payload={"ok": True}),
+        verifier=object(),
+        dispatch=lambda envelope, verifier: WebhookResponse(status_code=200, payload={"ok": True}),
         now=now,
     )
 

@@ -44,6 +44,10 @@ def _deps(tmp_path):
         "oidc_policy": oidc_policy,
         "nonce_store": nonce_store,
         "webhook_resolver": webhook_resolver,
+        "policy": GatewayPolicy(
+            allowed_user_ids=frozenset({"user-1"}),
+            oidc_policy=oidc_policy,
+        ),
     }
 
 
@@ -61,7 +65,7 @@ class _TracingOidcPolicy:
                 "exp": "1790784000",
                 "iat": "1767225600",
                 "iss": "https://issuer.example.invalid",
-                "nonce": "nonce-1",
+                "nonce": f"nonce:{bearer_token}",
                 "sub": "user-1",
             }
         )
@@ -103,11 +107,11 @@ def test_M_T_GATEWAY_EXECUTE_AUTH_FIRST_01_canonical_factory_invokes_auth_before
     deps["oidc_policy"] = oidc_policy
     deps["nonce_store"] = nonce_store
     deps["memory"] = memory
-    gateway = build_gateway(**deps)
-    gateway.policy = GatewayPolicy(
+    deps["policy"] = GatewayPolicy(
         allowed_user_ids=frozenset({"user-1"}),
         oidc_policy=oidc_policy,
     )
+    gateway = build_gateway(**deps)
 
     assert isinstance(gateway, GatewayPort)
     assert gateway.jwt_verifier is deps["jwt_verifier"]
@@ -118,7 +122,7 @@ def test_M_T_GATEWAY_EXECUTE_AUTH_FIRST_01_canonical_factory_invokes_auth_before
     assert "memory" in order
     assert order.index("nonce") < order.index("memory")
     assert oidc_policy.tokens == ["token-req-1"]
-    assert nonce_store.nonces == ["nonce-1"]
+    assert nonce_store.nonces == ["nonce:token-req-1"]
 
     missing_bearer_ctx = replace(make_ctx("req-missing"), rate_limit_token=None)
     order.clear()
@@ -144,6 +148,34 @@ def test_M_T_AUTH_VERIFIER_WIRED_AT_COMPOSITION_01_canonical_factory_requires_au
         assert param.default is inspect.Parameter.empty
 
 
+def test_M_T_GATEWAY_COMPOSITION_POLICY_CONFIGURED_01_factory_uses_supplied_policy(
+    tmp_path,
+) -> None:
+    deps = _deps(tmp_path)
+    order: list[str] = []
+    oidc_policy = _TracingOidcPolicy(order)
+    deps["oidc_policy"] = oidc_policy
+    deps["nonce_store"] = _TracingNonceStore(order)
+    deps["policy"] = GatewayPolicy(
+        allowed_user_ids=frozenset({"user-1"}),
+        oidc_policy=oidc_policy,
+    )
+    gateway = build_gateway(**deps)
+
+    assert gateway.execute(make_intent(), make_ctx()).session.status == "completed"
+
+    with pytest.raises(GatewayCtxError) as exc_info:
+        gateway.execute(
+            replace(
+                make_intent(idempotency_key="blocked", workspace_id="workspace-1"),
+                requester_user_id="blocked-user",
+            ),
+            replace(make_ctx("req-blocked"), caller_id="blocked-user"),
+        )
+
+    assert exc_info.value.context_field == "policy:user_not_allowlisted"
+
+
 def test_M_T_COMPOSITION_NO_NONE_DEFAULT_01_build_gateway_has_no_optional_defaults() -> None:
     sig = inspect.signature(build_gateway)
 
@@ -158,6 +190,7 @@ def test_M_T_COMPOSITION_NO_NONE_DEFAULT_01_build_gateway_has_no_optional_defaul
         "oidc_policy",
         "nonce_store",
         "webhook_resolver",
+        "policy",
     }
     assert all(param.default is inspect.Parameter.empty for param in sig.parameters.values())
 

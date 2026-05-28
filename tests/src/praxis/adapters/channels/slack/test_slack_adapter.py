@@ -51,7 +51,17 @@ def _event():
             "ts": "1770000000.000100",
         },
     }
-    event = parse_event(envelope)
+    event = parse_event(
+        envelope,
+        claims={
+            "aud": "api://verdaca",
+            "exp": "1790784000",
+            "iat": "1767225600",
+            "iss": "https://issuer.example.invalid",
+            "sub": "user-1",
+        },
+        verifier=object(),
+    )
     assert event is not None
     return event
 

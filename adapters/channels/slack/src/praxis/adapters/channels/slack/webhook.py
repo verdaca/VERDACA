@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any
 
+from praxis.kernel.auth.jwt import JwtVerifier
 from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
 from praxis.ports.gateway_dto import ChannelKind
 
@@ -77,11 +78,10 @@ def receive_webhook(
     headers: Mapping[str, str],
     *,
     secret: str,
-    dispatch: Callable[[Mapping[str, Any]], WebhookResponse],
+    verifier: JwtVerifier,
+    dispatch: Callable[[Mapping[str, Any], JwtVerifier], WebhookResponse],
     now: float | None = None,
 ) -> WebhookResponse:
-    # TODO(Stage 13): thread a JwtVerifier from the gateway composition root
-    # into Slack event parsing; Stage 12 validates channel HMAC only here.
     normalized_headers = {key.lower(): value for key, value in headers.items()}
     try:
         timestamp = normalized_headers[TIMESTAMP_HEADER]
@@ -100,4 +100,4 @@ def receive_webhook(
             status_code=200,
             payload={"challenge": envelope.get("challenge", "")},
         )
-    return dispatch(envelope)
+    return dispatch(envelope, verifier)

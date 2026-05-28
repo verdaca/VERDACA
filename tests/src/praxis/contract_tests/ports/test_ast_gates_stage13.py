@@ -72,6 +72,40 @@ def test_gate_a_extract_claims_no_none_default() -> None:
     assert "verifier" not in defaulted_arg_names
     assert not _annotation_contains_optional(verifier.annotation)
 
+    for path, function_name in (
+        (
+            ROOT
+            / "adapters"
+            / "channels"
+            / "teams"
+            / "src"
+            / "praxis"
+            / "adapters"
+            / "channels"
+            / "teams"
+            / "events.py",
+            "parse_activity",
+        ),
+        (
+            ROOT
+            / "adapters"
+            / "channels"
+            / "slack"
+            / "src"
+            / "praxis"
+            / "adapters"
+            / "channels"
+            / "slack"
+            / "events.py",
+            "parse_event",
+        ),
+    ):
+        parser = _function(path, function_name)
+        verifier_arg = next(arg for arg in parser.args.kwonlyargs if arg.arg == "verifier")
+        verifier_default = parser.args.kw_defaults[parser.args.kwonlyargs.index(verifier_arg)]
+        assert verifier_default is None
+        assert not _annotation_contains_optional(verifier_arg.annotation)
+
 
 @pytest.mark.no_waiver
 def test_gate_b_oidc_policy_verifier_required() -> None:
@@ -112,8 +146,9 @@ def test_gate_c_build_gateway_full_deps() -> None:
         "oidc_policy",
         "nonce_store",
         "webhook_resolver",
+        "policy",
     ]
-    assert node.args.kw_defaults == [None] * 10
+    assert node.args.kw_defaults == [None] * 11
 
 
 @pytest.mark.no_waiver

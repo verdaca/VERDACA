@@ -1,14 +1,7 @@
-"""Slack event parsing.
-
-Unverified JWT payload decoding in this module is retained only for tests and
-synthetic fixture paths. Production callers must provide pre-verified claims or
-use a JwtVerifier with a raw bearer token.
-"""
+"""Slack event parsing."""
 
 from __future__ import annotations
 
-import base64
-import json
 import uuid
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -37,7 +30,7 @@ def parse_event(
     *,
     claims: Mapping[str, Any] | str | None = None,
     authorization_header: str | None = None,
-    verifier: JwtVerifier | None = None,
+    verifier: JwtVerifier,
 ) -> SlackEvent | None:
     event = _as_mapping(envelope.get("event"))
     if event.get("type") != "app_mention":
@@ -55,7 +48,7 @@ def parse_event(
         or _optional_str(envelope.get("authorization"))
         or _optional_str(envelope.get("bearer_token"))
     )
-    claim_payload = claims or bearer_token or _fallback_claims(user_id=user_id, team_id=team_id)
+    claim_payload = claims or bearer_token
     auth_claims = _resolve_claims(claim_payload, verifier=verifier)
     intent = StartAnalysisRequest(
         question=text,
@@ -82,30 +75,18 @@ def parse_event(
     return SlackEvent(intent=intent, ctx=ctx, response_url=_response_url(envelope))
 
 
-def _decode_unverified_jwt_payload_for_testing(token: str) -> Mapping[str, Any]:
-    try:
-        _header, payload, _signature = token.split(".", 2)
-    except ValueError as exc:
-        raise ValueError("Slack token must be a compact JWT") from exc
-    padded = payload + "=" * (-len(payload) % 4)
-    decoded = base64.urlsafe_b64decode(padded.encode("ascii"))
-    return json.loads(decoded.decode("utf-8"))
-
-
 def _resolve_claims(
-    payload: Mapping[str, Any] | str,
+    payload: Mapping[str, Any] | str | None,
     *,
-    verifier: JwtVerifier | None,
+    verifier: JwtVerifier,
 ) -> dict[str, str]:
-    if verifier is not None:
-        if not isinstance(payload, str):
-            raise ValueError("Slack verified claim extraction requires a bearer token")
-        return extract_claims(payload, verifier)
+    if payload is None:
+        raise ValueError("Slack auth claims or bearer token are required")
     if isinstance(payload, str):
-        claims = _fallback_claims(user_id="unverified-slack-token", team_id="unverified")
-    else:
-        claims = payload
-    return {str(key): str(value) for key, value in claims.items()}
+        if verifier is None:
+            raise ValueError("Slack bearer token requires a JwtVerifier")
+        return extract_claims(payload, verifier)
+    return {str(key): str(value) for key, value in payload.items()}
 
 
 def _as_mapping(value: object) -> Mapping[str, Any]:
@@ -125,14 +106,3 @@ def _extract_bearer_token(value: str | None) -> str | None:
 def _response_url(envelope: Mapping[str, Any]) -> str | None:
     response_url = envelope.get("response_url")
     return str(response_url) if response_url else None
-
-
-def _fallback_claims(*, user_id: str, team_id: str) -> dict[str, str]:
-    # exp/iat=0 marks a synthetic testing fallback, not a verified token lifetime.
-    return {
-        "aud": "verdaca-channel-adapter",
-        "exp": "0",
-        "iat": "0",
-        "iss": f"slack:{team_id}",
-        "sub": user_id,
-    }

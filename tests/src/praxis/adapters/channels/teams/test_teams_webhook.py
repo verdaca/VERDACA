@@ -40,7 +40,8 @@ def test_M_T_TEAMS_WEBHOOK_HMAC_VALID_01_valid_signature_dispatches() -> None:
         body,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda activity: dispatched.append(dict(activity))
+        verifier=object(),
+        dispatch=lambda activity, verifier: dispatched.append(dict(activity))
         or WebhookResponse(status_code=200, payload={"ok": True}),
         now=timestamp,
     )
@@ -61,7 +62,8 @@ def test_M_T_TEAMS_WEBHOOK_HMAC_TAMPERED_01_tampered_body_is_rejected() -> None:
         tampered,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda activity: dispatched.append(dict(activity))
+        verifier=object(),
+        dispatch=lambda activity, verifier: dispatched.append(dict(activity))
         or WebhookResponse(status_code=200, payload={"ok": True}),
         now=timestamp,
     )
@@ -90,7 +92,8 @@ def test_M_T_TEAMS_WEBHOOK_REPLAY_WINDOW_01_rejects_stale_timestamp(
         body,
         _headers(body, timestamp=timestamp, secret="stage12-secret"),
         secret="stage12-secret",
-        dispatch=lambda activity: WebhookResponse(status_code=200, payload={"ok": True}),
+        verifier=object(),
+        dispatch=lambda activity, verifier: WebhookResponse(status_code=200, payload={"ok": True}),
         now=now,
     )
 

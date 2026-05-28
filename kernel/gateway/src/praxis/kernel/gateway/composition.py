@@ -34,8 +34,13 @@ def build_gateway(
     oidc_policy: OidcPolicy,
     nonce_store: NonceStore,
     webhook_resolver: WebhookSigningKeyResolver,
+    policy: GatewayPolicy,
 ) -> GatewayPort:
-    """Build the single canonical GatewayPort implementation."""
+    """Build the single canonical GatewayPort implementation.
+
+    WebhookSigningKeyResolver is retained for inbound channel webhook verification
+    and is not part of the GatewayPort execute path.
+    """
     return VerdacaGatewayService(
         llm_proxy=llm_proxy,
         memory=memory,
@@ -47,7 +52,7 @@ def build_gateway(
         oidc_policy=oidc_policy,
         nonce_store=nonce_store,
         webhook_resolver=webhook_resolver,
-        policy=GatewayPolicy(oidc_policy=oidc_policy),
+        policy=policy,
     )
 
 

@@ -32,7 +32,7 @@ def _activity(activity_type: str = "message") -> dict[str, object]:
 
 
 def test_M_T_TEAMS_EVENT_DISPATCH_MESSAGE_01_message_maps_to_gateway_request() -> None:
-    event = parse_activity(_activity(), claims=_claims())
+    event = parse_activity(_activity(), claims=_claims(), verifier=object())
 
     assert event is not None
     assert event.intent.question == "Summarize this decision"
@@ -42,7 +42,7 @@ def test_M_T_TEAMS_EVENT_DISPATCH_MESSAGE_01_message_maps_to_gateway_request() -
 
 
 def test_M_T_TEAMS_EVENT_DISPATCH_UNKNOWN_01_unknown_activity_is_noop() -> None:
-    assert parse_activity(_activity("typing"), claims=_claims()) is None
+    assert parse_activity(_activity("typing"), claims=_claims(), verifier=object()) is None
 
 
 def test_M_T_TEAMS_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_tenant() -> None:
@@ -50,6 +50,7 @@ def test_M_T_TEAMS_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_tenant() -
         _activity(),
         claims=_claims(),
         authorization_header="Bearer teams-token-1",
+        verifier=object(),
     )
 
     assert event is not None
@@ -63,7 +64,7 @@ def test_M_T_TEAMS_CHANNEL_CONTEXT_FIELDS_01_context_has_channel_user_tenant() -
 
 
 def test_M_T_TEAMS_AUTH_CLAIMS_EXTRACT_01_extracts_claims_as_strings() -> None:
-    event = parse_activity(_activity(), claims=_claims())
+    event = parse_activity(_activity(), claims=_claims(), verifier=object())
     assert event is not None
     claims = event.ctx.auth_claims.unwrap()
 
