@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Mapping
 from typing import Any
 
@@ -15,7 +16,7 @@ class TeamsAdapter:
     def __init__(
         self,
         *,
-        http_client: httpx.Client | None = None,
+        http_client: httpx.AsyncClient | None = None,
         post_results: bool = False,
     ) -> None:
         self._http_client = http_client
@@ -30,7 +31,7 @@ class TeamsAdapter:
         result = gateway.execute(intent, ctx)
         callback_url = (intent.metadata or {}).get("service_url")
         if self._post_results and callback_url:
-            self.post_result(callback_url, result)
+            self._dispatch_post_result(callback_url, result)
         return result
 
     def result_to_adaptive_card(self, result: AnalysisResult) -> dict[str, Any]:
@@ -68,12 +69,23 @@ class TeamsAdapter:
             "body": body,
         }
 
-    def post_result(self, callback_url: str, result: AnalysisResult) -> None:
-        client = self._http_client or httpx.Client(timeout=10.0)
-        close_client = self._http_client is None
-        try:
-            response = client.post(callback_url, json=self.result_to_adaptive_card(result))
+    async def post_result(self, callback_url: str, result: AnalysisResult) -> None:
+        if self._http_client is not None:
+            response = await self._http_client.post(
+                callback_url,
+                json=self.result_to_adaptive_card(result),
+            )
             response.raise_for_status()
-        finally:
-            if close_client:
-                client.close()
+            return
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(callback_url, json=self.result_to_adaptive_card(result))
+            response.raise_for_status()
+
+    def _dispatch_post_result(self, callback_url: str, result: AnalysisResult) -> None:
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            asyncio.run(self.post_result(callback_url, result))
+            return
+        loop.create_task(self.post_result(callback_url, result))
