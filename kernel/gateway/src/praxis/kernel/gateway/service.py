@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import ClassVar, Coroutine, TypeVar
 
-from praxis.kernel.auth import JwtVerifier, NonceStore, OidcPolicy
+from praxis.kernel.auth import AuthClaims, JwtVerifier, NonceStore, OidcPolicy
 from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
 from praxis.kernel.gateway.dial import DIAL_LITELLM_MODEL, DIAL_LITELLM_PROVIDER
 from praxis.kernel.gateway.policy import GatewayPolicy, evaluate_gateway_policy
@@ -66,6 +66,8 @@ class VerdacaGatewayService:
     def execute(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AnalysisResult:
         """Execute one channel-neutral analysis request."""
         now = datetime.now(timezone.utc)
+        self._run_auth_first(intent, ctx, now)
+
         policy_decision = evaluate_gateway_policy(intent, ctx, self.policy, self.cost_meter)
         if not policy_decision.allowed:
             raise self._policy_error(ctx, policy_decision.reason, now)
@@ -176,6 +178,46 @@ class VerdacaGatewayService:
         if self.wal_store is not None:
             self.wal_store.complete_attempt(intent.idempotency_key, result)
         return result
+
+    def _run_auth_first(
+        self,
+        intent: StartAnalysisRequest,
+        ctx: ChannelContext,
+        now: datetime,
+    ) -> AuthClaims:
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            try:
+                return asyncio.run(self._auth_first(intent, ctx))
+            except Exception as exc:
+                raise self._auth_error(ctx, exc, now) from exc
+        raise RuntimeError("Gateway execute API must be called outside an active event loop")
+
+    async def _auth_first(self, intent: StartAnalysisRequest, ctx: ChannelContext) -> AuthClaims:
+        bearer_token = self._bearer_token(ctx)
+        verified_claims = await self.oidc_policy.authenticate(bearer_token)
+        await self.nonce_store.check_and_mark(self._nonce_value(ctx, verified_claims))
+        if self.policy.virtual_keys is not None:
+            await self.policy.enforce_budget(verified_claims)
+        return verified_claims
+
+    @staticmethod
+    def _bearer_token(ctx: ChannelContext) -> str:
+        token = ctx.rate_limit_token
+        if token is None or not token.strip():
+            raise ValueError("missing bearer token")
+        return token
+
+    @staticmethod
+    def _nonce_value(ctx: ChannelContext, verified_claims: AuthClaims) -> str:
+        nonce = verified_claims.get("nonce") or verified_claims.get("jti")
+        if nonce is None:
+            ctx_claims = ctx.auth_claims.unwrap()
+            nonce = ctx_claims.get("nonce") or ctx_claims.get("jti")
+        if nonce is None or not nonce.strip():
+            raise ValueError("missing nonce")
+        return nonce
 
     def get_session_summary(self, session_id: str) -> str:
         """Return a compact synopsis for a persisted session."""
@@ -367,6 +409,20 @@ class VerdacaGatewayService:
             occurred_at=occurred_at,
             violation_class="invariant",
             context_field=f"policy:{reason or 'rejected'}",
+        )
+
+    @staticmethod
+    def _auth_error(
+        ctx: ChannelContext,
+        exc: Exception,
+        occurred_at: datetime,
+    ) -> GatewayCtxError:
+        return GatewayCtxError(
+            port_name=_GATEWAY_PORT_NAME,
+            correlation_id=ctx.request_id,
+            occurred_at=occurred_at,
+            violation_class="invariant",
+            context_field=f"auth:{type(exc).__module__}.{type(exc).__name__}",
         )
 
     @staticmethod

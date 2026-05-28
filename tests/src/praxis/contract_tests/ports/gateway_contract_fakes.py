@@ -9,13 +9,21 @@ from decimal import Decimal
 from pathlib import Path
 from typing import ClassVar
 
+from praxis.kernel.auth import (
+    AuthClaims as KernelAuthClaims,
+)
+from praxis.kernel.auth import (
+    InMemoryNonceStore,
+    JwtVerifier,
+    OidcMetadata,
+    OidcPolicy,
+)
 from praxis.kernel.gateway import (
     GatewayPolicy,
     GatewayWalConfig,
     GatewayWalStore,
     VerdacaGatewayService,
 )
-from praxis.kernel.auth import InMemoryNonceStore, JwtVerifier, OidcMetadata, OidcPolicy
 from praxis.kernel.gateway.composition_types import WebhookSigningKeyResolver
 from praxis.kernel.session_index.models import (
     ArtifactRef as SessionIndexArtifactRef,
@@ -234,6 +242,24 @@ class FakeCompaction:
         )
 
 
+class FakeOidcPolicy:
+    def __init__(self) -> None:
+        self.tokens: list[str] = []
+
+    async def authenticate(self, bearer_token: str) -> KernelAuthClaims:
+        self.tokens.append(bearer_token)
+        return KernelAuthClaims(
+            _claims={
+                "aud": "api://verdaca",
+                "exp": "1790784000",
+                "iat": "1767225600",
+                "iss": "https://issuer.example.invalid",
+                "nonce": f"nonce:{bearer_token}",
+                "sub": "user-1",
+            }
+        )
+
+
 class CountingSqliteSessionIndex(SqliteSessionIndex):
     def __init__(self, db_path: Path) -> None:
         self.index_calls = 0
@@ -278,7 +304,12 @@ class GatewayHarness:
     session_index: CountingSqliteSessionIndex
 
 
-def make_auth_quartet() -> tuple[JwtVerifier, OidcPolicy, InMemoryNonceStore, WebhookSigningKeyResolver]:
+def make_auth_quartet() -> tuple[
+    JwtVerifier,
+    OidcPolicy,
+    InMemoryNonceStore,
+    WebhookSigningKeyResolver,
+]:
     verifier = JwtVerifier(
         OidcMetadata(
             issuer="https://issuer.example.invalid",
@@ -315,10 +346,17 @@ def make_ctx(request_id: str = "req-1") -> ChannelContext:
     return ChannelContext(
         caller_id="user-1",
         caller_kind=CallerKind.HUMAN,
-        auth_claims=AuthClaims(_claims={"sub": "user-1", "email": "user@example.test"}),
+        auth_claims=AuthClaims(
+            _claims={
+                "email": "user@example.test",
+                "nonce": f"nonce:token-{request_id}",
+                "sub": "user-1",
+            }
+        ),
         channel=ChannelKind.CLI,
         channel_session_id="cli-session-1",
         request_id=request_id,
+        rate_limit_token=f"token-{request_id}",
     )
 
 
@@ -334,7 +372,8 @@ def make_gateway_harness(
     cost = FakeCostMeter(consumed_usd=consumed_usd)
     compaction = FakeCompaction()
     session_index = CountingSqliteSessionIndex(tmp_path / "session-index.sqlite3")
-    jwt_verifier, oidc_policy, nonce_store, webhook_resolver = make_auth_quartet()
+    jwt_verifier, _oidc_policy, nonce_store, webhook_resolver = make_auth_quartet()
+    oidc_policy = FakeOidcPolicy()
     gateway = VerdacaGatewayService(
         llm_proxy=llm,
         memory=memory,
@@ -368,6 +407,7 @@ __all__ = [
     "FakeCostMeter",
     "FakeLLMProxy",
     "FakeMemory",
+    "FakeOidcPolicy",
     "GatewayHarness",
     "make_ctx",
     "make_gateway_harness",

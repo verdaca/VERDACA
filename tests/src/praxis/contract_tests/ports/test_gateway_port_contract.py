@@ -36,10 +36,11 @@ def test_M_T_GATEWAY_EXEC_HAPPY_01_returns_analysis_result(tmp_path) -> None:
 def test_M_T_GATEWAY_EXEC_IDEMPOTENCY_01_gateway_owns_replay(tmp_path) -> None:
     harness = make_gateway_harness(tmp_path)
     intent = make_intent(idempotency_key="idem-replay")
-    ctx = make_ctx()
+    first_ctx = make_ctx("req-replay-1")
+    second_ctx = make_ctx("req-replay-2")
 
-    first = harness.gateway.execute(intent, ctx)
-    second = harness.gateway.execute(intent, ctx)
+    first = harness.gateway.execute(intent, first_ctx)
+    second = harness.gateway.execute(intent, second_ctx)
 
     assert second == first
     assert len(harness.llm.calls) == 1
