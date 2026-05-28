@@ -10,11 +10,11 @@ from __future__ import annotations
 import base64
 import json
 import uuid
-import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from praxis.kernel.auth import extract_claims
 from praxis.kernel.auth.jwt import JwtVerifier
 from praxis.ports.gateway_dto import (
     AuthClaims,
@@ -24,35 +24,12 @@ from praxis.ports.gateway_dto import (
     StartAnalysisRequest,
 )
 
-_AUTH_AUDIENCE = "verdaca-channel-adapter"
-
 
 @dataclass(frozen=True, slots=True)
 class SlackEvent:
     intent: StartAnalysisRequest
     ctx: ChannelContext
     response_url: str | None = None
-
-
-def extract_claims(
-    payload: Mapping[str, Any] | str,
-    verifier: JwtVerifier | None = None,
-) -> dict[str, str]:
-    if verifier is not None:
-        if not isinstance(payload, str):
-            raise ValueError("Slack verified claim extraction requires a bearer token")
-        return dict(verifier.decode(payload, audience=_AUTH_AUDIENCE)._claims)
-
-    warnings.warn(
-        "Slack claim extraction without JwtVerifier is for tests and fixtures only",
-        RuntimeWarning,
-        stacklevel=2,
-    )
-    if isinstance(payload, str):
-        claims = _fallback_claims(user_id="unverified-slack-token", team_id="unverified")
-    else:
-        claims = payload
-    return {str(key): str(value) for key, value in claims.items()}
 
 
 def parse_event(
@@ -79,7 +56,7 @@ def parse_event(
         or _optional_str(envelope.get("bearer_token"))
     )
     claim_payload = claims or bearer_token or _fallback_claims(user_id=user_id, team_id=team_id)
-    auth_claims = extract_claims(claim_payload, verifier=verifier)
+    auth_claims = _resolve_claims(claim_payload, verifier=verifier)
     intent = StartAnalysisRequest(
         question=text,
         requester_user_id=user_id,
@@ -113,6 +90,22 @@ def _decode_unverified_jwt_payload_for_testing(token: str) -> Mapping[str, Any]:
     padded = payload + "=" * (-len(payload) % 4)
     decoded = base64.urlsafe_b64decode(padded.encode("ascii"))
     return json.loads(decoded.decode("utf-8"))
+
+
+def _resolve_claims(
+    payload: Mapping[str, Any] | str,
+    *,
+    verifier: JwtVerifier | None,
+) -> dict[str, str]:
+    if verifier is not None:
+        if not isinstance(payload, str):
+            raise ValueError("Slack verified claim extraction requires a bearer token")
+        return extract_claims(payload, verifier)
+    if isinstance(payload, str):
+        claims = _fallback_claims(user_id="unverified-slack-token", team_id="unverified")
+    else:
+        claims = payload
+    return {str(key): str(value) for key, value in claims.items()}
 
 
 def _as_mapping(value: object) -> Mapping[str, Any]:

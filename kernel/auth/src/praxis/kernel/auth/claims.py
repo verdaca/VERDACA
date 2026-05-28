@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import final
+from typing import TYPE_CHECKING, final
+
+if TYPE_CHECKING:
+    from praxis.kernel.auth.jwt import JwtVerifier
 
 
 class ClaimsValidationError(ValueError):
@@ -14,6 +17,7 @@ class ClaimsValidationError(ValueError):
 
 
 _REQUIRED_CLAIMS: frozenset[str] = frozenset({"sub", "iss", "aud", "iat", "exp"})
+_CHANNEL_ADAPTER_AUDIENCE = "verdaca-channel-adapter"
 
 
 @final
@@ -39,4 +43,9 @@ def validate_claims(raw: Mapping[str, str]) -> AuthClaims:
     return AuthClaims(_claims=raw)
 
 
-__all__ = ["AuthClaims", "ClaimsValidationError", "validate_claims"]
+def extract_claims(token: str, verifier: JwtVerifier) -> dict[str, str]:
+    """Decode and validate a bearer token through an explicit JWT verifier."""
+    return dict(verifier.decode(token, audience=_CHANNEL_ADAPTER_AUDIENCE)._claims)
+
+
+__all__ = ["AuthClaims", "ClaimsValidationError", "extract_claims", "validate_claims"]

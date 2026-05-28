@@ -5,9 +5,14 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import httpx
+
+from praxis.kernel.auth.claims import AuthClaims
+
+if TYPE_CHECKING:
+    from praxis.kernel.auth.jwt import JwtVerifier
 
 
 @dataclass(frozen=True)
@@ -27,6 +32,17 @@ class _CacheEntry:
 
 class UnknownKeyError(KeyError):
     """Raised when a JWKS does not contain a requested key id."""
+
+
+class OidcPolicy:
+    """Tenant OIDC verifier with an explicit JwtVerifier dependency."""
+
+    def __init__(self, *, verifier: JwtVerifier, audience: str) -> None:
+        self._verifier = verifier
+        self._audience = audience
+
+    async def authenticate(self, bearer_token: str) -> AuthClaims:
+        return self._verifier.decode(bearer_token, audience=self._audience)
 
 
 class JwksCache:
@@ -116,4 +132,4 @@ def _find_key(jwks: dict[str, Any], kid: str) -> dict[str, Any] | None:
     return None
 
 
-__all__ = ["JwksCache", "OidcMetadata", "UnknownKeyError"]
+__all__ = ["JwksCache", "OidcMetadata", "OidcPolicy", "UnknownKeyError"]

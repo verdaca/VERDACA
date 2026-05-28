@@ -8,7 +8,7 @@ import secrets
 from dataclasses import dataclass
 from decimal import Decimal
 
-from praxis.kernel.auth import AuthClaims, JoseError, JwksCache, JwtVerifier
+from praxis.kernel.auth import AuthClaims, OidcPolicy
 from praxis.ports.cost_meter import BudgetScope, BudgetStatus, CostMeterPort
 from praxis.ports.gateway import GatewayPort
 from praxis.ports.gateway_dto import AnalysisResult, ChannelContext, StartAnalysisRequest
@@ -36,28 +36,15 @@ class GatewayPolicy:
     per_workspace_budget_cap_usd: Decimal | None = None
     gateway: GatewayPort | None = None
     virtual_keys: VirtualKeyPort | None = None
-    jwks_cache: JwksCache | None = None
-    tenant_idp_map: dict[str, str] | None = None
-    expected_audience: str | None = None
+    oidc_policy: OidcPolicy | None = None
 
     async def authenticate(self, bearer_token: str, tenant_id: str) -> AuthClaims:
         """Validate a tenant-scoped bearer token through kernel auth primitives."""
         if not bearer_token or bearer_token.strip() == "":
             raise InvalidBearerError("Bearer token is empty or missing")
-        if self.jwks_cache is None or self.expected_audience is None:
+        if self.oidc_policy is None:
             raise RuntimeError("GatewayPolicy auth dependencies are not configured")
-        issuer = (self.tenant_idp_map or {}).get(tenant_id)
-        if issuer is None:
-            raise UnknownTenantError(tenant_id)
-
-        metadata, jwks = await self.jwks_cache.get_or_fetch(issuer)
-        verifier = JwtVerifier(metadata, jwks)
-        try:
-            return verifier.decode(bearer_token, audience=self.expected_audience)
-        except JoseError:
-            metadata, jwks = await self.jwks_cache.invalidate(issuer)
-            verifier = JwtVerifier(metadata, jwks)
-            return verifier.decode(bearer_token, audience=self.expected_audience)
+        return await self.oidc_policy.authenticate(bearer_token)
 
     async def enforce_budget(self, claims: AuthClaims) -> None:
         """Enforce virtual-key budget for the authenticated subject."""
