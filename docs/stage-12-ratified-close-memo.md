@@ -191,7 +191,7 @@ Meta-test: `tests/src/praxis/contract_tests/test_stage12_no_waiver_count.py` —
 | **Test count** | 281 passed / 8 skipped / 0 failed / 12 warnings |
 | **HARD-constraint grep** | Zero hits across Stage 12 source surfaces |
 | **no_waiver count** | Exactly 9 (strict-equality meta-test green) |
-| **Path-of-record** | `docs/stage-12-ratified-close-memo.md` (gitignored per `docs/*.md` rule) |
+| **Path-of-record** | `docs/stage-12-ratified-close-memo.md` (tracked per `.gitignore:61` negation `!docs/stage-*-ratified-close-memo.md`, overriding the broader `docs/*.md` ignore) |
 | **Predecessor close memo** | `docs/stage-11-ratified-close-memo.md` |
 | **Charter v0.1** | `_bmad-output/implementation-artifacts/verdaca/stage12/ports-architecture-delta.md` (gitignored) |
 | **MAC-T catalog v0.1** | `_bmad-output/implementation-artifacts/verdaca/stage12/test-strategy-delta.md` (gitignored) |
