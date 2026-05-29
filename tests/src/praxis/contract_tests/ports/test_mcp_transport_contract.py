@@ -36,9 +36,10 @@ def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_main_runs_policy_health_check(
 ) -> None:
     calls: list[str] = []
 
-    def fake_policy_health_check() -> bool:
+    def fake_policy_health_check() -> None:
+        # Stage 14 B2: return type changed bool → None (callers were
+        # side-effect-only); fake mirrors current production signature.
         calls.append("health")
-        return True
 
     def fake_asyncio_run(coro) -> None:
         calls.append("run")

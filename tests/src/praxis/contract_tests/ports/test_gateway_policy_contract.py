@@ -16,6 +16,7 @@ from praxis.kernel.auth import AuthClaims
 from praxis.kernel.gateway import GatewayPolicy
 from praxis.kernel.gateway.policy import (
     InvalidBearerError,
+    OperationalMisconfigurationError,
     policy_health_check,
     verify_bearer_token,
 )
@@ -105,11 +106,46 @@ def test_deployment_bearer_token_outer_gate(monkeypatch) -> None:
 def test_policy_health_check_warns_when_bearer_token_unset(monkeypatch, caplog) -> None:
     monkeypatch.delenv("VERDACA_GATEWAY_BEARER_TOKEN", raising=False)
 
-    assert policy_health_check() is False
+    # Stage 14 B2: return type changed bool → None; side-effect-only callers
+    # are backward-compatible. Assertion now verifies the implicit None return
+    # plus the warning log.
+    result = policy_health_check()
+
+    assert result is None
     assert (
         "Bearer auth not configured (VERDACA_GATEWAY_BEARER_TOKEN unset): "
         "all requests will be rejected"
     ) in caplog.text
+
+
+def test_M_T_POLICY_HEALTH_CHECK_PROD_FAIL_CLOSED_01_production_profile_none_vkey_raises(
+    monkeypatch, caplog
+) -> None:
+    """Production profile + GatewayPolicy(virtual_keys=None) →
+    OperationalMisconfigurationError (fail-closed at startup; catches
+    Stage 13 V3.A contract violation early)."""
+    monkeypatch.setenv("VERDACA_GATEWAY_BEARER_TOKEN", "set-to-isolate-vkey-check")
+    monkeypatch.setenv("VERDACA_DEPLOY_PROFILE", "production")
+
+    policy = GatewayPolicy()  # virtual_keys defaults to None
+
+    with pytest.raises(OperationalMisconfigurationError, match="virtual_keys is None"):
+        policy_health_check(policy=policy)
+
+
+def test_M_T_POLICY_HEALTH_CHECK_DEV_WARNS_01_dev_profile_none_vkey_warns_only(
+    monkeypatch, caplog
+) -> None:
+    """Dev profile (or unset) + GatewayPolicy(virtual_keys=None) → warning
+    only, no raise. Operator gets visibility without blocking dev cycles."""
+    monkeypatch.setenv("VERDACA_GATEWAY_BEARER_TOKEN", "set-to-isolate-vkey-check")
+    monkeypatch.setenv("VERDACA_DEPLOY_PROFILE", "development")
+
+    policy = GatewayPolicy()  # virtual_keys=None
+
+    policy_health_check(policy=policy)  # Must NOT raise
+
+    assert "vkey budget unenforced" in caplog.text
 
 
 @pytest.mark.asyncio
