@@ -2263,14 +2263,24 @@ name = "praxis-adapter-mcp-server"
 version = "0.1.0"
 source = { editable = "adapters/mcp_server" }
 dependencies = [
+    { name = "anyio" },
     { name = "mcp" },
+    { name = "praxis-adapter-in-tree-compaction-stub" },
+    { name = "praxis-kernel-auth" },
+    { name = "praxis-kernel-gateway" },
+    { name = "praxis-kernel-session-index" },
     { name = "praxis-ports" },
     { name = "pydantic" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "anyio", specifier = ">=4" },
     { name = "mcp", specifier = "==1.27.0" },
+    { name = "praxis-adapter-in-tree-compaction-stub", editable = "adapters/in_tree_compaction_stub" },
+    { name = "praxis-kernel-auth", editable = "kernel/auth" },
+    { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
+    { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
     { name = "praxis-ports", editable = "ports" },
     { name = "pydantic", specifier = ">=2.0" },
 ]
