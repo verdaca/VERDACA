@@ -34,23 +34,41 @@ def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_uses_e1_policy(
 def test_M_T_MCP_TRANSPORT_HTTP_BEARER_01_main_runs_policy_health_check(
     monkeypatch,
 ) -> None:
+    # Stage 14 Phase-0.5: main() now composes a live gateway (async OIDC
+    # discovery) inside a single asyncio.run, then calls
+    # policy_health_check(policy=...) with the built policy BEFORE serving.
+    # This plain contract test (NOT @no_waiver — pin unaffected) is updated to
+    # assert the new compose → health(policy) → serve order; the MAC-T intent
+    # ("main validates deploy posture before serving") is preserved.
     calls: list[str] = []
+    sentinel_gateway = object()
+    sentinel_policy = object()
 
-    def fake_policy_health_check() -> None:
-        # Stage 14 B2: return type changed bool → None (callers were
-        # side-effect-only); fake mirrors current production signature.
+    async def fake_compose_auth_quartet():
+        calls.append("compose")
+        return ("verifier", "oidc")
+
+    def fake_build_runtime_gateway(*, jwt_verifier, oidc_policy):
+        calls.append("build")
+        assert (jwt_verifier, oidc_policy) == ("verifier", "oidc")
+        return sentinel_gateway, sentinel_policy
+
+    def fake_policy_health_check(policy=None) -> None:
         calls.append("health")
+        assert policy is sentinel_policy
 
-    def fake_asyncio_run(coro) -> None:
-        calls.append("run")
-        coro.close()
+    async def fake_serve_http(*, gateway=None) -> None:
+        calls.append("serve")
+        assert gateway is sentinel_gateway
 
+    monkeypatch.setattr(http, "compose_auth_quartet", fake_compose_auth_quartet)
+    monkeypatch.setattr(http, "build_runtime_gateway", fake_build_runtime_gateway)
     monkeypatch.setattr(http, "policy_health_check", fake_policy_health_check)
-    monkeypatch.setattr(http.asyncio, "run", fake_asyncio_run)
+    monkeypatch.setattr(http, "serve_http", fake_serve_http)
 
     http.main()
 
-    assert calls == ["health", "run"]
+    assert calls == ["compose", "build", "health", "serve"]
 
 
 def test_M_T_MCP_TRANSPORT_STDIO_TOOL_LIST_01_stdio_server_has_tools() -> None:

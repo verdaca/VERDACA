@@ -9,12 +9,25 @@ description = "Verdaca inbound MCP server adapter for GatewayPort"
 requires-python = ">=3.12"
 dependencies = [
     "praxis-ports",
+    # Stage 14 Phase-0.5: build_runtime_gateway (composition.py) composes the
+    # runtime gateway from kernel + sibling-adapter packages; tools.py uses
+    # anyio for the Option A worker-thread offload. Declared explicitly
+    # (previously resolved only via the editable uv workspace).
+    "praxis-adapter-in_tree_compaction_stub",
+    "praxis-kernel-auth",
+    "praxis-kernel-gateway",
+    "praxis-kernel-session-index",
+    "anyio>=4",
     "mcp==1.27.0",
     "pydantic>=2.0",
 ]
 
 [tool.uv.sources]
 praxis-ports = { workspace = true }
+praxis-adapter-in_tree_compaction_stub = { workspace = true }
+praxis-kernel-auth = { workspace = true }
+praxis-kernel-gateway = { workspace = true }
+praxis-kernel-session-index = { workspace = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]
