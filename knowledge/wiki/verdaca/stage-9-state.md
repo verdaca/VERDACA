@@ -1,7 +1,7 @@
 # Stage 9 — Ports-and-Adapters State
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-27 (Stage 12 RATIFIED + Stage 13 OPEN) | **Source:** session handoffs 2026-04-12 → 2026-05-13 + `docs/stage-*-handover.md` 2026-05-16 → 2026-05-22 + in-session VOC synthesis 2026-05-24 + Stage 11 handoffs 2026-05-25 → 2026-05-26 + Stage 12 close memo `docs/stage-12-ratified-close-memo.md` 2026-05-27
-**Working-branch HEAD (Stage 12 ratification authority):** `43f57ba` on `stage-12.0-channel-adapters` (Path A local-only; 29 commits from base `e0aade3`). H#8.V2 WARNING close at `43f57ba`; H#8.V2 MEDIUM at `16a147a`; H#8.V2 HIGH at `06bcb8a`; H#8.V2 CRITICAL at `c48d3ce`. **Branch is LOCAL-ONLY (Path A — never pushed to origin).** | **origin/main HEAD:** `f181a7e` (Stage 10 A7 team-lead override close 2026-05-24); local now diverged via Path A — push gated through Stage 13 close (or explicit team-lead merge authorization) per `feedback_memory_authorization` adjacent risk-action discipline.
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-29 (Stage 13 RATIFIED + merged to main + Path A CLOSED + Stage 14 G1 RATIFIED) | **Source:** session handoffs + `docs/stage-*-handover.md` 2026-04-12 → 2026-05-28 + in-session VOC synthesis 2026-05-24 + Stage 12 close memo `docs/stage-12-ratified-close-memo.md` 2026-05-27 + Stage 13 close memo `docs/stage-13-ratified-close-memo.md` 2026-05-28 + 6-agent Stage 14 G1 roundtable 2026-05-28 (Winston+Vera+Amelia+Murat+John+Mary, 3 rounds, full alignment)
+**Working-branch HEAD (Stage 14 entry):** `stage-14.0-buyer-contact-surface @ 620b4cb` (cut from `main @ 620b4cb`). **Stage 13 RATIFIED 2026-05-28** at `620b4cb` (14 commits from base `5306c8d`) — merged to main + annotated tag `stage-13.0-ratified` → `620b4cb` (pushed to origin). **Path A CLOSED 2026-05-28** via team-lead override of D13: Stages 11+12+13 chain pushed to origin (stage-11.0-mcp-gateway, stage-12.0-channel-adapters, stage-13.0-production-hardening); `local main = origin/main = 620b4cb` (in sync; advanced from `f181a7e` via fast-forward merge of Stage 13 chain).
 **Branch:** `stage-12.0-channel-adapters` (Path A local-only; base = Stage-11 close `e0aade3`; never merged to main)
 
 ---
@@ -47,8 +47,9 @@
 | 9.6 Supply-Chain | ✅ CLOSED 2026-05-19 | `3e26f48` (#40 CI close); merge into main `76eea26` | `uv.lock` SHA-pinned (mem0ai==1.0.11, letta-client==1.10.3, litellm==1.83.14, llmlingua==0.2.2); 4 adapter `version_pin.py` with hashes; `.github/{renovate.json, workflows/contract-tests.yml, workflows/audit.yml}`; `tests/pyproject.toml` registers 6 adapter members; runtime fixture `kernel/runtime/tests/runtime/fixtures/agent-manifest.csv`; 9.9 enforcer un-skipped + green; F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01 CLOSED; 22 CVE deferrals + 2 carry-forward |
 | **Stage 9** | ✅ **RATIFIED 2026-05-20** | merge `76eea26` on origin/main; CI close `3e26f48` | Full Stage 9 ports-and-adapters production-grade rebuild complete; 9.4.2 TONL remains deferred-work (authorized separate launch) |
 | **Stage 11** | ✅ **RATIFIED 2026-05-26** | close memo `e0aade3` on `stage-11.0-mcp-gateway` (Path A local-only); H#8 V2 substantive close `1adbecb`; H#7 buyer-language `1501454`; H#1.5 list_sessions freeze `14a31f8`; REFREEZE-02 substantive `af5d4f4`; REFREEZE-01 substantive `9609c29` (read API stamp `121670a`); base `a11aa67` (off Stage-10 close `f181a7e`) | Channel-Neutral MCP Gateway; GatewayPort + ChannelAdapterPort + ChannelContext (FROZEN_FIELD_ALLOWLIST); `kernel/gateway/` + `adapters/mcp_server/` (FastMCP); 5 tools + 5 resources + 1 prompt + 2 transports (stdio + Streamable HTTP); 38 MAC-Ts delta; 208 contract tests GREEN + 8 skipped (env-gated DIAL live + others); 8 Cleo findings closed at H#8 V2; 4 MVP ChannelKinds (CLI, TEAMS, SLACK, CLAUDE_DESKTOP — UI/WEB deferred); only Claude-Desktop ChannelAdapter ships LIVE; HYPOTHETICAL-VOC caveat inherited from A7 override |
-| **Stage 12** | ✅ **RATIFIED 2026-05-27** | close at `43f57ba` on `stage-12.0-channel-adapters` (Path A local-only); 29 commits from base `e0aade3`; H#8.V2 chain: CRITICAL `c48d3ce` → HIGH `06bcb8a` → MEDIUM `16a147a` → WARNING `43f57ba`; Mary H#7 `4608a52`; VirtualKeyPort H#2 `2c68f12`; auth_claims H#1.5 `3257304`+`43036f4` | Teams + Slack `ChannelAdapterPort` (E1); `kernel/auth/` OIDC+JWKS+JWT+claims+nonce + VirtualKeyPort + LiteLLM HTTP-client vkeys (E2); `kernel/gateway/policy.py` thin-orchestrator refactor; uv 19→22; 281 tests / 9 no_waiver / 6 AST gates; Mary PASS-WITH-AMENDMENTS + Cleo FAIL→PASS post-V2; 5 findings → Stage 13; DIAL-LIVE-SMOKE RESOLVED; HYPOTHETICAL-VOC inherited |
-| **Stage 13** | 🔲 **OPEN** (G1 RATIFIED 2026-05-27) | branch not yet cut (G3 pending); Path A continuation from `43f57ba` | Production hardening Option A (no new feature surface); scope: F-12 composition root + NonceStore persistence + async post_result + D4/Q1 WebhookSigningKeyResolver + JSONRPC-FIXTURE-REGEN + SESSION-ID-WIDTH entropy floor; WAL-CONCURRENCY DEFERRED per R6; 25 binding MAC-Ts floor; 13 no_waiver (Stage 12 9 + 4 new); 5 AST gates (A–E); E1‖E2 2-window; pre-charter: `/verdaca-wiki-update` + `graphify update .` BEFORE H#1 |
+| **Stage 12** | ✅ **RATIFIED 2026-05-27** | close at `43f57ba` on `stage-12.0-channel-adapters` (binding ratification anchor preserved); 29 commits from base `e0aade3`; H#8.V2 chain; Mary H#7 `4608a52`; **Path A status CLOSED 2026-05-28** — 3 hygiene tail commits `dc97e7a` + `9fe3057` + `5306c8d` post-RATIFIED for wiki sync + close memo tracking; branch pushed to origin 2026-05-28 | Teams + Slack `ChannelAdapterPort` (E1); `kernel/auth/` OIDC+JWKS+JWT+claims+nonce + VirtualKeyPort + LiteLLM HTTP-client vkeys (E2); `kernel/gateway/policy.py` thin-orchestrator refactor; uv 19→22; 281 tests / 9 no_waiver / 6 AST gates; Mary PASS-WITH-AMENDMENTS + Cleo FAIL→PASS post-V2; 5 findings → Stage 13; DIAL-LIVE-SMOKE RESOLVED; HYPOTHETICAL-VOC inherited |
+| **Stage 13** | ✅ **RATIFIED 2026-05-28** | close at `620b4cb` on `stage-13.0-production-hardening` (14 commits from base `5306c8d`); E2 SHAs `4d45100`+`f1aa572`+`2e1d134`; E1 SHAs `2802754`+`8be62e0`+`54f9235`+`a354283`+`a3c589a`; V2 chain CRITICAL `e2ece6f` → HIGH `f91aad0` → MEDIUM `2776be0` → LOW `3fc11c7`; V3.A `1ce9539` (V1 C-1 binding criterion fully closed via unconditional enforce_budget); close memo `620b4cb` MERGED TO MAIN + tag `stage-13.0-ratified` → `620b4cb` pushed origin 2026-05-28 | Production hardening Option A; auth quartet invoked-in-execute (V2.A + V3.A) + composition root `kernel/gateway/composition.py` 11-param `build_gateway()` + OidcPolicy NEW class + extract_claims relocation + NonceStore SQLite separate file + BEGIN IMMEDIATE atomic + Teams/Slack post_result async + WebhookSigningKeyResolver hybrid dataclass + gateway session-id W-1 (32-hex/128-bit) + 6 AST gates A-F (Gate F close-memo tracking symmetry); **321 tests / 13 runtime no_waiver / 6 Stage 13 AST gates A-F / 19 total enforced markers**; 5/5 V1 Cleo CLOSED + 2/12 V3 CLOSED at V3.A + 10 V3 carry-forward Stage 14; Mary H#7 PASS (zero HARD-constraint hits); Stage 9-12 invariants ALL preserved; HYPOTHETICAL-VOC inherited (now compounds on merged main) |
+| **Stage 14** | 🔲 **OPEN** (G1 RATIFIED 2026-05-28) | branch cut: `stage-14.0-buyer-contact-surface @ 620b4cb` (from main); 6-agent roundtable Winston+Vera+Amelia+Murat+John+Mary (3 rounds, full alignment) | Cycle = "Buyer Contact Surface via auditor gate" (NOT Option-A hardening); Phase 0 dual-track Week 1 (Track A engineering CVE close: JWKS-NOT-INTEGRATED + AUDIENCE bundled + R15-c TTL race + R15-d pin + vkey REQUIRED fail-closed + policy_health_check ‖ Track B GTM+auditor floor B-1..B-7 Mary-coordinated split with Cleo+Murat); two end-of-Week-1 hard gates (CVE PASS ∧ B-6 auditor floor attestation); Phase 1 Week 2-3 first Champion VOC + demo runbook + onboarding pipeline + Charter v0.2 11-param ratification; Phase 2 Week 4+ polish burndown; **canonical pin target 14/9/20** (+1 no_waiver `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`, +3 AST gates A-S14/B-S14/C-S14); PROVISIONAL-SINGLE-SAMPLE caveat replaces HYPOTHETICAL-VOC after N=1 (full retire N≥3 per Murat); K1/K2/K3 pre-registration MANDATORY in close memo; auditor voice split Mary+Cleo+Murat; PARSE-ACTIVITY → Stage 14.5 event-gated named debt (Winston Round 3 yield); HARD-constraint adds `\brobust\b` + `\bproduction-ready\b` + `\bcomprehensive\b`; OUT: 4 WARNING + 3 LOW Cleo cosmetic + handover-template drift (3) + Mary docstring polish (3) + F-10-ARCH-AUDIT-02 |
 
 ⚠ Memory entry `[[project_verdaca_stage9_ratified]]` cites SHA `45e1fd8 #41`. That commit exists only on feature branches (`stage-9.4.7-namespace-cleanup`, `stage-9.6-cleo-supply-chain`, `stage-10.0-port-stubs`) and is a 9.6 corrigendum that did not merge into `origin/main`. The Stage-9 close on `origin/main` is `3e26f48` (#40 CI close) + `76eea26` (Stage 9 ratification merge). Memory SHA correction pending team-lead authorization.
 
@@ -108,9 +109,20 @@ Stage 12 sublist binding cardinality at Stage-12 RATIFIED is **9 entries** (stri
 
 **Cross-stage totals (post-Stage-12):** Stage 9 (9) + Stage 10 (4; verify) + Stage 11 (5) + Stage 12 (9) = **~27 across stages**. Stage 12 sublist cardinality strict equality = 9.
 
-### Stage 13 planned additions — 4 entries (PLANNED; not yet binding)
+### Stage 13 sublist — 4 entries (BINDING at Stage 13 RATIFIED 2026-05-28)
 
-Stage 13 G1 ratified 2026-05-27 plans to add **4 new no_waiver entries** (Stage 12 9 → Stage 13 13 strict equality total). Not binding until Stage 13 RATIFIED.
+Stage 13 RATIFIED 2026-05-28 at `620b4cb` — 4 NEW no_waiver entries added (Stage 12 9 → Stage 13 13 strict-equality total at `tests/src/praxis/contract_tests/test_stage13_no_waiver_count.py`). Marker IDs:
+- `M-T-GATEWAY-EXECUTE-AUTH-FIRST-01` (V2.A rename of original `M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01`; renamed at V2.D `3fc11c7` for V2.A rename regression closure)
+- `M-T-AUTH-NONCE-PERSISTENCE-RESTART-01`
+- `M-T-SESSION-ID-ENTROPY-FLOOR-01`
+- `M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01`
+
+### Stage 14 planned additions — 1 entry (PLANNED; not yet binding)
+
+Stage 14 G1 ratified 2026-05-28 plans to add **1 new no_waiver entry** (Stage 13 13 → Stage 14 14 strict-equality total). Marker ID:
+- `M-T-AUTH-JWKS-ROTATION-INVARIANT-01` (Murat lock: bundled commit ≠ bundled discipline; AUDIENCE-DOUBLE-DECODE bundled with JWKS in B1 but does NOT get a no_waiver marker — risk 5/10 < no_waiver floor 7)
+
+Not binding until Stage 14 RATIFIED.
 
 | # (planned) | MAC-T ID (planned) | Reason |
 |---|---|---|
@@ -267,9 +279,9 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 
 ---
 
-## Stage 13 — Production Hardening (OPEN — G1 RATIFIED 2026-05-27)
+## Stage 13 — Production Hardening — RATIFIED 2026-05-28
 
-**Status:** OPEN — G1 scope confirmation roundtable RATIFIED 2026-05-27. Branch NOT yet cut (G3 pending). Path A continuation from `43f57ba`.
+**Status:** RATIFIED 2026-05-28 at `620b4cb` on `stage-13.0-production-hardening` (14 commits from base `5306c8d`); merged to main via fast-forward + tag `stage-13.0-ratified` → `620b4cb` pushed to origin 2026-05-28. Stage 12 binding RATIFIED anchor `43f57ba` preserved.
 
 **Cycle:** Production hardening Option A — no new feature surface. R1–R14 advisor-reconciled + R15-V2 7-amendment patch folded pre-dispatch via Path α (Cleo C-1/C-2/C-3 + Amelia B1/B2 + Vera R13-A-1/R13-A-3).
 
@@ -305,13 +317,95 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 |---|---|---|
 | G1 | Stage 13 scope confirmation roundtable | ✅ RATIFIED 2026-05-27 |
 | G2 | VOC — HYPOTHETICAL caveat inherited; no new VOC gate for Stage 13 hardening cycle | RESOLVED per finish-then-demo sequencing lock |
-| G3 | Cut `stage-13.0-production-hardening` from `stage-12.0-channel-adapters @ 43f57ba` | OPEN |
+| G3 | Cut `stage-13.0-production-hardening` from `stage-12.0-channel-adapters @ 5306c8d` (post-hygiene tail) | ✅ CLOSED 2026-05-28 |
 | G4 | Executor dispatch — E1 ‖ E2; E2 commits land first | CLOSED via R11 |
 | G5 | Stage 11.5 debt scheduling — JSONRPC-FIXTURE-REGEN + SESSION-ID-WIDTH in scope; WAL/RUFF deferred | CLOSED at G1 |
-| G6 | Dispatch master executor | OPEN (blocked on G3) |
-| G7 | Merge Stage 11+12+13 → main | OPEN (Path A; deferred through Stage 13 close minimum) |
+| G6 | Dispatch master executor | ✅ CLOSED 2026-05-28 (Codex/GPT-5 master + Claude Code executor served Stages 13 H#1-H#9; V1+V2+V3.A) |
+| G7 | Merge Stages 11+12+13 → main | ✅ CLOSED 2026-05-28 (team-lead override of D13; fast-forward merge of Stage 13 chain; main `f181a7e` → `620b4cb`; tag `stage-13.0-ratified` pushed) |
 
 **Inherited caveat:** HYPOTHETICAL-VOC (A7 team-lead override 2026-05-24 at `f181a7e`) — every Stage 13 customer-fit claim must carry: "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
+
+---
+
+## Stage 14 — Buyer Contact Surface via auditor gate (OPEN — G1 RATIFIED 2026-05-28)
+
+**Status:** OPEN — G1 scope confirmation ratified 2026-05-28 via 6-agent roundtable (Winston + Vera + Amelia + Murat + John + Mary, 3 rounds, 16 total responses, full alignment). Branch `stage-14.0-buyer-contact-surface @ 620b4cb` cut from main 2026-05-29.
+
+**Cycle framing:** NOT another pure Option-A hardening. Stage 13 substrate is internally-defensible; Stage 14 makes it externally-defensible by clearing the **auditor gate FIRST**, then exposing to first real Champion. HYPOTHETICAL-VOC retire runway longer than originally implied: first Champion call downgrades caveat to PROVISIONAL-SINGLE-SAMPLE (N=1); full retire needs N≥3 for population/magnitude/pricing claims per Murat lock.
+
+### Phase 0 (Week 1) — Dual-track, two hard gates
+
+**Track A — Engineering CVE close (Amelia + Cleo + Murat):**
+- F-13-V3-JWKS-NOT-INTEGRATED-01 (CVE-class, Murat risk 9/10) — `JwksCache.get_or_fetch()` wired into `OidcPolicy.authenticate` before `JwtVerifier.decode`; `UnknownKeyError` → `invalidate()` + retry once; typed `AuthenticationError` on second failure
+- F-13-V3-AUDIENCE-DOUBLE-DECODE-01 — bundled into B1; +2 MAC-Ts + 1 AST gate but **NO `@pytest.mark.no_waiver`** (risk 5 < 7 floor)
+- vkey REQUIRED at production deploy — `policy_health_check()` fail-closed at production profile
+- R15-c TTL race test + R15-d no_waiver constant pin (Murat backlog)
+- Charter v0.2 11-param ratification — doc-only; M2 buyer-language audit before commit
+
+**Track B — GTM + Auditor floor (Mary-coordinated split ownership):**
+- B-1 Target prospect list (8-12 enterprise contacts, Teams/Slack profile)
+- B-2 First-call script (K1/K2/K3 hypothesis-test structure)
+- B-3 HYPOTHETICAL-VOC disclosure language
+- B-4 SOC2-style pre-flight checklist (Mary draft; Cleo + Murat grading slots reserved)
+- B-5 "First auditor meeting" worksheet (12-18 prepared Q&A pairs)
+- B-6 End-of-Phase-0 reconciliation → "auditor floor satisfied" attestation OR gap ledger
+- B-7 First-call scheduling Week 2-3, CONTINGENT on B-6 attestation
+
+**Two end-of-Week-1 hard gates (BOTH must pass to release Phase 1):**
+1. CVE PASS (Track A)
+2. B-6 auditor floor attestation (Track B)
+
+### Phase 1 (Week 2-3) — Champion-facing surface
+- First Champion VOC call against clean substrate
+- Demo runbook (M3 buyer-language audit at draft-close)
+- Onboarding pipeline scripts
+- K1/K2/K3 pre-registration table authored BEFORE Champion call
+- Post-call hypothesis-class log + HYPOTHETICAL-VOC → PROVISIONAL-SINGLE-SAMPLE downgrade
+
+### Phase 2 (Week 4+) — Polish burndown + Stage 14.5 named debt closure
+
+### Canonical pin target
+**Stage 14 close target: Runtime no_waiver = 14 / Stage 14 AST gates = 3 NEW / Total enforced markers = 23**
+- +1 marker: `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`
+- +3 AST gates: Gate A-S14 + Gate B-S14 + Gate C-S14
+
+### PROVISIONAL-SINGLE-SAMPLE caveat string (locked per Murat Round 3)
+
+> *"(PROVISIONAL-SINGLE-SAMPLE: ratified by N=1 Champion call on YYYY-MM-DD; binding for existence + disqualification claims only; population/magnitude/pricing claims remain HYPOTHETICAL pending N≥3 triangulation)"*
+
+### Auditor floor — split ownership (Mary coordinator)
+
+| Owner | Artifact |
+|---|---|
+| Mary | SOC2-style pre-flight checklist + "First auditor meeting" worksheet + post-CVE-close reconciliation attestation |
+| Cleo | Code-evidence grading against Mary's checklist |
+| Murat | Test-discipline-evidence grading (no_waiver MAC-Ts + AST gates → control mapping) |
+
+### HARD-constraint additions for Stage 14 (Mary M2 + M3)
+
+Added to Stage 11+12 inheritance: `\brobust\b`, `\bproduction-ready\b` (+ hyphen variant), `\bcomprehensive\b`.
+
+### Stage 14.5 named debt ledger
+- F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 (Winston Round 3 yield; Teams-channel-coupled, demo-event-gated)
+- R15-b semantic-drift probe (Murat backlog; if budget)
+
+### OUT of scope
+- 4 V3 WARNING + 3 V3 LOW Cleo cosmetic
+- 3 handover-template drift candidates → Vera Stage 14.1 corrigendum
+- 3 Mary H#7 cosmetic polish
+- F-10-ARCH-AUDIT-02 (shell workspace)
+- External SOC2 consultant (Stage 15+; needs VOC signal)
+
+### Stage 14 gates
+| Gate | Description | Status |
+|---|---|---|
+| G1 | 6-agent scope roundtable | ✅ RATIFIED 2026-05-28 |
+| G2 | First real Champion VOC call | OPEN (Phase 1; contingent on B-6) |
+| G3 | Cut `stage-14.0-buyer-contact-surface` from main `@620b4cb` | ✅ CLOSED 2026-05-29 |
+| G4 | Phase 0 dispatch (Track A executor ‖ Track B Mary session) | OPEN |
+| G5 | Memory `project_verdaca_stage14_scope` saved | ✅ CLOSED 2026-05-28 |
+| G6 | Phase 0 end-of-Week-1 hard gates (CVE PASS ∧ B-6 attestation) | OPEN |
+| G7 | Phase 1 release post-gates | OPEN |
 
 ---
 

@@ -202,6 +202,60 @@ docs/                     Pipeline tracking + stage handovers (untracked since `
 
 ---
 
+## Stage 13: Production Hardening + V1/V2/V3.A Cleo Closure — RATIFIED 2026-05-28
+
+**Status:** RATIFIED 2026-05-28 at `620b4cb` on `stage-13.0-production-hardening` (14 commits from base `5306c8d`); merged to main via fast-forward + annotated tag `stage-13.0-ratified` → `620b4cb` pushed to origin.
+
+**Architecture delivered:**
+- **`kernel/gateway/composition.py` NEW** — canonical composition root with `build_gateway()` 11-param keyword-only factory; no None defaults; runtime assertion `build_gateway.__module__ == "praxis.kernel.gateway.composition"`
+- **`kernel/gateway/composition_types.py` NEW** — `WebhookSigningKeyResolver` hybrid frozen dataclass (per-channel env mapping `TEAMS_WEBHOOK_SECRET` + `SLACK_SIGNING_SECRET`; `__post_init__` fail-fast; KeyError on unknown channel; NOT a port — promotable at 3rd channel)
+- **`kernel/auth/oidc.py:OidcPolicy`** — NEW class; `__init__(verifier: JwtVerifier, audience)` REQUIRED; no None defaults; audience required for JwtVerifier.decode validation
+- **`kernel/auth/claims.py:extract_claims(token, verifier: JwtVerifier)`** — relocated (NOT in jwt.py); no None default; AST Gate A enforces structurally
+- **`kernel/auth/nonce.py:NonceStore`** — SQLite separate file from `session_index` (closes WAL-CONCURRENCY); WAL mode + `synchronous=NORMAL` + lazy TTL + startup sweep + asyncio.Lock; `check_and_mark` wrapped in BEGIN IMMEDIATE atomic transaction (V2 Cleo C-2 TOCTOU fix); `persistent: ClassVar[bool] = True`; `InMemoryNonceStore` for tests (`persistent = False`)
+- **`VerdacaGatewayService.execute()` auth-quartet invocation (V2.A + V3.A)** — bearer → `OidcPolicy.authenticate` → `NonceStore.check_and_mark` → `GatewayPolicy.enforce_budget` (UNCONDITIONAL per V3.A) → `GatewayPolicy.execute` → memory/LLM; `VerdacaGatewayService.policy` is required constructor param (no default_factory; V3.A)
+- **Teams/Slack `post_result` migrated to `httpx.AsyncClient`** — private async method; port `execute()` boundary stays sync (Stage 11 REFREEZE-02 preserved; no REFREEZE-03 triggered); `_dispatch_post_result` retains tasks + done_callback for observable failures (V2.C Cleo M-1)
+- **Gateway session-ID W-1** — 32-hex 128-bit prefix at `kernel/gateway/.../service.py:321-325`; deterministic `(workspace_id, idempotency_key) → session_id` mapping preserved
+
+**Test surface:** 321 passed / 8 skipped / 1 warning. 47 binding MAC-Ts (Stage 13 delta).
+
+**Stage 13 runtime no_waiver = 13 (Stage 9-12 = 9 preserved + Stage 13 = 4 new):**
+- `M-T-GATEWAY-EXECUTE-AUTH-FIRST-01` (V2.A; renamed at V2.D `3fc11c7`)
+- `M-T-AUTH-NONCE-PERSISTENCE-RESTART-01`
+- `M-T-SESSION-ID-ENTROPY-FLOOR-01`
+- `M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01`
+
+**Stage 13 AST gates = 6 NEW (A-F):** extract_claims-no-None + NonceStore-persistent-ClassVar + sync-httpx-ban + session-id-entropy-floor + bare-except-auth-crypto-ban + close-memo-tracking-symmetry (Gate F, Murat R16-a).
+
+**Total enforced markers at Stage 13 close: 19** (13 runtime no_waiver + 6 Stage 13 AST gates A-F).
+
+**V1 Cleo closure ratio: 5/5 structurally verified.**
+**V3 Cleo PASS-WITH-AMENDMENTS:** 2/12 closed at V3.A (`1ce9539`); 10/12 carry-forward Stage 14.
+**Stage 9-12 invariants ALL preserved.** Frozen Port surfaces preserved (no REFREEZE-03).
+
+---
+
+## Stage 14: Buyer Contact Surface via auditor gate — OPEN (G1 RATIFIED 2026-05-28)
+
+**Status:** OPEN — G1 ratified 2026-05-28 via 6-agent roundtable (Winston + Vera + Amelia + Murat + John + Mary, 3 rounds, full alignment). Branch `stage-14.0-buyer-contact-surface` cut from main `@ 620b4cb` 2026-05-29.
+
+**Cycle framing:** NOT another pure Option-A hardening. "Buyer Contact Surface via auditor gate" — auditor reclassified as GATING stakeholder upstream of Champion.
+
+**Phase 0 Track A (Engineering) scope:** F-13-V3-JWKS-NOT-INTEGRATED-01 (CVE-class) + F-13-V3-AUDIENCE-DOUBLE-DECODE-01 bundled in B1 + vkey REQUIRED fail-closed + policy_health_check + R15-c TTL race + R15-d no_waiver constant pin + Charter v0.2 11-param ratification (M2 buyer-language audit).
+
+**Phase 0 Track B (GTM + Auditor floor):** B-1 prospect list + B-2 call script + B-3 disclosure language + B-4 SOC2 pre-flight checklist + B-5 auditor meeting worksheet + B-6 attestation + B-7 scheduling (contingent on B-6).
+
+**Two end-of-Week-1 hard gates:** CVE PASS ∧ B-6 auditor floor attestation.
+
+**Phase 1 (Week 2-3):** First Champion VOC + demo runbook + onboarding pipeline + K1/K2/K3 pre-registration table.
+
+**Canonical pin target: 14/9/23** (+1 no_waiver `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`; +3 AST gates A-S14 + B-S14 + C-S14).
+
+**Caveat evolution:** PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 (full retire needs N≥3 per Murat lock).
+
+**Stage 14.5 named debt:** F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 (Winston Round 3 yield; event-gated).
+
+---
+
 ## Technology Stack Active
 
 | Layer | Tech | Version |

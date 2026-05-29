@@ -1,6 +1,6 @@
 # Verdaca — Remaining Work to POV-Ready
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-27 (Stage 12 RATIFIED + Stage 13 G1 RATIFIED) | **Working branch HEAD:** `stage-12.0-channel-adapters @ 43f57ba` (Path A local-only; NOT pushed to origin) | **local main = origin/main = `f181a7e`** (Stage 10 RATIFIED in sync via A7 override push 2026-05-24; Stages 11+12+13 local-only per D13) | **Stage:** Stage 9 RATIFIED 2026-05-20; **Stage 10 RATIFIED 2026-05-24**; **Stage 11 RATIFIED 2026-05-26**; **Stage 12 RATIFIED 2026-05-27** (Teams + Slack channels + kernel/auth/ + VirtualKeyPort; 281 tests; Path A local-only on `stage-12.0-channel-adapters @ 43f57ba`; close memo at `docs/stage-12-ratified-close-memo.md`); **Stage 13 OPEN** — G1 RATIFIED 2026-05-27 (production hardening Option A; G3+G6 OPEN). A7 HYPOTHETICAL-VOC caveat inherited indefinitely: every customer-fit claim must say "(A7 closed via team-lead override 2026-05-24; underlying VOC substrate is HYPOTHETICAL synthesis, not real Champion calls)".
+**Compiled:** 2026-05-08 → **Updated:** 2026-05-29 (Stage 13 RATIFIED + merged to main + Path A CLOSED + Stage 14 G1 OPEN) | **Working branch HEAD:** `stage-14.0-buyer-contact-surface @ 620b4cb` (cut from main 2026-05-29) | **local main = origin/main = `620b4cb`** (Stage 13 RATIFIED close memo; tag `stage-13.0-ratified` → `620b4cb` pushed origin 2026-05-28; Path A CLOSED via team-lead override of D13) | **Stage:** Stage 9 RATIFIED 2026-05-20; Stage 10 RATIFIED 2026-05-24; Stage 11 RATIFIED 2026-05-26; Stage 12 RATIFIED 2026-05-27; **Stage 13 RATIFIED 2026-05-28** at `620b4cb` (14-commit chain from base `5306c8d`; auth quartet invoked-in-execute + composition root build_gateway() 11-param + OidcPolicy + NonceStore SQLite + Teams/Slack async post_result + WebhookSigningKeyResolver + session-id W-1 + 6 AST gates A-F; 321 tests / 13 runtime no_waiver / 6 AST gates / 19 total enforced markers; 5/5 V1 Cleo CLOSED + 2/12 V3 CLOSED at V3.A + 10 V3 carry-forward Stage 14; close memo `docs/stage-13-ratified-close-memo.md` TRACKED on main); **Stage 14 OPEN** — G1 RATIFIED 2026-05-28 via 6-agent roundtable Winston+Vera+Amelia+Murat+John+Mary (3 rounds, 16 responses, full alignment); cycle = "Buyer Contact Surface via auditor gate"; Phase 0 dual-track Week 1 + two end-of-Week-1 hard gates (CVE PASS ∧ B-6 auditor floor attestation). A7 HYPOTHETICAL-VOC caveat compounds on merged main; **PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 first Champion call (full retire needs N≥3 per Murat lock)**: every population/magnitude/pricing claim still carries HYPOTHETICAL-VOC tail until N≥3; existence/disqualification claims downgrade at N=1.
 
 ---
 
@@ -103,22 +103,41 @@ Stage 9 RATIFIED 2026-05-20 — full ports-and-adapters production rebuild
 - [x] Mary buyer-language audit PASS-WITH-AMENDMENTS (H#7); Cleo adversarial FAIL→PASS post-V2 (H#8)
 - [x] Close memo: `docs/stage-12-ratified-close-memo.md` at `43f57ba`; 5 findings → Stage 13
 
-### Before Stage 13 charter opens — IN FLIGHT
-- [x] **G1** Stage 13 scope confirmation roundtable (Winston + Murat + Cleo + Vera + Amelia, advisor-reconciled) — RATIFIED 2026-05-27 (R1–R14 advisor-reconciled + R15-V2 7-amendment patch folded pre-dispatch via Path α; production hardening Option A)
-- [x] **G2** VOC — CLOSED: inherits HYPOTHETICAL caveat per project_verdaca_strategic_sequencing
-- [ ] **G3** Cut `stage-13.0-production-hardening` from `43f57ba` — OPEN (master executor Phase 0)
-- [x] **G4** Executor split — CLOSED via R11: E1 (auth/channel hardening) ‖ E2 (hygiene/data-plane); E2 commits land first
-- [x] **G5** Debt scheduling — CLOSED via R1+R2 (7 scope IN items; WAL-CONCURRENCY DEFERRED per R6)
-- [ ] **G6** Dispatch master executor — OPEN
-- [x] **G7** Path A local-only — CLOSED via D13 (Stages 11+12+13 all local-only)
+### Before Stage 13 charter opens — COMPLETE (Historical) 2026-05-27
+- [x] **G1** Stage 13 scope confirmation roundtable (Winston + Murat + Cleo + Vera + Amelia) — RATIFIED 2026-05-27 (R1–R14 + R15-V2 + R16-V3 + V3.1 corrigenda)
+- [x] **G2** VOC — CLOSED: inherits HYPOTHETICAL caveat
+- [x] **G3** Cut `stage-13.0-production-hardening` from `9fe3057` (post-Stage-12-hygiene-tip) — CLOSED 2026-05-28 (later FF'd to `5306c8d`)
+- [x] **G4** Executor split E1 (auth/channel) ‖ E2 (hygiene/data-plane); E2 commits first
+- [x] **G5** Debt scheduling — 7 scope IN; WAL-CONCURRENCY DEFERRED per R6
+- [x] **G6** Dispatch master executor + V2 (CRITICAL→HIGH→MEDIUM→LOW) + V3.A — CLOSED 2026-05-28
+- [x] **G7** Path A — CLOSED 2026-05-28 via team-lead override; Stages 11+12+13 merged to main + tag `stage-13.0-ratified` pushed
 
-### Stage 13 RATIFIED when — TENTATIVE
-- [ ] 7 scope IN items closed via E1 + E2 (F-12-CLEO-C2 JwtVerifier composition root; F-12-CLEO-M3 NonceStore SQLite persistence + lazy TTL + startup sweep; F-12-CLEO-W2 async post_result; D4/Q1 WebhookSigningKeyResolver dataclass; JSONRPC-FIXTURE-REGEN; SESSION-ID-WIDTH ≥128-bit entropy; WAL-CONCURRENCY DEFERRED per R6)
-- [ ] 25 MAC-T floor + 13-entry no_waiver strict-equality (9 → 13: +M-T-AUTH-VERIFIER-WIRED-AT-COMPOSITION-01, +M-T-AUTH-NONCE-PERSISTENCE-RESTART-01, +M-T-SESSION-ID-ENTROPY-FLOOR-01, +M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01) + 5 AST gates (claims-extraction ban; NonceStore persistent ClassVar; sync httpx in async ban; session-id entropy floor 128 bits; bare-except auth/crypto ban)
-- [ ] 281+ tests still passing (Stage 12 baseline + Stage 13 additions)
-- [ ] H#7 Mary buyer-language audit PASS (HARD-constraint grep zero hits — strategic analysis, seamless, enterprise-grade)
+### Stage 13 RATIFIED — COMPLETE (Historical) 2026-05-28
+- [x] All 7 scope IN items closed via E1 + E2 + V2 + V3.A (auth quartet invoked-in-execute; composition root build_gateway 11-param; NonceStore SQLite BEGIN IMMEDIATE; Teams/Slack async post_result; WebhookSigningKeyResolver; gateway session-id W-1 128-bit; JSONRPC-FIXTURE-REGEN no-delta; WAL-CONCURRENCY DEFERRED documented)
+- [x] 47 MAC-Ts (Stage 13 delta) + 13-entry no_waiver strict-equality at `test_stage13_no_waiver_count.py` (9 Stage 12 preserved + 4 new: `M-T-GATEWAY-EXECUTE-AUTH-FIRST-01` V2.A rename, `M-T-AUTH-NONCE-PERSISTENCE-RESTART-01`, `M-T-SESSION-ID-ENTROPY-FLOOR-01`, `M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01`) + 6 AST gates A-F (added Gate F close-memo tracking symmetry per Murat R16-a V3)
+- [x] 321 tests pass / 8 skipped / 1 warning at close
+- [x] H#7 Mary buyer-language audit PASS — zero HARD-constraint hits across Stage 13 source
+- [x] H#8 Cleo V1 FAIL → V2 (CRITICAL `e2ece6f` + HIGH `f91aad0` + MEDIUM `2776be0` + LOW `3fc11c7`) → V3 FAIL → V3.A (HIGH `1ce9539` V1 C-1 binding criterion fully closed; V3 PASS-WITH-AMENDMENTS 10 carry-forward Stage 14)
+- [x] Close memo: `docs/stage-13-ratified-close-memo.md` TRACKED on main `@620b4cb` (per `.gitignore:61` negation); merged to main 2026-05-28; tag `stage-13.0-ratified` pushed to origin
+
+### Before Stage 14 charter opens — IN FLIGHT
+- [x] **G1** Stage 14 scope confirmation 6-agent roundtable (Winston + Vera + Amelia + Murat + John + Mary) — RATIFIED 2026-05-28 (3 rounds, 16 responses, full alignment; cycle = "Buyer Contact Surface via auditor gate")
+- [x] **G2** VOC — OPEN (Phase 1; first Champion call scheduled contingent on B-6 attestation)
+- [x] **G3** Cut `stage-14.0-buyer-contact-surface` from main `@620b4cb` — CLOSED 2026-05-29
+- [x] **G4** Executor split — Phase 0 Track A (engineering CVE close) ‖ Track B (Mary-coordinated GTM + auditor floor split with Cleo + Murat)
+- [x] **G5** Memory `project_verdaca_stage14_scope` saved — CLOSED 2026-05-28
+- [ ] **G6** Phase 0 end-of-Week-1 hard gates (CVE PASS ∧ B-6 auditor floor attestation) — OPEN
+- [ ] **G7** Phase 1 release (Champion VOC + demo runbook + onboarding + Charter ratification) — OPEN, contingent on G6
+
+### Stage 14 RATIFIED when — TENTATIVE
+- [ ] Phase 0 Track A: B1 bundle JWKS-NOT-INTEGRATED + AUDIENCE-DOUBLE-DECODE + R15-c TTL race + R15-d no_waiver constant pin; vkey REQUIRED fail-closed at production profile; policy_health_check; Charter v0.2 11-param ratification (M2 buyer-language audit zero hits)
+- [ ] Phase 0 Track B: B-1 through B-7 (target list + first-call script + HYPOTHETICAL-VOC disclosure + SOC2 pre-flight checklist + auditor meeting worksheet + reconciliation attestation + scheduling contingent on B-6)
+- [ ] Phase 1: First Champion VOC call against clean substrate; demo runbook + onboarding pipeline (M3 buyer-language audit); K1/K2/K3 pre-registration table authored BEFORE call; post-call hypothesis-class log + HYPOTHETICAL-VOC → PROVISIONAL-SINGLE-SAMPLE caveat downgrade
+- [ ] Phase 2: Stage 14.5 named debt closure (PARSE-ACTIVITY event-gated)
+- [ ] Canonical pin: 13/6/19 → **14/9/23** (+1 no_waiver `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`; +3 AST gates A-S14/B-S14/C-S14; AUDIENCE bundled in B1 with +2 MAC-Ts + 1 AST gate but NO no_waiver per Murat lock "bundled commit ≠ bundled discipline" risk 5 < 7)
+- [ ] H#7 Mary buyer-language audit PASS — 6 forbidden tokens zero hits (`\bstrategic analysis\b` + `\bseamless\b` + `\benterprise-grade\b` + `\brobust\b` + `\bproduction-ready\b` (+ hyphen) + `\bcomprehensive\b`)
 - [ ] H#8 Cleo adversarial review = PASS or PASS-WITH-AMENDMENTS
-- [ ] Pre-charter: `/verdaca-wiki-update` + `graphify update .` BEFORE H#1 (Vera load-bearing — kernel/auth/ not yet in wiki/graph)
+- [ ] B-6 auditor floor attestation language: "Stage 14 Phase 0 auditor floor satisfied at SHA [X]. ... HYPOTHETICAL-VOC caveat inherited; auditor floor does NOT supersede VOC requirement."
 
 ---
 
