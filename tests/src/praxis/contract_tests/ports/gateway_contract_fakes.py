@@ -14,6 +14,7 @@ from praxis.kernel.auth import (
 )
 from praxis.kernel.auth import (
     InMemoryNonceStore,
+    JwksCache,
     JwtVerifier,
     OidcMetadata,
     OidcPolicy,
@@ -320,15 +321,18 @@ def make_auth_quartet() -> tuple[
     InMemoryNonceStore,
     WebhookSigningKeyResolver,
 ]:
-    verifier = JwtVerifier(
-        OidcMetadata(
-            issuer="https://issuer.example.invalid",
-            jwks_uri="https://issuer.example.invalid/keys",
-            id_token_signing_alg_values_supported=("RS256",),
-        ),
-        jwks={"keys": []},
+    metadata = OidcMetadata(
+        issuer="https://issuer.example.invalid",
+        jwks_uri="https://issuer.example.invalid/keys",
+        id_token_signing_alg_values_supported=("RS256",),
     )
-    oidc_policy = OidcPolicy(verifier=verifier, audience="api://verdaca")
+    verifier = JwtVerifier(metadata)
+    jwks_cache = JwksCache()
+    oidc_policy = OidcPolicy(
+        verifier=verifier,
+        audience="api://verdaca",
+        jwks_cache=jwks_cache,
+    )
     nonce_store = InMemoryNonceStore()
     webhook_resolver = WebhookSigningKeyResolver(
         secrets={

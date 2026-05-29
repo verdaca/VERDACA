@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, final
+from typing import TYPE_CHECKING, Any, final
 
 if TYPE_CHECKING:
     from praxis.kernel.auth.jwt import JwtVerifier
@@ -16,8 +16,17 @@ class ClaimsValidationError(ValueError):
         super().__init__(f"Required claims absent: {missing}")
 
 
+class AuthenticationError(ValueError):
+    """Raised when JWT verification fails (kid lookup, signature, audience, or claims schema).
+
+    Stage 14 V3.A: typed surface for the CVE-class auth failure path. Replaces
+    the prior pattern of leaking authlib JoseError or httpx errors through
+    OidcPolicy.authenticate. Production callers catch this single type;
+    GatewayCtxError wraps via service._auth_error.
+    """
+
+
 _REQUIRED_CLAIMS: frozenset[str] = frozenset({"sub", "iss", "aud", "iat", "exp"})
-_CHANNEL_ADAPTER_AUDIENCE = "verdaca-channel-adapter"
 
 
 @final
@@ -43,9 +52,28 @@ def validate_claims(raw: Mapping[str, str]) -> AuthClaims:
     return AuthClaims(_claims=raw)
 
 
-def extract_claims(token: str, verifier: JwtVerifier) -> dict[str, str]:
-    """Decode and validate a bearer token through an explicit JWT verifier."""
-    return dict(verifier.decode(token, audience=_CHANNEL_ADAPTER_AUDIENCE)._claims)
+def extract_claims(
+    token: str,
+    verifier: JwtVerifier,
+    audience: str,
+    key: dict[str, Any],
+) -> dict[str, str]:
+    """Decode and validate a bearer token through an explicit JWT verifier.
+
+    Stage 14 V3.A: parameterized audience + caller-provided signing key.
+    Test-only: production paths verify via OidcPolicy.authenticate which
+    resolves the signing key from JwksCache (kid-aware rotation). Direct
+    callers MUST pre-resolve the key (typically via JwksCache.get_key).
+    The previous hardcoded `_CHANNEL_ADAPTER_AUDIENCE` constant has been
+    removed; channel layer threads audience from configured OidcPolicy.
+    """
+    return dict(verifier.decode(token, audience, key)._claims)
 
 
-__all__ = ["AuthClaims", "ClaimsValidationError", "extract_claims", "validate_claims"]
+__all__ = [
+    "AuthClaims",
+    "AuthenticationError",
+    "ClaimsValidationError",
+    "extract_claims",
+    "validate_claims",
+]

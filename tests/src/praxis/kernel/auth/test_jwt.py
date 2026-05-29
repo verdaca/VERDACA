@@ -64,10 +64,10 @@ def test_M_T_AUTH_JWT_ALG_PIN_01_filters_or_rejects_unsafe_algorithms(
 
     if expected_safe is None:
         with pytest.raises(UnsupportedAlgorithmError):
-            JwtVerifier(_metadata(algorithms), jwks={"keys": []})
+            JwtVerifier(_metadata(algorithms))
         assert constructed_algorithms == []
         return
 
-    JwtVerifier(_metadata(algorithms), jwks={"keys": []})
+    JwtVerifier(_metadata(algorithms))
 
     assert constructed_algorithms == [expected_safe]

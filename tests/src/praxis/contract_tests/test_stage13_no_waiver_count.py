@@ -50,7 +50,15 @@ PRE_STAGE13_MARKER_PATHS: frozenset[Path] = frozenset(
     }
 )
 
-EXCLUSIONS: frozenset[Path] = PRE_STAGE13_MARKER_PATHS
+POST_STAGE13_MARKER_PATHS: frozenset[Path] = frozenset(
+    {
+        CONTRACT_TESTS_ROOT / "test_stage14_no_waiver_count.py",
+        CONTRACT_TESTS_ROOT / "ports" / "test_ast_gates_stage14.py",
+        CONTRACT_TESTS_ROOT / "ports" / "test_oidc_policy_construction.py",
+    }
+)
+
+EXCLUSIONS: frozenset[Path] = PRE_STAGE13_MARKER_PATHS | POST_STAGE13_MARKER_PATHS
 
 
 def _format_path(path: Path) -> str:

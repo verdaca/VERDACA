@@ -7,7 +7,6 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from praxis.kernel.auth import extract_claims
 from praxis.kernel.auth.jwt import JwtVerifier
 from praxis.ports.gateway_dto import (
     AuthClaims,
@@ -92,7 +91,15 @@ def _resolve_claims(
     if isinstance(payload, str):
         if verifier is None:
             raise ValueError("Teams bearer token requires a JwtVerifier")
-        return extract_claims(payload, verifier)
+        # Stage 14 V3.A (Option β): production str-bearer path no longer
+        # decodes at channel layer. Raw bearer is stored in
+        # ctx.rate_limit_token; full verification (kid-aware JwksCache + audience
+        # + signature) happens at kernel _auth_first via OidcPolicy.authenticate.
+        # The verifier param is required at signature level (H-2 invariant
+        # preserved) but unused on this path. ctx.auth_claims remains empty
+        # for production bearer flow; production tokens MUST include nonce/jti
+        # claim — standard IdP practice (Entra/Okta/Auth0 issue jti by default).
+        return {}
     return {str(key): str(value) for key, value in payload.items()}
 
 

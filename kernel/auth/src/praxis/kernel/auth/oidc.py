@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import json
 import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, cast
 
 import httpx
 
-from praxis.kernel.auth.claims import AuthClaims
+from praxis.kernel.auth.claims import AuthClaims, AuthenticationError
 
 if TYPE_CHECKING:
     from praxis.kernel.auth.jwt import JwtVerifier
@@ -34,15 +36,66 @@ class UnknownKeyError(KeyError):
     """Raised when a JWKS does not contain a requested key id."""
 
 
-class OidcPolicy:
-    """Tenant OIDC verifier with an explicit JwtVerifier dependency."""
+def _extract_kid_from_bearer(token: str) -> str:
+    """Extract the 'kid' header claim from a bearer JWT WITHOUT verification.
 
-    def __init__(self, *, verifier: JwtVerifier, audience: str) -> None:
+    Signature verification happens later via JwtVerifier.decode with the
+    cache-resolved key. This function only parses the header segment to enable
+    kid-based cache lookup. Raises AuthenticationError on malformed tokens.
+    """
+    try:
+        header_segment = token.split(".", 1)[0]
+    except (AttributeError, IndexError) as exc:
+        raise AuthenticationError("Malformed bearer token") from exc
+    if not header_segment:
+        raise AuthenticationError("Malformed bearer token")
+    padding = "=" * (-len(header_segment) % 4)
+    try:
+        decoded = base64.urlsafe_b64decode(header_segment + padding)
+        header = json.loads(decoded)
+    except (ValueError, json.JSONDecodeError) as exc:
+        raise AuthenticationError("Cannot decode bearer token header") from exc
+    kid = header.get("kid") if isinstance(header, dict) else None
+    if not isinstance(kid, str) or not kid:
+        raise AuthenticationError("Bearer token missing 'kid' header")
+    return kid
+
+
+class OidcPolicy:
+    """Tenant OIDC verifier orchestrator.
+
+    Stage 14 V3.A: kid extraction + JwksCache.get_key (rotation-aware) +
+    JwtVerifier.decode with caller-resolved key. No static-key fallback.
+    Operational note: production tokens MUST include 'nonce' or 'jti'
+    claim — standard for IdP-issued tokens (Entra, Okta, Auth0 issue
+    'jti' by default per RFC 7519 §4.1.7). Channel layer no longer
+    decodes at parse time (Option β per Stage 14 advisor disposition).
+    """
+
+    def __init__(
+        self,
+        *,
+        verifier: JwtVerifier,
+        audience: str,
+        jwks_cache: JwksCache,
+    ) -> None:
         self._verifier = verifier
         self._audience = audience
+        self._jwks_cache = jwks_cache
 
     async def authenticate(self, bearer_token: str) -> AuthClaims:
-        return self._verifier.decode(bearer_token, audience=self._audience)
+        kid = _extract_kid_from_bearer(bearer_token)
+        try:
+            key = await self._jwks_cache.get_key(self._verifier.issuer, kid)
+        except UnknownKeyError as exc:
+            raise AuthenticationError(
+                f"Unknown JWKS key id {kid!r} for issuer {self._verifier.issuer!r}"
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise AuthenticationError(
+                f"JWKS retrieval failed for issuer {self._verifier.issuer!r}: {exc}"
+            ) from exc
+        return self._verifier.decode(bearer_token, audience=self._audience, key=key)
 
 
 class JwksCache:
