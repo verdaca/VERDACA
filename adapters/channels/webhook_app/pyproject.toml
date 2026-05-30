@@ -11,6 +11,7 @@ dependencies = [
     "praxis-ports",
     "praxis-kernel-gateway",
     "praxis-adapter-channels-teams",
+    "praxis-adapter-channels-slack",
     # Stage 14 Day-2: composition (build_runtime_gateway / compose_auth_quartet)
     # HOISTED out of the mcp_server adapter into the neutral praxis-composition
     # member (D-O6-6 RESOLVED) — the channel no longer pulls mcp_server/FastMCP.
@@ -23,6 +24,7 @@ dependencies = [
 praxis-ports = { workspace = true }
 praxis-kernel-gateway = { workspace = true }
 praxis-adapter-channels-teams = { workspace = true }
+praxis-adapter-channels-slack = { workspace = true }
 praxis-composition = { workspace = true }
 
 [tool.setuptools.packages.find]

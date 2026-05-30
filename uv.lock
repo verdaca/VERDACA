@@ -2198,6 +2198,7 @@ version = "0.1.0"
 source = { editable = "adapters/channels/webhook_app" }
 dependencies = [
     { name = "anyio" },
+    { name = "praxis-adapter-channels-slack" },
     { name = "praxis-adapter-channels-teams" },
     { name = "praxis-composition" },
     { name = "praxis-kernel-gateway" },
@@ -2208,6 +2209,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "anyio", specifier = ">=4" },
+    { name = "praxis-adapter-channels-slack", editable = "adapters/channels/slack" },
     { name = "praxis-adapter-channels-teams", editable = "adapters/channels/teams" },
     { name = "praxis-composition", editable = "composition" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
