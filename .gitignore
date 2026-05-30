@@ -9,6 +9,7 @@
 
 # Step 2: Re-include the Verdaca project directories
 !.gitignore
+!.gitattributes
 !README.md
 !kernel/
 !ports/
