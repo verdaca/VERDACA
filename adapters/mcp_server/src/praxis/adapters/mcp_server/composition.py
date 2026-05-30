@@ -120,21 +120,45 @@ from praxis.ports.cost_meter import (
     CostBreakdown,
     CostEvent,
     CostLedgerEntry,
+    CostMeterPort,
     CostQuery,
     CostReport,
 )
 from praxis.ports.gateway import GatewayPort
-from praxis.ports.llm_proxy import LLMRequest, LLMResponse, LLMStreamChunk, ProviderInfo
+from praxis.ports.llm_proxy import (
+    LLMProxyPort,
+    LLMRequest,
+    LLMResponse,
+    LLMStreamChunk,
+    ProviderInfo,
+)
 from praxis.ports.memory import (
     MemoryEntry,
     MemoryHit,
+    MemoryPort,
     MemoryQuery,
     StoredMemory,
 )
+from praxis.ports.virtual_key import VirtualKeyPort
 
 _AUDIENCE_ENV = "OIDC_AUDIENCE"
 _ISSUER_ENV = "OIDC_ISSUER_URL"
 _ALLOWED_USERS_ENV = "VERDACA_ALLOWED_USER_IDS"
+
+# Stage 14 implementation-finalization: production-profile gating for the
+# de-stubbed real adapters. At VERDACA_DEPLOY_PROFILE=production the runtime
+# composes the REAL adapter and fails CLOSED if its creds are absent; at any
+# other profile (dev/test) it keeps the Tier-1 stub so the hermetic,
+# credential-less integration path stays green. Real adapters are imported
+# LAZILY on the production branch ONLY (they are not declared mcp_server deps;
+# the dev/test path never imports them).
+_DEPLOY_PROFILE_ENV = "VERDACA_DEPLOY_PROFILE"
+_LITELLM_BASE_URL_ENV = "LITELLM_PROXY_URL"
+_LITELLM_MASTER_KEY_ENV = "LITELLM_MASTER_KEY"
+_DIAL_API_KEY_ENV = "DIAL_API_KEY"
+# Letta (secondary memory adapter) — the letta_client SDK reads these natively.
+_LETTA_API_KEY_ENV = "LETTA_API_KEY"
+_LETTA_BASE_URL_ENV = "LETTA_BASE_URL"
 
 
 class ConfigurationError(RuntimeError):
@@ -292,6 +316,130 @@ def _allowed_user_ids() -> frozenset[str]:
     return frozenset(uid.strip() for uid in raw.split(",") if uid.strip())
 
 
+def _is_production_profile() -> bool:
+    return os.environ.get(_DEPLOY_PROFILE_ENV, "").lower() == "production"
+
+
+def _build_virtual_keys() -> VirtualKeyPort:
+    """Production → real LiteLLM virtual-key adapter (fail-closed if creds
+    absent); dev/test → Tier-1 stub (keeps the credential-less hermetic path).
+
+    De-stubs CC6.1-e / CC7.1-b from record-only theater to live budget
+    ENFORCEMENT: the real adapter's ``check_budget`` rejects an over-budget key
+    (``BudgetExhaustedError``), whereas ``_DemoStubVirtualKeys`` only records.
+    FROZEN nonce/auth/pin untouched.
+    """
+    if not _is_production_profile():
+        return _DemoStubVirtualKeys()
+    base_url = os.environ.get(_LITELLM_BASE_URL_ENV)
+    master_key = os.environ.get(_LITELLM_MASTER_KEY_ENV)
+    if not base_url or not master_key:
+        raise ConfigurationError(
+            f"{_LITELLM_BASE_URL_ENV} + {_LITELLM_MASTER_KEY_ENV} are REQUIRED at "
+            f"{_DEPLOY_PROFILE_ENV}=production (live virtual-key budget enforcement)."
+        )
+    from praxis.adapters.litellm.virtual_keys import LiteLLMVirtualKeyAdapter
+
+    return LiteLLMVirtualKeyAdapter(base_url=base_url, master_key=master_key)
+
+
+def _build_llm_proxy() -> LLMProxyPort:
+    """Production → real DIAL-backed LiteLLM LLM proxy (fail-closed if the DIAL
+    key is absent); dev/test → Tier-1 canned-output stub.
+
+    Uses the canonical ``create_dial_llm_proxy`` factory (provider=azure,
+    api_base=EPAM DIAL, version pinned) — the same wiring the DIAL contract
+    test exercises. NOTE: the LLM proxy egresses DIRECT to DIAL, distinct from
+    the virtual-key adapter's ``LITELLM_PROXY_URL`` (the dispatch's "same
+    proxy/env" framing is corrected here per the codebase's existing topology).
+    """
+    if not _is_production_profile():
+        return _DemoStubLLMProxy()
+    api_key = os.environ.get(_DIAL_API_KEY_ENV)
+    if not api_key:
+        raise ConfigurationError(
+            f"{_DIAL_API_KEY_ENV} is REQUIRED at {_DEPLOY_PROFILE_ENV}=production "
+            "(real DIAL model output via create_dial_llm_proxy)."
+        )
+    from praxis.kernel.gateway.dial import create_dial_llm_proxy
+
+    return create_dial_llm_proxy(api_key=api_key)
+
+
+class _DialKeyNormalizingCostMeter:
+    """Task 3 (O-8 EQUAL branch) composition-layer decorator over the REAL
+    PiMonoNativeAdapter: rewrites DIAL cost events keyed ("azure","gpt-4o")
+    onto the existing ("openai","gpt-4o") PRICING_TABLE row before pricing.
+
+    The two are the SAME model at the SAME list price ($2.50 in / $10 out per
+    1M tokens), so pricing the DIAL event via the openai row is ACCURATE — not
+    a fudge. This avoids editing PRICING_TABLE or bumping the frozen, hashed
+    PRICING_TABLE_VERSION (O-8: azure row absent; version bump deferred to
+    Stage-14.x). Source of truth for the ("azure","gpt-4o") pair is
+    dial.DIAL_LITELLM_PROVIDER / DIAL_LITELLM_MODEL.
+    """
+
+    API_VERSION: ClassVar[str] = "1.0.0"
+    _FROM_PROVIDER: ClassVar[str] = "azure"
+    _MODEL: ClassVar[str] = "gpt-4o"
+    _TO_PROVIDER: ClassVar[str] = "openai"
+
+    def __init__(self, inner: CostMeterPort) -> None:
+        self._inner = inner
+
+    def record(self, event: CostEvent) -> CostLedgerEntry:
+        if (event.provider, event.model) == (self._FROM_PROVIDER, self._MODEL):
+            event = event.model_copy(update={"provider": self._TO_PROVIDER})
+        return self._inner.record(event)
+
+    def query(self, q: CostQuery) -> CostReport:
+        return self._inner.query(q)
+
+    def budget_check(self, scope: BudgetScope) -> BudgetStatus:
+        return self._inner.budget_check(scope)
+
+
+def _build_cost_meter() -> CostMeterPort:
+    """Production → real PiMonoNativeAdapter behind the DIAL key-normalizing
+    decorator (O-8 EQUAL: azure/gpt-4o priced via the openai/gpt-4o row, no
+    PRICING_TABLE edit / version bump); dev/test → Tier-1 stub. No external
+    creds (pricing is in-process) → no fail-closed branch.
+    """
+    if not _is_production_profile():
+        return _DemoStubCostMeter()
+    from praxis.adapters.pi_mono_native import PiMonoNativeAdapter
+
+    return _DialKeyNormalizingCostMeter(PiMonoNativeAdapter())
+
+
+def _build_memory() -> MemoryPort:
+    """Production → real memory adapter; dev/test → Tier-1 stub.
+
+    Substrate selection (Task 4): Mem0 is the ratified PRIMARY, but its
+    caller-constructed backing defaults to an OpenAI embedder + LLM, which is
+    UNAVAILABLE here (no OPENAI_API_KEY; project policy is DIAL-only, no OpenAI
+    products) and a DIAL-backed Mem0 embedder config is not yet built. So the
+    SECONDARY adapter Letta (native passage-search) is wired — the
+    ``letta_client`` SDK reads ``LETTA_API_KEY`` / ``LETTA_BASE_URL`` natively
+    (no invented convention). Fail-closed if neither is set. Construction does
+    not contact the server (``on_init``/``health`` is not called by
+    ``build_gateway``).
+    """
+    if not _is_production_profile():
+        return _DemoStubMemory()
+    if not (os.environ.get(_LETTA_API_KEY_ENV) or os.environ.get(_LETTA_BASE_URL_ENV)):
+        raise ConfigurationError(
+            f"{_LETTA_API_KEY_ENV} or {_LETTA_BASE_URL_ENV} is REQUIRED at "
+            f"{_DEPLOY_PROFILE_ENV}=production (Letta memory substrate; the Mem0 "
+            "primary needs an OpenAI/DIAL-backed embedder config not yet built)."
+        )
+    from letta_client import Letta
+
+    from praxis.adapters.letta import LettaAdapter
+
+    return LettaAdapter(letta_client=Letta())
+
+
 async def _build_oidc_policy() -> tuple[JwtVerifier, OidcPolicy]:
     """Construct the real auth quartet's verifier + OIDC policy from env config.
 
@@ -327,7 +475,7 @@ def build_runtime_gateway(
     Delegates to the FROZEN ``build_gateway`` — this function only assembles
     arguments; it does not alter the kernel composition root.
     """
-    virtual_keys = _DemoStubVirtualKeys()
+    virtual_keys = _build_virtual_keys()  # prod→real LiteLLM vkey; dev/test→stub
     policy = GatewayPolicy(
         allowed_user_ids=_allowed_user_ids(),
         oidc_policy=oidc_policy,
@@ -337,9 +485,9 @@ def build_runtime_gateway(
     gateway = build_gateway(
         session_index=SqliteSessionIndex(),
         compaction=InTreeCompactionStubAdapter(),
-        memory=_DemoStubMemory(),
-        llm_proxy=_DemoStubLLMProxy(),
-        cost_meter=_DemoStubCostMeter(),
+        memory=_build_memory(),  # prod→real Letta (Mem0 backing absent); dev/test→stub
+        llm_proxy=_build_llm_proxy(),  # prod→real DIAL LiteLLM; dev/test→stub
+        cost_meter=_build_cost_meter(),  # prod→real pi_mono (DIAL-key-normalized); dev/test→stub
         channel_adapters={},
         jwt_verifier=jwt_verifier,
         oidc_policy=oidc_policy,
