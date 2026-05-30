@@ -17,6 +17,7 @@ dependencies = [
     "praxis-adapter-mem0",
     "praxis-adapter-letta",
     "praxis-adapter-llmlingua",
+    "praxis-composition",
     "praxis-kernel-gateway",
     "praxis-kernel-session-index",
     "asyncpg==0.31.0",
@@ -42,6 +43,7 @@ praxis-adapter-mcp-server = { workspace = true }
 praxis-adapter-mem0 = { workspace = true }
 praxis-adapter-letta = { workspace = true }
 praxis-adapter-llmlingua = { workspace = true }
+praxis-composition = { workspace = true }
 praxis-kernel-gateway = { workspace = true }
 praxis-kernel-session-index = { workspace = true }
 

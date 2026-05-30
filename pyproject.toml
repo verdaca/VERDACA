@@ -9,6 +9,7 @@
 [tool.uv.workspace]
 members = [
     "ports",
+    "composition",
     "adapters/beads",
     "adapters/tonl",
     "adapters/in_tree_compaction_stub",

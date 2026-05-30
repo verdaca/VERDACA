@@ -10,11 +10,14 @@ had zero non-test callers (finding O-3), so the deployable MCP entrypoint ran
 ``build_runtime_gateway()`` reads configuration from the environment, builds
 the 11 dependencies ``build_gateway`` requires, and returns a live
 ``GatewayPort``. It is intentionally transport-neutral (no MCP/FastMCP imports)
-so the SAME composition is reusable by the Teams/Slack channel transports when
-they are wired in a later cycle. (D-1 locked: a transport-neutral home, not
-``shell/api/`` — that package carries a separate Clerk-auth lineage. It lives
-inside the ``mcp_server`` adapter package this cycle to avoid adding a new uv
-workspace member; hoist to a dedicated neutral member when channels wire.)
+so the SAME composition is reusable by the MCP server and the Teams/Slack
+channel transports. (D-1 locked: a transport-neutral home, not ``shell/api/``
+— that package carries a separate Clerk-auth lineage.) Stage 14 Day-2: HOISTED
+out of the ``mcp_server`` adapter into this dedicated neutral
+``praxis.composition`` workspace member (D-1 / finding D-O6-6) now that channels
+wire — so ``channels.webhook_app`` no longer transitively imports
+``mcp_server``/FastMCP (the wrong-direction arrow is gone;
+F-14-O6-COMPOSITION-HOIST-PENDING-01 resolved).
 
 FROZEN — this module only CONSTRUCTS and INJECTS existing kernel classes. It
 does not modify ``build_gateway``'s signature, the auth quartet, the

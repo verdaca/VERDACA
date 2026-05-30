@@ -1,29 +1,20 @@
-"""Stage 14 Phase-0.6 O-6 — composition-root hoist boundary guardrail.
+"""Stage 14 — composition-root boundary guard (LIVE; hoist landed).
 
-``F-14-O6-COMPOSITION-HOIST-PENDING-01`` — an executable fence for the deferred
-composition-root hoist (the HARD MERGE-GATE, not this commit).
+``F-14-O6-COMPOSITION-HOIST-PENDING-01`` — RESOLVED at the Stage-14 Day-2 hoist.
+The runtime composition (``build_runtime_gateway`` / ``compose_auth_quartet``)
+was moved out of the ``mcp_server`` adapter into the neutral
+``praxis.composition.runtime_gateway`` member, so ``webhook_app`` no longer
+imports ``mcp_server``/FastMCP. The earlier wrong-direction arrow
+``channels -> mcp_server -> FastMCP`` is gone.
 
-On this demo branch ``webhook_app`` wires its gateway through
-``praxis.adapters.mcp_server.composition`` (``build_runtime_gateway`` /
-``compose_auth_quartet``). That is the WRONG-DIRECTION arrow
-``channels -> mcp_server -> FastMCP``: ``composition.py`` carries the contract
-to "hoist to a dedicated neutral member when channels wire", which has NOT
-happened yet. The arrow is tolerable on a local demo branch but MUST NOT reach
-main (Winston⇄Murat 2026-05-30).
+This was an ``xfail(strict=True)`` fence while the arrow existed; it is now a
+LIVE PASSING assertion and a permanent regression guard: no
+``praxis.adapters.channels.*`` module may transitively import
+``praxis.adapters.mcp_server.*`` (equivalently, ``webhook_app`` must not pull in
+``fastmcp``). If a future change reintroduces the arrow, this test goes red.
 
-This test ASSERTS the desired POST-HOIST state — that no
-``praxis.adapters.channels.*`` module transitively imports
-``praxis.adapters.mcp_server.*`` (equivalently, ``webhook_app`` does not pull in
-``fastmcp``). It therefore FAILS TODAY BY DESIGN and is marked
-``xfail(strict=True)``:
-
-  - today  → assertion fails → ``xfailed`` (expected; the fence is armed).
-  - after the hoist lands → assertion passes → ``xpassed`` → strict xfail turns
-    that into a CI FAILURE, forcing the hoist author to flip this marker to a
-    live assertion. That is the fence screaming at the next channel author.
-
-NO ``@pytest.mark.no_waiver`` — this is an xfail guardrail, not a runtime
-invariant, so the 14/9/23 pin (no_waiver == 14) is unaffected.
+NO ``@pytest.mark.no_waiver`` — a boundary guard, not a runtime invariant; the
+14/9/23 pin is unaffected.
 """
 
 from __future__ import annotations
@@ -31,8 +22,6 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-
-import pytest
 
 # Probe script: import the channel package in a CLEAN interpreter and report any
 # mcp_server / fastmcp modules that got transitively pulled in.
@@ -49,16 +38,6 @@ print(json.dumps(offenders))
 """
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "F-14-O6-COMPOSITION-HOIST-PENDING-01: webhook_app wires through "
-        "praxis.adapters.mcp_server.composition (wrong-direction "
-        "channels->mcp_server->FastMCP arrow). composition.py's 'hoist to a "
-        "dedicated neutral member when channels wire' contract is not yet "
-        "satisfied; flips green only when the hoist merge-gate lands."
-    ),
-)
 def test_channels_do_not_transitively_import_mcp_server_subtree() -> None:
     result = subprocess.run(
         [sys.executable, "-c", _PROBE],
@@ -69,5 +48,5 @@ def test_channels_do_not_transitively_import_mcp_server_subtree() -> None:
     offenders = json.loads(result.stdout.strip().splitlines()[-1])
     assert offenders == [], (
         "channels.webhook_app transitively imports the mcp_server subtree / "
-        f"fastmcp (hoist not yet landed): {offenders}"
+        f"fastmcp — the composition-root hoist regressed: {offenders}"
     )

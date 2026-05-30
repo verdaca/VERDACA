@@ -3,27 +3,24 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "praxis-adapter-channels-webhook-app"
+name = "praxis-composition"
 version = "0.1.0"
-description = "Verdaca channel webhook ASGI entrypoint (Stage 14 Phase-1 O-6) — composes a runtime gateway and serves inbound Teams/Slack webhooks"
+description = "Verdaca runtime composition root (neutral apex) — wires kernel + adapter substrates into a deployable GatewayPort (hoisted from mcp_server per D-1 / D-O6-6)"
 requires-python = ">=3.12"
 dependencies = [
     "praxis-ports",
+    "praxis-adapter-in_tree_compaction_stub",
+    "praxis-kernel-auth",
     "praxis-kernel-gateway",
-    "praxis-adapter-channels-teams",
-    # Stage 14 Day-2: composition (build_runtime_gateway / compose_auth_quartet)
-    # HOISTED out of the mcp_server adapter into the neutral praxis-composition
-    # member (D-O6-6 RESOLVED) — the channel no longer pulls mcp_server/FastMCP.
-    "praxis-composition",
-    "anyio>=4",
-    "starlette>=0.40",
+    "praxis-kernel-session-index",
 ]
 
 [tool.uv.sources]
 praxis-ports = { workspace = true }
+praxis-adapter-in_tree_compaction_stub = { workspace = true }
+praxis-kernel-auth = { workspace = true }
 praxis-kernel-gateway = { workspace = true }
-praxis-adapter-channels-teams = { workspace = true }
-praxis-composition = { workspace = true }
+praxis-kernel-session-index = { workspace = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]

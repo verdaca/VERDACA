@@ -68,7 +68,7 @@ from praxis.adapters.channels.teams.webhook import (
     load_webhook_secret,
     receive_webhook,
 )
-from praxis.adapters.mcp_server.composition import (
+from praxis.composition.runtime_gateway import (
     build_runtime_gateway,
     compose_auth_quartet,
 )

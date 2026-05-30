@@ -16,8 +16,8 @@ import os
 
 from mcp.server.fastmcp import FastMCP
 
-from praxis.adapters.mcp_server.composition import build_runtime_gateway, compose_auth_quartet
 from praxis.adapters.mcp_server.server import create_verdaca_mcp_server
+from praxis.composition.runtime_gateway import build_runtime_gateway, compose_auth_quartet
 from praxis.kernel.gateway.policy import policy_health_check, verify_bearer_token
 from praxis.ports.gateway import GatewayPort
 

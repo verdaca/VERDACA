@@ -44,8 +44,8 @@ import pytest
 from authlib.jose import JsonWebKey
 from authlib.jose import jwt as jose_jwt
 
-from praxis.adapters.mcp_server.composition import build_runtime_gateway
 from praxis.adapters.mcp_server.tools import build_channel_context
+from praxis.composition.runtime_gateway import build_runtime_gateway
 from praxis.kernel.auth import OidcPolicy
 from praxis.kernel.auth.jwt import JwtVerifier
 from praxis.kernel.auth.oidc import JwksCache, OidcMetadata, _CacheEntry

@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 import httpx
 import pytest
 
-import praxis.adapters.mcp_server.composition as comp
+import praxis.composition.runtime_gateway as comp
 from praxis.adapters.litellm.virtual_keys import LiteLLMVirtualKeyAdapter
 from praxis.adapters.pi_mono_native import PiMonoNativeAdapter
 from praxis.kernel.auth import AuthClaims

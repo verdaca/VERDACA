@@ -22,6 +22,7 @@ members = [
     "praxis-adapter-mem0",
     "praxis-adapter-pi-mono-native",
     "praxis-adapter-tonl",
+    "praxis-composition",
     "praxis-compression",
     "praxis-contract-tests",
     "praxis-kernel-auth",
@@ -2198,7 +2199,7 @@ source = { editable = "adapters/channels/webhook_app" }
 dependencies = [
     { name = "anyio" },
     { name = "praxis-adapter-channels-teams" },
-    { name = "praxis-adapter-mcp-server" },
+    { name = "praxis-composition" },
     { name = "praxis-kernel-gateway" },
     { name = "praxis-ports" },
     { name = "starlette" },
@@ -2208,7 +2209,7 @@ dependencies = [
 requires-dist = [
     { name = "anyio", specifier = ">=4" },
     { name = "praxis-adapter-channels-teams", editable = "adapters/channels/teams" },
-    { name = "praxis-adapter-mcp-server", editable = "adapters/mcp_server" },
+    { name = "praxis-composition", editable = "composition" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
     { name = "praxis-ports", editable = "ports" },
     { name = "starlette", specifier = ">=0.40" },
@@ -2290,6 +2291,7 @@ dependencies = [
     { name = "anyio" },
     { name = "mcp" },
     { name = "praxis-adapter-in-tree-compaction-stub" },
+    { name = "praxis-composition" },
     { name = "praxis-kernel-auth" },
     { name = "praxis-kernel-gateway" },
     { name = "praxis-kernel-session-index" },
@@ -2302,6 +2304,7 @@ requires-dist = [
     { name = "anyio", specifier = ">=4" },
     { name = "mcp", specifier = "==1.27.0" },
     { name = "praxis-adapter-in-tree-compaction-stub", editable = "adapters/in_tree_compaction_stub" },
+    { name = "praxis-composition", editable = "composition" },
     { name = "praxis-kernel-auth", editable = "kernel/auth" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
     { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
@@ -2358,6 +2361,27 @@ requires-dist = [
     { name = "praxis-compression", editable = "kernel/compression" },
     { name = "praxis-ports", editable = "ports" },
     { name = "pydantic", specifier = ">=2.0" },
+]
+
+[[package]]
+name = "praxis-composition"
+version = "0.1.0"
+source = { editable = "composition" }
+dependencies = [
+    { name = "praxis-adapter-in-tree-compaction-stub" },
+    { name = "praxis-kernel-auth" },
+    { name = "praxis-kernel-gateway" },
+    { name = "praxis-kernel-session-index" },
+    { name = "praxis-ports" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "praxis-adapter-in-tree-compaction-stub", editable = "adapters/in_tree_compaction_stub" },
+    { name = "praxis-kernel-auth", editable = "kernel/auth" },
+    { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
+    { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
+    { name = "praxis-ports", editable = "ports" },
 ]
 
 [[package]]
@@ -2423,6 +2447,7 @@ dependencies = [
     { name = "praxis-adapter-mcp-server" },
     { name = "praxis-adapter-mem0" },
     { name = "praxis-adapter-pi-mono-native" },
+    { name = "praxis-composition" },
     { name = "praxis-kernel-gateway" },
     { name = "praxis-kernel-session-index" },
     { name = "praxis-ports" },
@@ -2449,6 +2474,7 @@ requires-dist = [
     { name = "praxis-adapter-mcp-server", editable = "adapters/mcp_server" },
     { name = "praxis-adapter-mem0", editable = "adapters/mem0" },
     { name = "praxis-adapter-pi-mono-native", editable = "adapters/pi_mono_native" },
+    { name = "praxis-composition", editable = "composition" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
     { name = "praxis-kernel-session-index", editable = "kernel/session_index" },
     { name = "praxis-ports", editable = "ports" },
