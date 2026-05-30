@@ -13,6 +13,7 @@ members = [
     "praxis-adapter-beads",
     "praxis-adapter-channels-slack",
     "praxis-adapter-channels-teams",
+    "praxis-adapter-channels-webhook-app",
     "praxis-adapter-in-tree-compaction-stub",
     "praxis-adapter-letta",
     "praxis-adapter-litellm",
@@ -2188,6 +2189,29 @@ requires-dist = [
     { name = "praxis-kernel-auth", editable = "kernel/auth" },
     { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
     { name = "praxis-ports", editable = "ports" },
+]
+
+[[package]]
+name = "praxis-adapter-channels-webhook-app"
+version = "0.1.0"
+source = { editable = "adapters/channels/webhook_app" }
+dependencies = [
+    { name = "anyio" },
+    { name = "praxis-adapter-channels-teams" },
+    { name = "praxis-adapter-mcp-server" },
+    { name = "praxis-kernel-gateway" },
+    { name = "praxis-ports" },
+    { name = "starlette" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anyio", specifier = ">=4" },
+    { name = "praxis-adapter-channels-teams", editable = "adapters/channels/teams" },
+    { name = "praxis-adapter-mcp-server", editable = "adapters/mcp_server" },
+    { name = "praxis-kernel-gateway", editable = "kernel/gateway" },
+    { name = "praxis-ports", editable = "ports" },
+    { name = "starlette", specifier = ">=0.40" },
 ]
 
 [[package]]

@@ -17,6 +17,7 @@ members = [
     "adapters/mcp_server",
     "adapters/channels/teams",
     "adapters/channels/slack",
+    "adapters/channels/webhook_app",
     "adapters/mem0",
     "adapters/letta",
     "adapters/llmlingua",
