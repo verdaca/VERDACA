@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conceptual Model — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script>history.scrollRestoration='manual';addEventListener('pageshow',function(){if(!location.hash)scrollTo(0,0);});</script>
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="../index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link type-caption">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">CONCEPTS</p>
+      <h1 class="docs-content__page-title type-display">Conceptual model</h1>
+
+      <p class="type-body-editorial">Verdaca's architecture is built around two independent axes of extensibility: the horizontal persona layer, where you compose who deliberates, and the vertical adapter layer, where you configure what infrastructure those personas use. Understanding how the kernel mediates between them is the key to extending the platform without breaking existing workflows.</p>
+
+      <h2 class="docs-content__section-heading type-headline">Two-axis pluggability</h2>
+
+      <p class="type-body-editorial">The horizontal axis controls deliberation composition &mdash; which personas are in the room and in what sequence they reason. The vertical axis controls substrate &mdash; which memory backend, model provider, and compaction engine the kernel routes through. A change on one axis has no effect on the other, because both axes talk only to the port contracts in between.</p>
+
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 462" role="img" aria-labelledby="d1-title d1-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="d1-title">Two-axis pluggability — layered architecture</title>
+          <desc id="d1-desc">A five-layer stack: Workflows, Agents (five plug-in persona packs forming the horizontal axis), the Kernel, Ports, and Adapters. The kernel, ports and adapters form the vertical substrate axis.</desc>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">TWO-AXIS PLUGGABILITY</text>
+
+          <!-- kernel band wash -->
+          <rect x="41" y="259" width="678" height="62" fill="#6B1F25" fill-opacity="0.05"/>
+
+          <!-- outer stack + gutter + dividers -->
+          <rect x="40" y="80" width="680" height="346" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="176" y1="80"  x2="176" y2="426" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="40"  y1="132" x2="720" y2="132" stroke="#1F2226" stroke-width="1.5"/>
+          <line x1="40"  y1="258" x2="720" y2="258" stroke="#6B1F25" stroke-width="1.5"/>
+          <line x1="40"  y1="322" x2="720" y2="322" stroke="#6B1F25" stroke-width="1.5"/>
+          <line x1="40"  y1="372" x2="720" y2="372" stroke="#1F2226" stroke-width="1.5"/>
+
+          <!-- layer names -->
+          <g font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas" font-size="12" letter-spacing="0.6">
+            <text x="58" y="110" fill="#1F2226">WORKFLOWS</text>
+            <text x="58" y="199" fill="#1F2226">AGENTS</text>
+            <text x="58" y="292" fill="#6B1F25">KERNEL</text>
+            <text x="58" y="350" fill="#1F2226">PORTS</text>
+            <text x="58" y="401" fill="#1F2226">ADAPTERS</text>
+          </g>
+
+          <!-- workflows content -->
+          <text x="196" y="110" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Strategy review &middot; Code review &middot; Hiring &middot; M&amp;A diligence &middot; Architecture review</text>
+
+          <!-- agents content -->
+          <text x="196" y="156" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">HORIZONTAL AXIS &mdash; SWAP ANY PACK, NO KERNEL CHANGE</text>
+          <g fill="none" stroke="#1F2226" stroke-width="1.25">
+            <rect x="196" y="172" width="92" height="66"/>
+            <rect x="300" y="172" width="92" height="66"/>
+            <rect x="404" y="172" width="92" height="66"/>
+            <rect x="508" y="172" width="92" height="66"/>
+            <rect x="612" y="172" width="92" height="66" stroke-dasharray="4 3"/>
+          </g>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="12" fill="#1F2226" text-anchor="middle">
+            <text x="242" y="209">Strategy</text>
+            <text x="346" y="209">UX / Design</text>
+            <text x="450" y="209">Software Eng</text>
+            <text x="554" y="209">Data Science</text>
+            <text x="658" y="209">Your custom</text>
+          </g>
+
+          <!-- kernel content -->
+          <text x="196" y="287" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="13" fill="#1F2226">Orchestration &middot; Routing &middot; Provenance</text>
+          <text x="196" y="305" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11" fill="#42454A">Domain-blind &mdash; protocol only, no editorial judgment</text>
+
+          <!-- ports + adapters content -->
+          <text x="196" y="351" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Memory &middot; LLM Proxy &middot; Compaction &middot; QA &middot; Coordination</text>
+          <text x="196" y="402" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="12.5" fill="#1F2226">Mem0 / Letta &middot; Anthropic / OpenAI &middot; Forge / Caveman / &hellip;</text>
+
+          <!-- vertical-axis caption -->
+          <text x="40" y="449" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">VERTICAL AXIS &mdash; KERNEL, PORTS &amp; ADAPTERS SWAP FREELY, NO AGENT CHANGE</text>
+        </svg>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Deliberation loop</h2>
+
+      <p class="type-body-editorial">Each persona in a session passes through a fixed five-phase loop: receive the current context, reason against its role constraints, propose an output, pass through the quality gate, and emit to the synthesis layer. Proposals that fail the gate re-enter the reason phase rather than propagating downstream. The kernel coordinates sequencing and provenance; it does not interpret domain content.</p>
+
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 282" role="img" aria-labelledby="d2-title d2-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="d2-title">Deliberation loop — five-phase pipeline</title>
+          <desc id="d2-desc">Input enters the Receive phase, then flows through Reason, Propose, Gate and Emit to the synthesis layer. Proposals rejected at the Gate return to the Reason phase.</desc>
+
+          <defs>
+            <marker id="loop-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+            <marker id="loop-arrow-ox" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#6B1F25"/>
+            </marker>
+          </defs>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">DELIBERATION LOOP</text>
+
+          <!-- input -->
+          <text x="104" y="98" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="11" letter-spacing="0.6" fill="#42454A">INPUT</text>
+          <line x1="104" y1="106" x2="104" y2="123" stroke="#42454A" stroke-width="1.5" marker-end="url(#loop-arrow)"/>
+
+          <!-- stage boxes -->
+          <g fill="none" stroke="#1F2226" stroke-width="1.5">
+            <rect x="40"  y="124" width="128" height="58"/>
+            <rect x="188" y="124" width="128" height="58"/>
+            <rect x="336" y="124" width="128" height="58"/>
+            <rect x="632" y="124" width="128" height="58"/>
+          </g>
+          <rect x="484" y="124" width="128" height="58" fill="#6B1F25" fill-opacity="0.05"/>
+          <rect x="484" y="124" width="128" height="58" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="15" font-weight="500" text-anchor="middle">
+            <text x="104" y="158" fill="#1F2226">RECEIVE</text>
+            <text x="252" y="158" fill="#1F2226">REASON</text>
+            <text x="400" y="158" fill="#1F2226">PROPOSE</text>
+            <text x="548" y="158" fill="#6B1F25">GATE</text>
+            <text x="696" y="158" fill="#1F2226">EMIT</text>
+          </g>
+
+          <!-- inter-stage arrows -->
+          <g stroke="#42454A" stroke-width="1.5">
+            <line x1="168" y1="153" x2="186" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="316" y1="153" x2="334" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="464" y1="153" x2="482" y2="153" marker-end="url(#loop-arrow)"/>
+            <line x1="612" y1="153" x2="630" y2="153" marker-end="url(#loop-arrow)"/>
+          </g>
+
+          <!-- emit to synthesis -->
+          <line x1="696" y1="182" x2="696" y2="201" stroke="#42454A" stroke-width="1.5" marker-end="url(#loop-arrow)"/>
+          <text x="696" y="217" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10.5" letter-spacing="0.5" fill="#42454A">SYNTHESIS LAYER</text>
+
+          <!-- reject feedback -->
+          <path d="M548,182 L548,230 L252,230 L252,184" fill="none" stroke="#6B1F25" stroke-width="1.5"
+                marker-end="url(#loop-arrow-ox)"/>
+          <circle cx="548" cy="230" r="2.4" fill="#6B1F25"/>
+          <circle cx="252" cy="230" r="2.4" fill="#6B1F25"/>
+          <rect x="332" y="221" width="136" height="16" fill="#F2EDE2"/>
+          <text x="400" y="233" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.4" fill="#6B1F25">REJECT &mdash; RE-REASON</text>
+
+          <!-- caption -->
+          <text x="400" y="263" text-anchor="middle" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="11" fill="#42454A">The five-phase loop runs once per persona, each round.</text>
+        </svg>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Kernel responsibilities</h2>
+
+      <p class="type-body-editorial">The kernel handles three things and nothing else:</p>
+
+      <ul class="type-body-editorial">
+        <li>Route inputs and inter-agent messages according to the workflow graph, without applying domain logic</li>
+        <li>Track provenance &mdash; which persona produced which claim, in which round, and with what gate result</li>
+        <li>Enforce the port contracts at every adapter boundary and reject calls that violate the interface</li>
+      </ul>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">The kernel has no domain knowledge and applies no editorial judgment. If two personas reach contradictory conclusions, both are preserved in the output; resolution is the human practitioner's call, not the kernel's.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Adapter contract</h2>
+
+      <p class="type-body-editorial">Every adapter in Verdaca implements the same typed protocol for its port category. The memory adapter contract, for example, requires three methods. Any class that satisfies the protocol &mdash; including custom implementations &mdash; is a valid drop-in.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Memory adapter contract example">
+        <pre><code>class MemoryAdapter(Protocol):
+    def store(self, key: str, value: Any) -&gt; None: ...
+    def retrieve(self, key: str) -&gt; Optional[Any]: ...
+    def search(self, query: str, top_k: int) -&gt; list[Any]: ...</code></pre>
+      </div>
+
+      <hr>
+
+      <h2 class="docs-content__section-heading type-headline">Vendored components</h2>
+
+      <p class="type-body-editorial">These are the pinned components Verdaca vendors and validates at the adapter layer. Each pin is a specific version or commit SHA chosen for behavioral reproducibility &mdash; both Apache-2.0 and MIT entries are license-clean for commercial distribution, and "validates" means Verdaca's contract tests run against the pinned artifact on every build, not against the upstream tip.</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Purpose</th>
+            <th>Pinned version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>mem0</code></td>
+            <td>Memory adapter &mdash; hybrid vector + graph store</td>
+            <td><code>v1.0.11</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>letta</code></td>
+            <td>Memory adapter &mdash; stateful memory management</td>
+            <td><code>v1.10.3</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>tonl</code></td>
+            <td>Serialization &mdash; structured agent message format</td>
+            <td><code>pinned SHA</code> (Apache-2.0)</td>
+          </tr>
+          <tr>
+            <td><code>beads</code></td>
+            <td>Versioned-state &mdash; conversation state versioning</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>forge</code></td>
+            <td>Compaction &mdash; context window compaction</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>pi-mono</code></td>
+            <td>Cost-meter &mdash; per-session token cost tracking</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+          <tr>
+            <td><code>rtk</code></td>
+            <td>LLM-proxy &mdash; model-provider routing adapter</td>
+            <td><code>pinned SHA</code> (MIT)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="type-body-editorial">Pinned versions are locked in pyproject.toml and verified against the no-waiver conformance suite on every release; a version bump requires a passing test run before the pin advances.</p>
+
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__wordmark-col">
+          <a href="../index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+
+        <!-- About -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">ABOUT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../about.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="index.html" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="conceptual-model.html" class="footer__link type-caption">Concept</a></li>
+            <li class="footer__link-item"><a href="build-your-own-agent.html" class="footer__link type-caption">Build</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Licenses</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="footer__social-row">
+          <a href="https://github.com/verdaca/VERDACA" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Verdaca on GitHub">
+            <svg class="footer__social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#1F2226" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span class="footer__social-label type-caption">GitHub</span>
+          </a>
+        </div>
+
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

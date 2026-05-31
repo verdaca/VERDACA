@@ -16,9 +16,18 @@
 !adapters/
 !assets/
 !shell/
+!docs/
 !pyproject.toml
 !.python-version
 !uv.lock
+
+# docs/ holds the verdaca.com website (*.html + styles.css). Keep operational
+# working docs (handovers, advisor notes, close memos as *.md) OUT of the remote.
+docs/*.md
+docs/*.mp3
+docs/*.json
+docs/_archive/
+docs/ai-news/
 
 # ============================================================
 # Workspace files — NEVER tracked

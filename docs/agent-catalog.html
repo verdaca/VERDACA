@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Catalog — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script>history.scrollRestoration='manual';addEventListener('pageshow',function(){if(!location.hash)scrollTo(0,0);});</script>
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="../index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link type-caption">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link type-caption">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">CONCEPTS</p>
+      <h1 class="docs-content__page-title type-display">Agent catalog</h1>
+
+      <p class="type-body-editorial">The catalog lists every agent persona available in Verdaca's current release, organized by the deliberation context each one is optimized for. Personas are not interchangeable by default &mdash; each carries a role contract, a constraint set, and an output format spec. Choose the ones whose domain focus matches what you need in the room.</p>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">Persona contracts are versioned independently of the kernel. When a persona contract advances a major version, existing sessions that reference that persona by name will continue to use the pinned version until you explicitly migrate.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Studio agents</h2>
+
+      <p class="type-body-editorial">Studio agents are optimized for high-deliberation work: design, architecture, strategy, and quality critique. They are the default panel for Studio-tier sessions.</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Role</th>
+            <th>Key capabilities</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sally</td>
+            <td>UX Designer</td>
+            <td>Screen-level UX analysis, accessibility critique, component hierarchy review, and user-journey gap identification</td>
+          </tr>
+          <tr>
+            <td>Winston</td>
+            <td>Architect</td>
+            <td>System architecture review, layer decomposition, cross-component dependency analysis, and ADR drafting</td>
+          </tr>
+          <tr>
+            <td>Amelia</td>
+            <td>Test architect</td>
+            <td>Test strategy design, coverage gap analysis, contract test scaffolding, and no-waiver boundary enforcement</td>
+          </tr>
+          <tr>
+            <td>Sophia</td>
+            <td>Market strategist</td>
+            <td>Narrative strategy, market positioning, audience-register calibration, and message stress-testing</td>
+          </tr>
+          <tr>
+            <td>Caravaggio</td>
+            <td>Visual designer</td>
+            <td>Visual identity critique, brand-system consistency review, typography and contrast audit, and layout hierarchy evaluation</td>
+          </tr>
+          <tr>
+            <td>Quinn</td>
+            <td>QA lead</td>
+            <td>End-to-end quality gate enforcement, regression surface analysis, and test-artifact provenance review</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="docs-content__section-heading type-headline">Factory agents</h2>
+
+      <p class="type-body-editorial">Factory agents handle structured analysis tasks &mdash; requirements decomposition, data interpretation, and test execution &mdash; and are optimized for high-throughput, repeatable work within defined scope.</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Role</th>
+            <th>Key capabilities</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>John</td>
+            <td>Business analyst</td>
+            <td>Requirements elicitation, process mapping, acceptance criteria drafting, and stakeholder-needs decomposition</td>
+          </tr>
+          <tr>
+            <td>Mary</td>
+            <td>Data analyst</td>
+            <td>Quantitative analysis, dataset interpretation, metric framing, and findings synthesis</td>
+          </tr>
+          <tr>
+            <td>Murat</td>
+            <td>Test engineer</td>
+            <td>Test case execution, defect triage, coverage reporting, and quality-metric tracking</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="docs-content__section-heading type-headline">Using an agent</h2>
+
+      <p class="type-body-editorial">Load any catalog persona by its ID string and attach it to an active session.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Agent loading example">
+        <pre><code>from verdaca.catalog import get_agent
+
+sally = get_agent("sally")
+session.add_persona(sally)</code></pre>
+      </div>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">IMPORTANT</p>
+        <p class="docs-callout__body">Pin personas by explicit version in production sessions; relying on the default alias means your session behavior will change when the catalog advances.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Build your own</h2>
+
+      <p class="type-body-editorial">If no catalog persona covers your domain, you can define your own with the same role-card and constraint schema the catalog agents use.</p>
+
+      <p class="type-body-editorial">See <a href="build-your-own-agent.html">Build your own agent</a> for the full guide.</p>
+
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__wordmark-col">
+          <a href="../index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+
+        <!-- About -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">ABOUT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../about.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="index.html" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="conceptual-model.html" class="footer__link type-caption">Concept</a></li>
+            <li class="footer__link-item"><a href="build-your-own-agent.html" class="footer__link type-caption">Build</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Licenses</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="footer__social-row">
+          <a href="https://github.com/verdaca/VERDACA" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Verdaca on GitHub">
+            <svg class="footer__social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#1F2226" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span class="footer__social-label type-caption">GitHub</span>
+          </a>
+        </div>
+
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
