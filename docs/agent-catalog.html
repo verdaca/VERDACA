@@ -72,6 +72,8 @@
 
       <p class="type-body-editorial">The catalog lists every agent persona available in Verdaca's current release, organized by the deliberation context each one is optimized for. Personas are not interchangeable by default &mdash; each carries a role contract, a constraint set, and an output format spec. Choose the ones whose domain focus matches what you need in the room.</p>
 
+      <p class="type-caption">However a request arrives &mdash; local session, Microsoft Teams, or Slack &mdash; it reaches these agents only through the authenticated gateway: signature, identity, replay, and budget checks run before any persona is invoked. See <a href="conceptual-model.html">the front door</a>.</p>
+
       <div class="docs-callout">
         <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
         <p class="docs-callout__body">Persona contracts are versioned independently of the kernel. When a persona contract advances a major version, existing sessions that reference that persona by name will continue to use the pinned version until you explicitly migrate.</p>

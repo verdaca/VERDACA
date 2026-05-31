@@ -117,6 +117,64 @@ memory:
         <p class="docs-callout__body">Your LLM provider credentials must be available as environment variables before the session runs &mdash; Verdaca does not store or proxy API keys.</p>
       </div>
 
+      <h2 class="docs-content__section-heading type-headline">Connect a channel</h2>
+
+      <p class="type-body-editorial">Beyond a local session, Verdaca can be driven from Microsoft Teams or Slack. Connecting a channel walks through four steps in sequence &mdash; each one halts on failure, so you fix one thing at a time &mdash; ending with your first message answered back in the channel.</p>
+
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 132" role="img" aria-labelledby="ob-title ob-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="ob-title">Onboarding &mdash; four steps</title>
+          <desc id="ob-desc">A four-step sequence: environment check, provision a per-user key, policy smoke test, and first message. Each step halts on failure.</desc>
+          <defs>
+            <marker id="ob-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+          </defs>
+          <line x1="40" y1="30" x2="70" y2="30" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="49" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">ONBOARDING &mdash; FOUR STEPS</text>
+          <g fill="none" stroke="#1F2226" stroke-width="1.5">
+            <rect x="40"  y="64" width="160" height="48"/>
+            <rect x="232" y="64" width="160" height="48"/>
+            <rect x="424" y="64" width="160" height="48"/>
+          </g>
+          <rect x="616" y="64" width="160" height="48" fill="#6B1F25" fill-opacity="0.05"/>
+          <rect x="616" y="64" width="160" height="48" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="13.5" font-weight="500" text-anchor="middle">
+            <text x="120" y="93" fill="#1F2226">Env check</text>
+            <text x="312" y="93" fill="#1F2226">Provision key</text>
+            <text x="504" y="93" fill="#1F2226">Policy smoke</text>
+            <text x="696" y="93" fill="#6B1F25">First message</text>
+          </g>
+          <g stroke="#42454A" stroke-width="1.5">
+            <line x1="200" y1="88" x2="230" y2="88" marker-end="url(#ob-arrow)"/>
+            <line x1="392" y1="88" x2="422" y2="88" marker-end="url(#ob-arrow)"/>
+            <line x1="584" y1="88" x2="614" y2="88" marker-end="url(#ob-arrow)"/>
+          </g>
+          <text x="40" y="126" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="9.5" letter-spacing="0.4" fill="#42454A">EACH STEP HALTS ON FAILURE &mdash; FIX ONE THING AT A TIME</text>
+        </svg>
+      </div>
+
+      <ol class="type-body-editorial">
+        <li><strong>Environment check</strong> &mdash; confirm the required variables are present: the OIDC issuer and audience, the channel signing secret, the LLM proxy URL and key, and the deploy profile.</li>
+        <li><strong>Provision a key</strong> &mdash; issue a per-user virtual key with a conservative budget cap; the step prints the key prefix and how to revoke it.</li>
+        <li><strong>Policy smoke test</strong> &mdash; build the gateway policy and run the startup health check; it fails closed if a production deployment is missing its virtual-key backing.</li>
+        <li><strong>First message</strong> &mdash; send a signed channel message through the auth-first spine and watch the deliberation result return to your thread.</li>
+      </ol>
+
+      <div class="docs-code-block" role="region" aria-label="Onboarding flow">
+        <pre><code># run the four checks in sequence, halting on the first failure
+bash onboard.sh</code></pre>
+      </div>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">Design-partner preview. Channel identity is verified against a local OIDC validator today; connectors for commercial identity providers (Entra, Okta, Auth0) are configuration-level and not yet exercised. Per-tenant budget enforcement and durable nonce storage are wired but not live-exercised in this preview.</p>
+      </div>
+
       <h2 class="docs-content__section-heading type-headline">Next steps</h2>
 
       <ul class="type-body-editorial">

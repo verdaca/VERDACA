@@ -81,8 +81,9 @@
 
       <ul class="type-body-editorial">
         <li><strong>Overview</strong> (this page) &mdash; What Verdaca is and how these docs are organized.</li>
-        <li><strong>Getting started</strong> &mdash; Installation, first session, and configuration essentials.</li>
-        <li><strong>Conceptual model</strong> &mdash; Two-axis architecture, deliberation loop, and kernel responsibilities.</li>
+        <li><strong>Getting started</strong> &mdash; Installation, first session, and the four-step channel onboarding flow.</li>
+        <li><strong>Channels &amp; onboarding</strong> &mdash; Drive Verdaca from Microsoft Teams or Slack through one gateway, behind an auth-first spine. See <a href="getting-started.html">Getting started</a> for the flow and <a href="conceptual-model.html">Conceptual model</a> for the front door.</li>
+        <li><strong>Conceptual model</strong> &mdash; Two-axis architecture, the auth-first front door, the deliberation loop, and kernel responsibilities.</li>
         <li><strong>Agent catalog</strong> &mdash; Available personas, capabilities, and how to load them.</li>
         <li><strong>Build your own agent</strong> &mdash; Define a custom persona and bind it to a session.</li>
         <li><strong>Workflow recipes</strong> &mdash; Pre-built deliberation patterns ready to run or adapt.</li>
@@ -106,6 +107,8 @@ result  = session.run("[workflow-placeholder]")</code></pre>
       <h2 class="docs-content__section-heading type-headline">Architecture at a glance</h2>
 
       <p class="type-body-editorial">Verdaca is organized on two independent axes: swap the agent personas horizontally, swap the substrate adapters vertically. Neither axis requires changing the other.</p>
+
+      <p class="type-body-editorial">Every request reaches the kernel through one channel-neutral gateway, after an auth-first spine of four checks &mdash; signature, identity, replay, and budget. See <a href="conceptual-model.html">the front door</a> in the conceptual model.</p>
 
       <div class="docs-diagram">
         <svg viewBox="0 0 800 514" role="img" aria-labelledby="arch-title arch-desc"

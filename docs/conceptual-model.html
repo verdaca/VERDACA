@@ -137,13 +137,97 @@
 
           <!-- ports + adapters content -->
           <text x="196" y="351" font-family="'Inter Tight', ui-sans-serif, system-ui"
-                font-size="12.5" fill="#1F2226">Memory &middot; LLM Proxy &middot; Compaction &middot; QA &middot; Coordination</text>
+                font-size="12.5" fill="#1F2226">Memory &middot; LLM Proxy &middot; Compaction &middot; QA &middot; Gateway &middot; Channel</text>
           <text x="196" y="402" font-family="'Inter Tight', ui-sans-serif, system-ui"
-                font-size="12.5" fill="#1F2226">Mem0 / Letta &middot; Anthropic / OpenAI &middot; Forge / Caveman / &hellip;</text>
+                font-size="12.5" fill="#1F2226">Mem0 / Letta &middot; Anthropic / OpenAI &middot; Teams / Slack &middot; Forge / Caveman / &hellip;</text>
 
           <!-- vertical-axis caption -->
           <text x="40" y="449" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
                 font-size="10" letter-spacing="0.5" fill="#42454A">VERTICAL AXIS &mdash; KERNEL, PORTS &amp; ADAPTERS SWAP FREELY, NO AGENT CHANGE</text>
+        </svg>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">The front door &mdash; auth-first ingress</h2>
+
+      <p class="type-body-editorial">Before any agent reasons, a request has to get in. A message from Microsoft Teams or Slack arrives at one channel-neutral gateway and clears four sequential checks &mdash; signature verification, per-user OIDC identity (RS256 / JWKS), replay/nonce rejection, and a budget ceiling. Only an authenticated, in-budget request reaches the deliberation loop below; anything that fails a check is rejected at the door.</p>
+
+      <p class="type-caption">Design-partner preview. The spine is verified against a local OIDC validator; connectors for commercial identity providers (Entra, Okta, Auth0) are configuration-level and not yet exercised &mdash; shown dashed below.</p>
+
+      <div class="docs-diagram">
+        <svg viewBox="0 0 800 362" role="img" aria-labelledby="fd-title fd-desc"
+             xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <title id="fd-title">The front door &mdash; auth-first ingress</title>
+          <desc id="fd-desc">Inbound messages from Microsoft Teams and Slack converge on one gateway. Each request passes four sequential checks — signature verification, OIDC identity, replay/nonce rejection, and a budget ceiling — before the deliberation loop runs. Commercial identity-provider connectors are configuration-level and not yet exercised.</desc>
+
+          <defs>
+            <marker id="fd-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6.5" markerHeight="6.5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#42454A"/>
+            </marker>
+          </defs>
+
+          <!-- eyebrow -->
+          <line x1="40" y1="42" x2="70" y2="42" stroke="#6B1F25" stroke-width="2"/>
+          <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="12" letter-spacing="0.8" fill="#6B1F25">AUTH-FIRST INGRESS &middot; THE FRONT DOOR</text>
+
+          <!-- inbound channels -->
+          <text x="36" y="96" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">INBOUND CHANNELS</text>
+          <g fill="none" stroke="#1F2226" stroke-width="1.5">
+            <rect x="36" y="104" width="140" height="48"/>
+            <rect x="36" y="170" width="140" height="48"/>
+          </g>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="13" fill="#1F2226" text-anchor="middle">
+            <text x="106" y="133">Microsoft Teams</text>
+            <text x="106" y="199">Slack</text>
+          </g>
+
+          <!-- converge into the spine -->
+          <g stroke="#42454A" stroke-width="1.5" fill="none">
+            <path d="M176,128 L206,161"/>
+            <path d="M176,194 L206,161"/>
+          </g>
+          <circle cx="206" cy="161" r="2.4" fill="#42454A"/>
+          <line x1="206" y1="161" x2="228" y2="161" stroke="#42454A" stroke-width="1.5" marker-end="url(#fd-arrow)"/>
+
+          <!-- auth-first spine (accent container) -->
+          <rect x="230" y="96" width="300" height="200" fill="#6B1F25" fill-opacity="0.05"/>
+          <rect x="230" y="96" width="300" height="200" fill="none" stroke="#6B1F25" stroke-width="2"/>
+          <text x="246" y="120" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="11" letter-spacing="0.6" fill="#6B1F25">AUTH-FIRST SPINE</text>
+          <g fill="none" stroke="#1F2226" stroke-width="1.25">
+            <rect x="246" y="130" width="268" height="32"/>
+            <rect x="246" y="168" width="268" height="32"/>
+            <rect x="246" y="206" width="268" height="32"/>
+            <rect x="246" y="244" width="268" height="32"/>
+          </g>
+          <g font-family="'Inter Tight', ui-sans-serif, system-ui" font-size="12.5" fill="#1F2226">
+            <text x="258" y="151">&#9312; Signature verify</text>
+            <text x="258" y="189">&#9313; Identity &mdash; OIDC RS256 / JWKS</text>
+            <text x="258" y="227">&#9314; Replay / nonce reject</text>
+            <text x="258" y="265">&#9315; Budget &mdash; spend ceiling</text>
+          </g>
+
+          <!-- spine -> gateway -> loop -->
+          <line x1="530" y1="196" x2="566" y2="196" stroke="#42454A" stroke-width="1.5" marker-end="url(#fd-arrow)"/>
+          <rect x="566" y="172" width="110" height="48" fill="none" stroke="#1F2226" stroke-width="1.5"/>
+          <text x="621" y="201" text-anchor="middle" font-family="'Inter Tight', ui-sans-serif, system-ui"
+                font-size="13" fill="#1F2226">Gateway</text>
+          <line x1="676" y1="196" x2="710" y2="196" stroke="#42454A" stroke-width="1.5" marker-end="url(#fd-arrow)"/>
+          <text x="714" y="193" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10.5" letter-spacing="0.4" fill="#42454A">DELIBERATION</text>
+          <text x="714" y="207" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10.5" letter-spacing="0.4" fill="#42454A">LOOP &darr;</text>
+
+          <!-- dashed: commercial IdP connectors not yet exercised -->
+          <rect x="230" y="312" width="360" height="28" fill="none" stroke="#6B1F25" stroke-width="1.25" stroke-dasharray="4 3"/>
+          <text x="246" y="330" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="9.5" letter-spacing="0.4" fill="#42454A">ENTRA &middot; OKTA &middot; AUTH0 &mdash; CONFIG-LEVEL, NOT YET EXERCISED</text>
+
+          <!-- caption -->
+          <text x="40" y="356" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
+                font-size="10" letter-spacing="0.5" fill="#42454A">EVERY INBOUND MESSAGE CLEARS ALL FOUR CHECKS BEFORE ANY AGENT REASONS</text>
         </svg>
       </div>
 
@@ -155,7 +239,7 @@
         <svg viewBox="0 0 800 282" role="img" aria-labelledby="d2-title d2-desc"
              xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
           <title id="d2-title">Deliberation loop — five-phase pipeline</title>
-          <desc id="d2-desc">Input enters the Receive phase, then flows through Reason, Propose, Gate and Emit to the synthesis layer. Proposals rejected at the Gate return to the Reason phase.</desc>
+          <desc id="d2-desc">An authenticated, in-budget request handed off by the gateway enters the Receive phase, then flows through Reason, Propose, Gate and Emit to the synthesis layer. Proposals rejected at the Gate return to the Reason phase.</desc>
 
           <defs>
             <marker id="loop-arrow" viewBox="0 0 10 10" refX="9" refY="5"
@@ -173,9 +257,9 @@
           <text x="40" y="61" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
                 font-size="12" letter-spacing="0.8" fill="#6B1F25">DELIBERATION LOOP</text>
 
-          <!-- input -->
+          <!-- input: arrives authenticated from the auth-first spine / gateway -->
           <text x="104" y="98" text-anchor="middle" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
-                font-size="11" letter-spacing="0.6" fill="#42454A">INPUT</text>
+                font-size="11" letter-spacing="0.6" fill="#42454A">FROM GATEWAY</text>
           <line x1="104" y1="106" x2="104" y2="123" stroke="#42454A" stroke-width="1.5" marker-end="url(#loop-arrow)"/>
 
           <!-- stage boxes -->

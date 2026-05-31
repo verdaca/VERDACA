@@ -454,6 +454,24 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* =============================================================================
+   Stage 14 — Channel-access band (buyer-contact surface; "second scene")
+   Mirrors section conventions: space-96 vertical rhythm + hairline top rule.
+   Channel-emotional lead; auth caveat carried in the trust line (Vera gate).
+   ============================================================================= */
+.channels {
+  padding-top:    var(--space-96);
+  padding-bottom: var(--space-96);
+  border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.30);
+}
+.channels__inner     { max-width: 72ch; }
+.channels__eyebrow   { margin: 0; color: var(--color-text-accent); }
+.channels__headline  { margin: 0; margin-top: var(--space-16); color: var(--color-text-primary); }
+.channels__body      { margin: 0; margin-top: var(--space-16); color: var(--color-text-primary); max-width: 60ch; }
+.channels__channels  { margin: 0; margin-top: var(--space-32); color: var(--color-supplier-line); }
+.channels__separator { display: inline; color: var(--color-supplier-line); margin: 0 var(--space-8); }
+.channels__trust     { margin: 0; margin-top: var(--space-16); color: var(--color-caveat-footnote); max-width: 60ch; }
+
+/* =============================================================================
    Phase 2 — Feature grid (new surface)
    Composition: §6.5 eyebrow + type.body-editorial; no borders; lighter density
    6 items in 3×2 grid per Q-#2-2 disposition

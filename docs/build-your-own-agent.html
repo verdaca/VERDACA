@@ -72,6 +72,8 @@
 
       <p class="type-body-editorial">This guide is for practitioners who need a deliberation perspective the catalog does not cover. You will define a role card, bind it to adapter ports, register it with a session, and verify it against the conformance suite. By the end, your custom agent runs inside the same deliberation loop as any catalog persona.</p>
 
+      <p class="type-caption">Your custom agent runs behind the same authenticated gateway as any catalog persona &mdash; inbound requests clear the auth-first spine (signature, identity, replay, budget) before reaching it. See <a href="conceptual-model.html">the front door</a>.</p>
+
       <div class="docs-callout">
         <p class="docs-callout__severity type-eyebrow">CAUTION</p>
         <p class="docs-callout__body">Before building a custom agent, check the catalog for a close match &mdash; adapting an existing persona's constraints is faster than writing a new role contract from scratch, and catalog agents carry pre-validated conformance records.</p>
