@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump — patch (fixes), minor (new stage), major (breaking)'
+        required: true
+        default: 'minor'
+        type: choice
+        options: [patch, minor, major]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: ver
+        run: |
+          latest=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          if [ -z "$latest" ]; then
+            echo "next=v0.13.0" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          IFS='.' read -r major minor patch <<< "${latest#v}"
+          case "${{ github.event.inputs.bump }}" in
+            major) echo "next=v$((major+1)).0.0" >> $GITHUB_OUTPUT ;;
+            minor) echo "next=v${major}.$((minor+1)).0" >> $GITHUB_OUTPUT ;;
+            patch) echo "next=v${major}.${minor}.$((patch+1))" >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Update version badge in README
+        run: |
+          VERSION=${{ steps.ver.outputs.next }}
+          # Update the static shields.io version badge label
+          sed -i "s|version-v[0-9]*\.[0-9]*\.[0-9]*-|version-${VERSION}-|g" README.md
+          sed -i "s|version: v[0-9]*\.[0-9]*\.[0-9]*|version: ${VERSION}|g" README.md
+
+      - name: Commit badge update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --cached --quiet || git commit -m "chore(release): bump version badge to ${{ steps.ver.outputs.next }}"
+
+      - name: Tag and push
+        run: |
+          git tag ${{ steps.ver.outputs.next }}
+          git push origin HEAD:main
+          git push origin ${{ steps.ver.outputs.next }}
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create ${{ steps.ver.outputs.next }} \
+            --title "Verdaca ${{ steps.ver.outputs.next }}" \
+            --generate-notes
