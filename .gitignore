@@ -18,9 +18,19 @@
 !adapters/
 !assets/
 !shell/
+!docs/
 !pyproject.toml
 !.python-version
 !uv.lock
+
+# docs/ holds the verdaca.com website (*.html + styles.css) AND operational
+# working docs (handovers, advisor notes, close memos as *.md). Re-include the
+# website; keep the operational markdown OUT of the repo/remote.
+docs/*.md
+docs/*.mp3
+docs/*.json
+docs/_archive/
+docs/ai-news/
 
 # Track ONLY the onboarding pipeline under scripts/ (Stage 14 Phase-1 H#4).
 # There is NO separate *.ps1 rule — the local helpers (load-design-env.ps1,

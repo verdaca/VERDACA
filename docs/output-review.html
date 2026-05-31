@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Output Review — Verdaca Docs</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script>history.scrollRestoration='manual';addEventListener('pageshow',function(){if(!location.hash)scrollTo(0,0);});</script>
+</head>
+<body>
+
+  <header class="docs-header" role="banner">
+    <div class="container docs-header__inner">
+      <a href="../index.html" class="docs-header__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <a href="../index.html" class="docs-header__home-link type-caption">Back to product</a>
+    </div>
+  </header>
+
+  <div class="docs-layout">
+
+    <aside class="docs-sidebar" aria-label="Documentation navigation">
+      <details class="docs-sidebar__mobile-toggle" open>
+        <summary class="docs-sidebar__toggle-label type-eyebrow">DOCUMENTATION</summary>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">GET STARTED</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="index.html" class="docs-sidebar__link type-caption">Overview</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="getting-started.html" class="docs-sidebar__link type-caption">Getting started</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">CONCEPTS</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="conceptual-model.html" class="docs-sidebar__link type-caption">Conceptual model</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="docs-sidebar__section">
+          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <ul class="docs-sidebar__nav" role="list">
+            <li class="docs-sidebar__nav-item">
+              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
+            </li>
+            <li class="docs-sidebar__nav-item">
+              <a href="output-review.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Output review</a>
+            </li>
+          </ul>
+        </div>
+
+      </details>
+    </aside>
+
+    <main class="docs-content" id="main-content" tabindex="-1">
+
+      <p class="docs-content__page-eyebrow type-eyebrow">BUILD</p>
+      <h1 class="docs-content__page-title type-display">Output review</h1>
+
+      <p class="type-body-editorial">Output review scores the result of a deliberation session against a rubric and returns a structured report: a single float score, a list of annotated findings, and the full deliberation trail. It tells you not just how well the session performed, but which persona's reasoning drove the result and where the panel disagreed.</p>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">ADVISORY</p>
+        <p class="docs-callout__body">Output review runs outside the deliberation loop by default &mdash; it scores a completed result and does not block or retry sessions. Configure it as a gate in your workflow recipe if you need automatic re-run on low scores.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">What output review measures</h2>
+
+      <p class="type-body-editorial">Output review evaluates three dimensions of deliberation quality:</p>
+
+      <ul class="type-body-editorial">
+        <li>Reasoning coverage &mdash; whether all relevant constraints were engaged by at least one persona</li>
+        <li>Synthesis coherence &mdash; whether the final output is consistent with the deliberation trail and does not contradict positions the panel held</li>
+        <li>Dissent preservation &mdash; whether minority positions were retained in the output rather than silently overwritten by the synthesis step</li>
+      </ul>
+
+      <h2 class="docs-content__section-heading type-headline">Running output review</h2>
+
+      <p class="type-body-editorial">Pass a completed session result and a rubric name to the OutputReviewer. The default rubric covers the three standard dimensions; swap it for a custom rubric if your workflow requires different weighting.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Running output review example">
+        <pre><code>from verdaca import OutputReviewer
+
+reviewer = OutputReviewer(session)
+report   = reviewer.evaluate(
+    result,
+    rubric="standard-deliberation",
+)
+
+print(report.score)       # float 0.0–1.0
+print(report.notes)       # list[str]
+print(report.audit_trail) # full deliberation log</code></pre>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Interpreting scores</h2>
+
+      <p class="type-body-editorial">Scores reflect the proportion of rubric criteria the session satisfied at or above their defined thresholds. A low score identifies which criteria failed, not just that something went wrong.</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Score range</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0.90&ndash;1.00</td>
+            <td>All major criteria met; output is ready for practitioner review without qualification</td>
+          </tr>
+          <tr>
+            <td>0.75&ndash;0.89</td>
+            <td>Minor gaps in coverage or dissent preservation; review the annotated findings before use</td>
+          </tr>
+          <tr>
+            <td>0.60&ndash;0.74</td>
+            <td>Partial coverage; at least one dimension scored below threshold &mdash; re-run with additional rounds or review the persona constraints</td>
+          </tr>
+          <tr>
+            <td>&lt; 0.60</td>
+            <td>Output should not be used without a manual review of the full deliberation trail; consider revising the workflow or persona configuration</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">CAUTION</p>
+        <p class="docs-callout__body">All published Verdaca score benchmarks &mdash; including the +47% vs vanilla / +21% vs enhanced composite figures (internal scoring; A4 deferred) &mdash; carry the A4-deferred status until Stage 7 ratification; do not cite them as externally validated metrics.</p>
+      </div>
+
+      <h2 class="docs-content__section-heading type-headline">Custom rubrics</h2>
+
+      <p class="type-body-editorial">Define a custom rubric by specifying named criteria and their relative weights. Weights must sum to 1.0 exactly; the reviewer will raise a validation error at rubric creation time if they do not.</p>
+
+      <div class="docs-code-block" role="region" aria-label="Custom rubric example">
+        <pre><code>from verdaca.review import Rubric, Criterion
+
+rubric = Rubric(
+    name="investment-memo-review",
+    criteria=[
+        Criterion(name="evidence-quality", weight=0.4),
+        Criterion(name="assumption-explicitness", weight=0.3),
+        Criterion(name="risk-identification", weight=0.3),
+    ],
+)
+
+report = reviewer.evaluate(result, rubric=rubric)</code></pre>
+      </div>
+
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">IMPORTANT</p>
+        <p class="docs-callout__body">Criterion weights must sum exactly to 1.0; the rubric constructor validates this at creation time and will not produce a rubric object if the sum is off.</p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__wordmark-col">
+          <a href="../index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+
+        <!-- About -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">ABOUT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../about.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="index.html" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="conceptual-model.html" class="footer__link type-caption">Concept</a></li>
+            <li class="footer__link-item"><a href="build-your-own-agent.html" class="footer__link type-caption">Build</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
+            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Licenses</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="footer__social-row">
+          <a href="https://github.com/verdaca/VERDACA" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Verdaca on GitHub">
+            <svg class="footer__social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#1F2226" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span class="footer__social-label type-caption">GitHub</span>
+          </a>
+        </div>
+
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
