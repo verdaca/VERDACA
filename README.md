@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://verdaca.com"><img src="https://img.shields.io/badge/status-LIVE-6B1F25?style=flat-square" alt="status: LIVE"></a>
   <a href="https://verdaca.com"><img src="https://img.shields.io/badge/site-verdaca.com-6B1F25?style=flat-square" alt="site: verdaca.com"></a>
+  <img src="https://img.shields.io/badge/version-v0.13.0-1F2226?style=flat-square" alt="version: v0.13.0">
   <img src="https://img.shields.io/badge/substrate-v1.0-1F2226?style=flat-square" alt="substrate: v1.0">
   <img src="https://img.shields.io/badge/python-3.12%2B-1F2226?style=flat-square" alt="python: 3.12+">
   <img src="https://img.shields.io/badge/coverage-90%25%2B-1F2226?style=flat-square" alt="coverage: 90%+">
