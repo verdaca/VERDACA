@@ -13,91 +13,140 @@
 
 **Multi-agent reasoning engine for strategic advisory.**
 
-Verdaca delivers structured multi-perspective strategic analysis -- explicit trade-offs, red team dissent, named scenarios, and scope-limits -- in minutes, not weeks.
+Verdaca runs a structured panel of AI agents over your question and returns explicit trade-offs, red-team dissent, named scenarios, and scope limits — in minutes, not weeks.
 
-> Internal codename: **Praxis** (Stages 1-6). The Python namespace `src/praxis/` preserves the codename as internal module path. See `docs/rename-praxis-to-verdaca.md`.
+> **Codename note:** The internal codename is **Praxis** (Stages 1–6). The Python namespace `src/praxis/` preserves that name as the internal module path. See `docs/rename-praxis-to-verdaca.md`.
 
 ## Architecture
 
-Verdaca is a 7-layer system built in strict dependency order:
+Verdaca follows a ports-and-adapters pattern. Protocol definitions stay separate from implementations, so you can swap an adapter without touching domain logic.
 
 ```
+ports/                  Port Protocols and DTOs — the canonical interface contracts
+adapters/               Concrete implementations of each port
+  beads/                Versioned state adapter
+  tonl/                 TONL serialization adapter
+  mem0/                 Mem0 memory adapter
+  letta/                Letta memory adapter
+  litellm/              LiteLLM LLM proxy (sole LLM substrate)
+  llmlingua/            LLMLingua token-compaction adapter (primary)
+  in_tree_compaction_stub/  Lightweight CI fallback for compaction
+  pi_mono_native/       Native cost-meter adapter
+  mcp_server/           FastMCP MCP gateway adapter
+  channels/
+    teams/              Microsoft Teams webhook adapter (HMAC-SHA256)
+    slack/              Slack webhook adapter (X-Slack-Signature v0)
+    webhook_app/        ASGI app — Teams and Slack share one composed gateway
+composition/            Wiring layer — builds the runtime and auth quartet; no domain logic here
 kernel/
-  pi-mono/       Stage 1 - Cost tracking & metering (measurement foundation)
-  compression/   Stage 2 - Token compression (TONL + Forge + Caveman + RTK)
-  memory/        Stage 3 - Experience store (Beads + Mem0 + Atelier facade)
-  runtime/       Stage 4 - Multi-agent orchestration & tool library
-  mac/           Stage 5 - Meta-Agent Controller (3-cycle deliberation)
-  studio/        Stage 6 - Workflow templates (YAML + Jinja2 rendering)
-
-shell/           Stage 7 - POV Delivery Harness (Next.js + FastAPI + Clerk + Stripe)
+  pi-mono/              Cost tracking and metering
+  compression/          Token compression (Caveman dialects)
+  memory/               MemoryProtocol facade over pluggable backends
+  runtime/              Multi-agent orchestration and tool library
+  mac/                  Meta-Agent Controller — runs the 3-cycle deliberation loop
+  studio/               Workflow templates (YAML + Jinja2)
+  gateway/              VerdacaGatewayService — composes all ports into one entry point
+  auth/                 Cross-cutting auth (OIDC, JWKS, JWT, nonce)
+  session_index/        SQLite FTS5 session index and skill telemetry
+shell/                  POV delivery harness (Next.js + FastAPI + Clerk + Stripe)
 ```
 
-Each layer is a self-contained Python package with its own `pyproject.toml`, test suite, and architecture documentation.
+The uv workspace has **23 active members** managed under a single `uv.lock` with SHA-pinned dependencies.
+
+## Channels
+
+| Channel | Status | Auth |
+|---|---|---|
+| **Claude Desktop** | LIVE | MCP stdio / Streamable HTTP |
+| **Microsoft Teams** | LIVE | HMAC-SHA256 webhook |
+| **Slack** | LIVE | X-Slack-Signature v0 webhook |
+
+## MCP integration
+
+The `adapters/mcp_server/` FastMCP adapter exposes five tools:
+
+- `verdaca_start_analysis`
+- `verdaca_estimate_cost`
+- `verdaca_get_result`
+- `verdaca_list_sessions`
+- `verdaca_get_artifact`
+
+It also exposes 5 resources and 1 prompt.
+
+**Transports:** stdio (Claude Desktop) and Streamable HTTP (`stateless_http=True`).
 
 ## Key metrics
 
 | Metric | Value |
 |---|---|
-| Quality vs vanilla single-agent | **+47%** composite improvement |
-| Quality vs enhanced single-agent | **+21%** composite improvement |
+| Quality vs. vanilla single-agent | **+47%** composite improvement |
+| Quality vs. enhanced single-agent | **+21%** composite improvement |
 | Deep session cost (internal) | ~$2.50 |
 | Deep session time | ~12 minutes |
 | Quick session time | ~4 minutes |
-| Test count | 415+ across all modules |
-| Coverage | 90%+ (MAC 94%, Studio 96%, Shell 92%) |
-| Python LoC | ~49,700 |
+| Tests passed | 411+ (19 skipped, 0 failed) |
+| `no_waiver` markers | 23 |
+| Coverage | 90%+ across modules |
+| uv workspace members | 23 |
+| Python | 3.12.12 (pinned) |
 
-*Quality metrics are from internal scoring. Human validation (A4 Spearman) pending.*
+*Quality metrics are from internal scoring (A4 Spearman ρ validation pending). Cite these numbers only with the "(internal scoring; A4 Spearman pending)" caveat.*
 
 ## Stack
 
-- **Backend:** Python 3.12+, FastAPI, SQLAlchemy, Pydantic v2
+- **Package manager:** uv (workspace, SHA-pinned `uv.lock`)
+- **Backend:** Python 3.12.12, FastAPI, Pydantic v2, SQLAlchemy
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS
-- **Auth:** Clerk
-- **Billing:** Stripe (per-session: $29 quick / $149 deep)
-- **Database:** Neon Postgres
-- **LLM:** Anthropic Claude (Opus 4.6 / Sonnet 4.6)
+- **Auth:** authlib (OIDC discovery, JWKS cache, JWT alg-pin), httpx; HMAC-SHA256 (Teams); X-Slack-Signature v0 (Slack); Clerk (shell)
+- **LLM:** Anthropic Claude (Opus 4.6 / Sonnet 4.6) via LiteLLM — virtual keys with per-key budget, TPM, and RPM caps
+- **MCP gateway:** FastMCP / MCP SDK
+- **Compaction:** LLMLingua (primary) + in-tree stub (CI fallback)
+- **Serialization:** tree-sitter + TONL
+- **Session store:** SQLite FTS5
+- **Billing:** Stripe (per-session: $29 quick / $149 deep) — shell only
+- **CI:** GitHub Actions + Renovate Bot (supply-chain gates, pip-audit)
 
 ## Quick start
 
+**Prerequisites:** [uv](https://docs.astral.sh/uv/) installed, Python 3.12+, Node.js 18+ (shell frontend only).
+
 ```bash
-# Clone
+# Clone the repository
 git clone <repo-url>
 cd verdaca
 
-# Backend (each kernel module)
-cd kernel/mac
-pip install -e ".[test]"
-pytest
+# Install all workspace packages
+uv sync
 
-# Shell backend
-cd shell
-pip install -e ".[test]"
-pytest
+# Run the full contract test suite
+uv run pytest tests/
 
-# Shell frontend
+# Run tests for a specific module
+uv run pytest kernel/mac/
+uv run pytest adapters/mcp_server/
+uv run pytest adapters/channels/
+
+# Start the shell frontend (development mode)
 cd shell/web
 npm install
 npm run dev
 ```
 
-## Built With Verdaca
+## Built with Verdaca
 
-Every architectural decision in the 7-stage build pipeline was run through the same multi-agent deliberation process the product delivers. See `docs/pipeline.md` for the full build history.
+The architecture of this product was designed using the product itself. Every major decision — port ratification, adapter selection, auth design, channel onboarding — went through a Verdaca multi-agent session. The deliberation outputs are captured in the `docs/` and per-module `architecture.md` files throughout the repo.
 
-## Documentation
+That means the trade-off records, red-team dissents, and scope limits you see in the documentation are not retrospective write-ups. They are the actual session outputs.
 
-- `docs/pipeline.md` -- Master orchestration pipeline (7 stages, ~40 sub-steps)
-- `docs/build-plan.md` -- Strategic build sequence rationale
-- `docs/box-architecture.md` -- 5-layer technical architecture
-- `docs/hybrid-architecture.md` -- Component selection analysis
+## Module documentation
 
-Each module also contains:
-- `architecture.md` -- System design
-- `test-strategy.md` -- Testing approach
-- `code-review.md` -- Review findings
-- `alignment-review.md` -- Cross-stage verification
+Each kernel module and adapter ships with:
+
+- `architecture.md` — design decisions and rationale
+- `test-strategy.md` — testing approach and coverage targets
+- `code-review.md` — review findings
+
+Top-level cross-cutting decisions live in `docs/`.
 
 ## License
 
