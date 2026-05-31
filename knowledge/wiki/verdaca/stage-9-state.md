@@ -1,6 +1,6 @@
 # Stage 9 — Ports-and-Adapters State
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-29 (Stage 13 RATIFIED + merged to main + Path A CLOSED + Stage 14 G1 RATIFIED) | **Source:** session handoffs + `docs/stage-*-handover.md` 2026-04-12 → 2026-05-28 + in-session VOC synthesis 2026-05-24 + Stage 12 close memo `docs/stage-12-ratified-close-memo.md` 2026-05-27 + Stage 13 close memo `docs/stage-13-ratified-close-memo.md` 2026-05-28 + 6-agent Stage 14 G1 roundtable 2026-05-28 (Winston+Vera+Amelia+Murat+John+Mary, 3 rounds, full alignment)
+**Compiled:** 2026-05-31 | **HEAD:** `60e081d` | **Updated:** 2026-05-31 (Stage 14 IMPL+TEST CLOSED · VOC PENDING @ `60e081d`; Stage 13 RATIFIED + merged to main + Path A CLOSED + Stage 14 G1 RATIFIED 2026-05-28) | **Source:** session handoffs + `docs/stage-*-handover.md` 2026-04-12 → 2026-05-28 + in-session VOC synthesis 2026-05-24 + Stage 12 close memo `docs/stage-12-ratified-close-memo.md` 2026-05-27 + Stage 13 close memo `docs/stage-13-ratified-close-memo.md` 2026-05-28 + 6-agent Stage 14 G1 roundtable 2026-05-28 (Winston+Vera+Amelia+Murat+John+Mary, 3 rounds, full alignment) + Stage 14 close memo `docs/stage-14-ratified-close-memo.md` 2026-05-31 (IMPL+TEST close · VOC pending)
 **Working-branch HEAD (Stage 14 entry):** `stage-14.0-buyer-contact-surface @ 620b4cb` (cut from `main @ 620b4cb`). **Stage 13 RATIFIED 2026-05-28** at `620b4cb` (14 commits from base `5306c8d`) — merged to main + annotated tag `stage-13.0-ratified` → `620b4cb` (pushed to origin). **Path A CLOSED 2026-05-28** via team-lead override of D13: Stages 11+12+13 chain pushed to origin (stage-11.0-mcp-gateway, stage-12.0-channel-adapters, stage-13.0-production-hardening); `local main = origin/main = 620b4cb` (in sync; advanced from `f181a7e` via fast-forward merge of Stage 13 chain).
 **Branch:** `stage-12.0-channel-adapters` (Path A local-only; base = Stage-11 close `e0aade3`; never merged to main)
 
@@ -117,12 +117,12 @@ Stage 13 RATIFIED 2026-05-28 at `620b4cb` — 4 NEW no_waiver entries added (Sta
 - `M-T-SESSION-ID-ENTROPY-FLOOR-01`
 - `M-T-NO-BARE-EXCEPT-AUTH-CRYPTO-01`
 
-### Stage 14 planned additions — 1 entry (PLANNED; not yet binding)
+### Stage 14 additions — 1 entry (BINDING at IMPL+TEST close 2026-05-31)
 
-Stage 14 G1 ratified 2026-05-28 plans to add **1 new no_waiver entry** (Stage 13 13 → Stage 14 14 strict-equality total). Marker ID:
+Stage 14 added **1 new no_waiver entry** (Stage 13 13 → Stage 14 14 strict-equality total); pin **14/9/23 machine-enforced** at IMPL+TEST close (`test_stage14_no_waiver_count.py` + 3 AST gates A/B/C-S14). Marker ID:
 - `M-T-AUTH-JWKS-ROTATION-INVARIANT-01` (Murat lock: bundled commit ≠ bundled discipline; AUDIENCE-DOUBLE-DECODE bundled with JWKS in B1 but does NOT get a no_waiver marker — risk 5/10 < no_waiver floor 7)
 
-Not binding until Stage 14 RATIFIED.
+BINDING at Stage 14 IMPL+TEST close (`60e081d`); the 14/9/23 pin is enforced. (NOTE: rows #40–43 below appear to be a Stage-13-sublist carryover mislabel — they do not match the single JWKS-ROTATION add; flagged for manual reconciliation, untouched here.)
 
 | # (planned) | MAC-T ID (planned) | Reason |
 |---|---|---|
@@ -327,9 +327,20 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 
 ---
 
-## Stage 14 — Buyer Contact Surface via auditor gate (OPEN — G1 RATIFIED 2026-05-28)
+## Stage 14 — Buyer Contact Surface via auditor gate (IMPL+TEST CLOSED · VOC PENDING — 2026-05-31 @ 60e081d)
 
-**Status:** OPEN — G1 scope confirmation ratified 2026-05-28 via 6-agent roundtable (Winston + Vera + Amelia + Murat + John + Mary, 3 rounds, 16 total responses, full alignment). Branch `stage-14.0-buyer-contact-surface @ 620b4cb` cut from main 2026-05-29.
+**Status:** IMPL + TEST CYCLE CLOSED · **VOC PENDING (NOT YET RATIFIED).** G1 scope ratified 2026-05-28 (6-agent roundtable). Implementation + test + Cleo H#8 + close memo + all merge-gate companions are done and pushed to `origin/stage-14.0-buyer-contact-surface @ 60e081d`. Ratification is gated SOLELY on the VOC track: first Champion call (H#5; B-7 dial-go reserved to team-lead) + post-call hypothesis-class log / HYPOTHETICAL-VOC → PROVISIONAL-SINGLE-SAMPLE downgrade (H#6). Close memo (status banner IMPL+TEST CLOSED · VOC PENDING): `docs/stage-14-ratified-close-memo.md` (tracked).
+
+### Implementation + test cycle — CLOSED 2026-05-31 (13-commit chain, base `620b4cb`)
+- `15fcc60` CVE B1 (JWKS+audience+R15-c/d) · `a795faa` vkey-REQUIRED **Gate-1 CVE PASS** · `57bfcc0`+`ec2689c` Phase-0.5 MCP transport
+- `e0c18f6` Phase-0.6 **O-6** Teams webhook transport (spine-live) · `a896e10` Phase-1 onboarding pipeline (13 tests)
+- `139f51b` Day-1 **de-stub** → profile-gated real adapters · `e8c61ef` **O-10** fix (`.gitattributes` LF) · `715dfc4` composition **hoist** → `praxis.composition` (fence flipped to live guard) · `c5ee353` **Slack** `/webhooks/slack` route
+- `c82ffe9` Phase-B honesty spine · `726c6de` H#8.V1 (Cleo 2 flip + 3 rec) · `4c25182` H#9 IMPL+TEST close memo · `60e081d` Track-B merge-gate companions (F-13-V3 typed bearer + Slack-only-boot)
+- **Suite: 411 passed / 19 skipped / 0 failed / 0 xfailed.** Pin 14/9/23 intact; 0 new no_waiver beyond the planned JWKS-ROTATION marker.
+
+**Stage 14 finding closures:** B-6 fold C-1 (channel path, `e0c18f6`) · F-14-O6-COMPOSITION-HOIST-PENDING-01 (`715dfc4`, fence→live) · O-10 (`e8c61ef`) · F-14-H1-SLACK-NOT-YET-WIRED (`c5ee353`) · 5× Cleo H#8 (`726c6de`) · F-13-V3 over-broad-catch (`60e081d`, typed `BearerRequiredError`) · F-14-H8-4 Slack-only-boot (`60e081d`).
+
+**Deferred-set (system of record: `tests/src/praxis/contract_tests/ports/test_stage14_deferred_register.py` — 7 named skips, two-axis reasons + flip-triggers):** O-9 nonce thread-safety (DURABLE-FROZEN) · O-11 persistent-loop (DURABLE-ARCH) · CC6.7-c vkey real-spend / spend-blind egress (DURABLE-ARCH) · O-8 PRICING_TABLE_VERSION (DURABLE-FROZEN) · commercial-IdP / Mem0-DIAL-embedder / live-smoke (TRANSIENT-CREDS).
 
 **Cycle framing:** NOT another pure Option-A hardening. Stage 13 substrate is internally-defensible; Stage 14 makes it externally-defensible by clearing the **auditor gate FIRST**, then exposing to first real Champion. HYPOTHETICAL-VOC retire runway longer than originally implied: first Champion call downgrades caveat to PROVISIONAL-SINGLE-SAMPLE (N=1); full retire needs N≥3 for population/magnitude/pricing claims per Murat lock.
 
@@ -386,8 +397,9 @@ F-11-CLEO-13, F-11-CLEO-14, F-11-CLEO-15, F-11-CLEO-16, F-11-CLEO-17, F-11-CLEO-
 Added to Stage 11+12 inheritance: `\brobust\b`, `\bproduction-ready\b` (+ hyphen variant), `\bcomprehensive\b`.
 
 ### Stage 14.5 named debt ledger
-- F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 (Winston Round 3 yield; Teams-channel-coupled, demo-event-gated)
+- F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 — **PARTIAL:** typed-bearer hardening landed (Track-B Option B `60e081d`: `BearerRequiredError` + `_dispatch` typed catch); **dict-path removal still deferred** (the D2 IdP-coercion contract `test_M_T_AUTH_E1_CONSUMES_E2_IDP_FIXTURE_01` is preserved; the dict path is unreachable from the live transport)
 - R15-b semantic-drift probe (Murat backlog; if budget)
+- Deferred-set ledger (7 items) carried as named skips — see Stage 14 section above
 
 ### OUT of scope
 - 4 V3 WARNING + 3 V3 LOW Cleo cosmetic
@@ -402,10 +414,10 @@ Added to Stage 11+12 inheritance: `\brobust\b`, `\bproduction-ready\b` (+ hyphen
 | G1 | 6-agent scope roundtable | ✅ RATIFIED 2026-05-28 |
 | G2 | First real Champion VOC call | OPEN (Phase 1; contingent on B-6) |
 | G3 | Cut `stage-14.0-buyer-contact-surface` from main `@620b4cb` | ✅ CLOSED 2026-05-29 |
-| G4 | Phase 0 dispatch (Track A executor ‖ Track B Mary session) | OPEN |
-| G5 | Memory `project_verdaca_stage14_scope` saved | ✅ CLOSED 2026-05-28 |
-| G6 | Phase 0 end-of-Week-1 hard gates (CVE PASS ∧ B-6 attestation) | OPEN |
-| G7 | Phase 1 release post-gates | OPEN |
+| G4 | Phase 0 dispatch (Track A executor ‖ Track B Mary session) | ✅ CLOSED |
+| G5 | Memory `project_verdaca_stage14_scope` saved | ✅ CLOSED 2026-05-28 (+ `project_verdaca_stage14_impl_test_closed` 2026-05-31) |
+| G6 | Phase 0 end-of-Week-1 hard gates (CVE PASS `a795faa` ∧ B-6 RATIFIED-PROVISIONAL 2026-05-29) | ✅ CLOSED |
+| G7 | Phase 1 release post-gates (Champion-facing surface shipped: O-6 transport + onboarding + runbook + Charter v0.2) | ✅ CLOSED |
 
 ---
 

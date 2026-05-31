@@ -1,6 +1,6 @@
 # Verdaca — Remaining Work to POV-Ready
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-29 (Stage 13 RATIFIED + merged to main + Path A CLOSED + Stage 14 G1 OPEN) | **Working branch HEAD:** `stage-14.0-buyer-contact-surface @ 620b4cb` (cut from main 2026-05-29) | **local main = origin/main = `620b4cb`** (Stage 13 RATIFIED close memo; tag `stage-13.0-ratified` → `620b4cb` pushed origin 2026-05-28; Path A CLOSED via team-lead override of D13) | **Stage:** Stage 9 RATIFIED 2026-05-20; Stage 10 RATIFIED 2026-05-24; Stage 11 RATIFIED 2026-05-26; Stage 12 RATIFIED 2026-05-27; **Stage 13 RATIFIED 2026-05-28** at `620b4cb` (14-commit chain from base `5306c8d`; auth quartet invoked-in-execute + composition root build_gateway() 11-param + OidcPolicy + NonceStore SQLite + Teams/Slack async post_result + WebhookSigningKeyResolver + session-id W-1 + 6 AST gates A-F; 321 tests / 13 runtime no_waiver / 6 AST gates / 19 total enforced markers; 5/5 V1 Cleo CLOSED + 2/12 V3 CLOSED at V3.A + 10 V3 carry-forward Stage 14; close memo `docs/stage-13-ratified-close-memo.md` TRACKED on main); **Stage 14 OPEN** — G1 RATIFIED 2026-05-28 via 6-agent roundtable Winston+Vera+Amelia+Murat+John+Mary (3 rounds, 16 responses, full alignment); cycle = "Buyer Contact Surface via auditor gate"; Phase 0 dual-track Week 1 + two end-of-Week-1 hard gates (CVE PASS ∧ B-6 auditor floor attestation). A7 HYPOTHETICAL-VOC caveat compounds on merged main; **PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 first Champion call (full retire needs N≥3 per Murat lock)**: every population/magnitude/pricing claim still carries HYPOTHETICAL-VOC tail until N≥3; existence/disqualification claims downgrade at N=1.
+**Compiled:** 2026-05-31 | **HEAD:** `60e081d` | **Updated:** 2026-05-31 (Stage 14 IMPL+TEST CLOSED · VOC PENDING; ratification gated solely on the VOC track) | **Working branch HEAD:** `stage-14.0-buyer-contact-surface @ 60e081d` (tracked on origin; 13 commits from base `620b4cb`; Path A = not merged to main) | **local main = origin/main = `620b4cb`** (Stage 13 RATIFIED close memo; tag `stage-13.0-ratified` → `620b4cb` pushed origin 2026-05-28; Path A CLOSED via team-lead override of D13) | **Stage:** Stage 9 RATIFIED 2026-05-20; Stage 10 RATIFIED 2026-05-24; Stage 11 RATIFIED 2026-05-26; Stage 12 RATIFIED 2026-05-27; **Stage 13 RATIFIED 2026-05-28** at `620b4cb` (14-commit chain from base `5306c8d`; auth quartet invoked-in-execute + composition root build_gateway() 11-param + OidcPolicy + NonceStore SQLite + Teams/Slack async post_result + WebhookSigningKeyResolver + session-id W-1 + 6 AST gates A-F; 321 tests / 13 runtime no_waiver / 6 AST gates / 19 total enforced markers; 5/5 V1 Cleo CLOSED + 2/12 V3 CLOSED at V3.A + 10 V3 carry-forward Stage 14; close memo `docs/stage-13-ratified-close-memo.md` TRACKED on main); **Stage 14 IMPL+TEST CLOSED · VOC PENDING 2026-05-31** at `60e081d` (G1 RATIFIED 2026-05-28; cycle = "Buyer Contact Surface via auditor gate"; both end-of-Week-1 hard gates CLOSED — CVE PASS `a795faa` ∧ B-6 RATIFIED-PROVISIONAL 2026-05-29; impl+test+H#8+close-memo+merge-gate-companions done; ratification gated solely on the first Champion VOC call → H#6). A7 HYPOTHETICAL-VOC caveat compounds on merged main; **PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 first Champion call (full retire needs N≥3 per Murat lock)**: every population/magnitude/pricing claim still carries HYPOTHETICAL-VOC tail until N≥3; existence/disqualification claims downgrade at N=1.
 
 ---
 
@@ -126,18 +126,20 @@ Stage 9 RATIFIED 2026-05-20 — full ports-and-adapters production rebuild
 - [x] **G3** Cut `stage-14.0-buyer-contact-surface` from main `@620b4cb` — CLOSED 2026-05-29
 - [x] **G4** Executor split — Phase 0 Track A (engineering CVE close) ‖ Track B (Mary-coordinated GTM + auditor floor split with Cleo + Murat)
 - [x] **G5** Memory `project_verdaca_stage14_scope` saved — CLOSED 2026-05-28
-- [ ] **G6** Phase 0 end-of-Week-1 hard gates (CVE PASS ∧ B-6 auditor floor attestation) — OPEN
-- [ ] **G7** Phase 1 release (Champion VOC + demo runbook + onboarding + Charter ratification) — OPEN, contingent on G6
+- [x] **G6** Phase 0 end-of-Week-1 hard gates — CLOSED (CVE PASS `a795faa` ∧ B-6 RATIFIED-PROVISIONAL 2026-05-29)
+- [x] **G7** Phase 1 release — surface SHIPPED (O-6 Teams+Slack transport + onboarding + demo runbook + Charter v0.2). VOC call itself is the remaining ratification step (H#6), not a surface gap.
 
-### Stage 14 RATIFIED when — TENTATIVE
-- [ ] Phase 0 Track A: B1 bundle JWKS-NOT-INTEGRATED + AUDIENCE-DOUBLE-DECODE + R15-c TTL race + R15-d no_waiver constant pin; vkey REQUIRED fail-closed at production profile; policy_health_check; Charter v0.2 11-param ratification (M2 buyer-language audit zero hits)
-- [ ] Phase 0 Track B: B-1 through B-7 (target list + first-call script + HYPOTHETICAL-VOC disclosure + SOC2 pre-flight checklist + auditor meeting worksheet + reconciliation attestation + scheduling contingent on B-6)
-- [ ] Phase 1: First Champion VOC call against clean substrate; demo runbook + onboarding pipeline (M3 buyer-language audit); K1/K2/K3 pre-registration table authored BEFORE call; post-call hypothesis-class log + HYPOTHETICAL-VOC → PROVISIONAL-SINGLE-SAMPLE caveat downgrade
-- [ ] Phase 2: Stage 14.5 named debt closure (PARSE-ACTIVITY event-gated)
-- [ ] Canonical pin: 13/6/19 → **14/9/23** (+1 no_waiver `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`; +3 AST gates A-S14/B-S14/C-S14; AUDIENCE bundled in B1 with +2 MAC-Ts + 1 AST gate but NO no_waiver per Murat lock "bundled commit ≠ bundled discipline" risk 5 < 7)
-- [ ] H#7 Mary buyer-language audit PASS — 6 forbidden tokens zero hits (`\bstrategic analysis\b` + `\bseamless\b` + `\benterprise-grade\b` + `\brobust\b` + `\bproduction-ready\b` (+ hyphen) + `\bcomprehensive\b`)
-- [ ] H#8 Cleo adversarial review = PASS or PASS-WITH-AMENDMENTS
-- [ ] B-6 auditor floor attestation language: "Stage 14 Phase 0 auditor floor satisfied at SHA [X]. ... HYPOTHETICAL-VOC caveat inherited; auditor floor does NOT supersede VOC requirement."
+### Stage 14 RATIFIED when — IMPL+TEST DONE; only the VOC call remains
+**IMPL+TEST CLOSED at `60e081d` 2026-05-31. The single remaining ratification step is the first Champion VOC call + post-call downgrade (H#6).** B-7 dial-go reserved to team-lead; archetype→Champion mapping + B-2.1 pre-registration timestamp-freeze-at-dial pending.
+- [x] Phase 0 Track A: B1 JWKS+AUDIENCE + R15-c/d; vkey REQUIRED fail-closed; policy_health_check; Charter v0.2 11-param ratification — CLOSED (`a795faa` Gate-1 CVE PASS)
+- [x] Phase 0 Track B: B-1..B-6 authored + verified (M3-clean); B-6 RATIFIED-PROVISIONAL 2026-05-29; B-7 gate RELEASED 2026-05-30 (dial-go reserved to team-lead)
+- [x] Phase 1 surface: O-6 Teams+Slack transport + onboarding pipeline + demo runbook (M3 zero-hit) + K1/K2/K3 pre-registration table (frozen, lifted verbatim into close memo §6.1)
+- [ ] **Phase 1 VOC (the only open item):** first Champion call against clean substrate → post-call hypothesis-class log + HYPOTHETICAL-VOC → PROVISIONAL-SINGLE-SAMPLE downgrade (close memo §6.3 → status flips to RATIFIED)
+- [ ] Phase 2: Stage 14.5 named debt closure (PARSE-ACTIVITY dict-path removal — typed hardening already landed; deferred-set ledger items)
+- [x] Canonical pin: 13/6/19 → **14/9/23** — REACHED + machine-enforced (`test_stage14_no_waiver_count.py` + 3 AST gates A/B/C-S14)
+- [x] H#7 Mary buyer-language audit PASS — 6 forbidden tokens zero hits (runbook + close memo)
+- [x] H#8 Cleo adversarial review = PASS-WITH-AMENDMENTS (2 flip + 3 rec fixes landed `726c6de`)
+- [x] B-6 auditor floor attestation — RATIFIED-PROVISIONAL 2026-05-29 (HYPOTHETICAL-VOC caveat inherited; does NOT supersede VOC requirement)
 
 ---
 

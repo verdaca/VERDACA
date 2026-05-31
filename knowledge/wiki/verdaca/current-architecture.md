@@ -1,6 +1,6 @@
 # Verdaca — What Is Actually Built
 
-**Compiled:** 2026-05-08 → **Updated:** 2026-05-27 (Stage 12 RATIFIED on local-only branch `stage-12.0-channel-adapters` @ `43f57ba`; Stage 13 OPEN — scope G1 ratified, no code shipped) | **HEAD (working branch):** `stage-12.0-channel-adapters @ 43f57ba` (Path A LOCAL-ONLY, never pushed to origin; 29 commits from `e0aade3`, base `f181a7e`) | **local main HEAD:** `f181a7e` (Stage 10 A7-override close, 2026-05-24) | **origin/main HEAD:** `f181a7e` (in sync; 0 ahead) | Stage 12 = Teams + Slack channel adapters + kernel/auth/ OIDC+JWKS+claims+nonce + VirtualKeyPort + LiteLLM HTTP-client virtual keys
+**Compiled:** 2026-05-31 | **HEAD:** `60e081d` | **Updated:** 2026-05-31 (Stage 14 IMPL+TEST CLOSED · VOC PENDING) | **HEAD (working branch):** `stage-14.0-buyer-contact-surface @ 60e081d` (tracked on origin; Path A = not merged to main; 13 commits from base `620b4cb`) | **local main = origin/main:** `620b4cb` (Stage 13 RATIFIED) | Stage 13 RATIFIED 2026-05-28 (`620b4cb`; auth quartet invoked-in-execute + build_gateway 11-param + OidcPolicy + NonceStore SQLite + WebhookSigningKeyResolver + 6 AST gates). Stage 14 = buyer transport (Teams + Slack webhooks on one composed gateway via the neutral `praxis.composition` apex; de-stubbed to profile-gated real adapters)
 
 ---
 
@@ -110,12 +110,12 @@ shell/                    POV harness (Next.js UI + API)
 docs/                     Pipeline tracking + stage handovers (untracked since `effa9ad` 2026-05-15)
 ```
 
-### uv workspace members (22 active + 1 deferred — verified against root `pyproject.toml` 2026-05-27)
-`ports` · `adapters/beads` · `adapters/tonl` · `adapters/in_tree_compaction_stub` · `adapters/pi_mono_native` · `adapters/litellm` · **`adapters/mcp_server`** (Stage 11) · **`adapters/channels/teams`** (Stage 12) · **`adapters/channels/slack`** (Stage 12) · `adapters/mem0` · `adapters/letta` · `adapters/llmlingua` · `tests` · `kernel/compression` · `kernel/mac` · **`kernel/gateway`** (Stage 11) · **`kernel/auth`** (Stage 12) · `kernel/memory` · `kernel/pi-mono/src` · `kernel/runtime` · **`kernel/session_index`** (Stage 10) · `kernel/studio`
+### uv workspace members (24 active + 1 deferred — verified against root `pyproject.toml` 2026-05-31)
+`ports` · **`composition`** (Stage 14) · `adapters/beads` · `adapters/tonl` · `adapters/in_tree_compaction_stub` · `adapters/pi_mono_native` · `adapters/litellm` · **`adapters/mcp_server`** (Stage 11) · **`adapters/channels/teams`** (Stage 12) · **`adapters/channels/slack`** (Stage 12) · **`adapters/channels/webhook_app`** (Stage 14) · `adapters/mem0` · `adapters/letta` · `adapters/llmlingua` · `tests` · `kernel/compression` · `kernel/mac` · **`kernel/gateway`** (Stage 11) · **`kernel/auth`** (Stage 12) · `kernel/memory` · `kernel/pi-mono/src` · `kernel/runtime` · **`kernel/session_index`** (Stage 10) · `kernel/studio`
 
 `shell/` deferred from workspace (pytest-asyncio constraint conflict).
 
-**Stage delta from prior wiki:** wiki previously listed "13 active" but actually enumerated 16 members; canonical `pyproject.toml` count was 19 active through Stage 11. Stage 10 added `kernel/session_index`; Stage 11 added `kernel/gateway` + `adapters/mcp_server`; **Stage 12 added `adapters/channels/teams` + `adapters/channels/slack` + `kernel/auth` (member #22)**.
+**Stage delta from prior wiki:** Stage 10 added `kernel/session_index`; Stage 11 added `kernel/gateway` + `adapters/mcp_server`; Stage 12 added `adapters/channels/teams` + `adapters/channels/slack` + `kernel/auth`; **Stage 14 added `composition` (member #23 — neutral runtime-composition apex; `build_runtime_gateway`/`compose_auth_quartet` hoisted out of `mcp_server` so channels don't transitively import the MCP server/FastMCP) + `adapters/channels/webhook_app` (#24 — the Teams+Slack inbound ASGI transport)**.
 
 9.6 audit added `[tool.uv.sources] workspace = true` entries for the 6 adapter members previously missing from `tests/pyproject.toml`, closing `F-9.9-CONTRACT-COLLECTION-UNRUNNABLE-01` and enabling naked `pytest` collection.
 
@@ -234,25 +234,20 @@ docs/                     Pipeline tracking + stage handovers (untracked since `
 
 ---
 
-## Stage 14: Buyer Contact Surface via auditor gate — OPEN (G1 RATIFIED 2026-05-28)
+## Stage 14: Buyer Contact Surface via auditor gate — IMPL+TEST CLOSED · VOC PENDING (2026-05-31 @ 60e081d)
 
-**Status:** OPEN — G1 ratified 2026-05-28 via 6-agent roundtable (Winston + Vera + Amelia + Murat + John + Mary, 3 rounds, full alignment). Branch `stage-14.0-buyer-contact-surface` cut from main `@ 620b4cb` 2026-05-29.
+**Status:** IMPL + TEST CYCLE CLOSED · **VOC PENDING (NOT YET RATIFIED).** 13-commit chain from base `620b4cb` → `60e081d` (tracked on origin). Pin **14/9/23**; suite **411 passed / 19 skipped / 0 failed / 0 xfailed**. Ratification gated solely on the VOC track (first Champion call → H#6).
 
-**Cycle framing:** NOT another pure Option-A hardening. "Buyer Contact Surface via auditor gate" — auditor reclassified as GATING stakeholder upstream of Champion.
+**What's actually built:**
+- **`composition/` neutral apex** — `praxis.composition.runtime_gateway.build_runtime_gateway` / `compose_auth_quartet`, hoisted out of `mcp_server` (composition-boundary fence is a live passing guard: channels pull no `mcp_server`/FastMCP).
+- **`adapters/channels/webhook_app/`** — ASGI transport serving `POST /webhooks/teams` (HMAC-SHA256) **and** `POST /webhooks/slack` (`v0` + URL-challenge) on ONE composed gateway + ONE shared `_exec_lock` (O-11 serialization). Per-channel-conditional boot (≥1 channel secret; absent secret ⇒ that route 503s).
+- **Profile-gated real adapters** in `build_runtime_gateway` (`VERDACA_DEPLOY_PROFILE=production`): `LiteLLMVirtualKeyAdapter` (vkey), `create_dial_llm_proxy` (DIAL LLM), `_DialKeyNormalizingCostMeter(PiMonoNativeAdapter)` (O-8 azure→openai key-normalize, price-identical), `LettaAdapter` (memory). **Fail-closed** on missing creds; dev/test keeps Tier-1 stubs (the hermetic path). Production paths construction+gating-tested, NOT live-exercised (no creds/VPN this window).
+- **Auth-first spine LIVE** on the channel path: inbound signature → per-user OIDC RS256/JWKS → nonce replay → budget gate → execute. Real OIDC `discover()` against a local stub (commercial-IdP config-only/untested).
+- **`.gitattributes`** pins the frozen MCP snapshot to `eol=lf` (O-10 fix). **Onboarding scripts** `scripts/onboarding/` (env-check → vkey-provision → policy-smoke → first-message). **Phase-B honesty tests:** deferred-set ledger + hermetic gaps + live-smoke skeleton + `require_production_profile` fixture.
 
-**Phase 0 Track A (Engineering) scope:** F-13-V3-JWKS-NOT-INTEGRATED-01 (CVE-class) + F-13-V3-AUDIENCE-DOUBLE-DECODE-01 bundled in B1 + vkey REQUIRED fail-closed + policy_health_check + R15-c TTL race + R15-d no_waiver constant pin + Charter v0.2 11-param ratification (M2 buyer-language audit).
+**Caveat evolution:** PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 (full retire needs N≥3 per Murat lock). Close memo: `docs/stage-14-ratified-close-memo.md` (status banner IMPL+TEST CLOSED · VOC PENDING; tracked).
 
-**Phase 0 Track B (GTM + Auditor floor):** B-1 prospect list + B-2 call script + B-3 disclosure language + B-4 SOC2 pre-flight checklist + B-5 auditor meeting worksheet + B-6 attestation + B-7 scheduling (contingent on B-6).
-
-**Two end-of-Week-1 hard gates:** CVE PASS ∧ B-6 auditor floor attestation.
-
-**Phase 1 (Week 2-3):** First Champion VOC + demo runbook + onboarding pipeline + K1/K2/K3 pre-registration table.
-
-**Canonical pin target: 14/9/23** (+1 no_waiver `M-T-AUTH-JWKS-ROTATION-INVARIANT-01`; +3 AST gates A-S14 + B-S14 + C-S14).
-
-**Caveat evolution:** PROVISIONAL-SINGLE-SAMPLE replaces HYPOTHETICAL-VOC after N=1 (full retire needs N≥3 per Murat lock).
-
-**Stage 14.5 named debt:** F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 (Winston Round 3 yield; event-gated).
+**Stage 14.5 named debt:** F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01 (PARTIAL — typed-bearer hardening landed `60e081d`; dict-path removal deferred, D2 contract preserved); deferred-set ledger (O-9/O-11/CC6.7-c/O-8/commercial-IdP/Mem0-DIAL/live-smoke).
 
 ---
 
