@@ -72,6 +72,7 @@ docs/ai-news/
 # Re-include intentionally tracked docs
 !docs/stage-*-ratified-close-memo.md
 !docs/stage-*-voc-gate.md
+!docs/stage-14-demo-runbook.md
 
 # ============================================================
 # Python development cruft
