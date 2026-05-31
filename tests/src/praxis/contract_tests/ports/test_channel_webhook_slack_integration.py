@@ -284,3 +284,46 @@ async def test_slack_malformed_body_maps_to_400_not_500(
         assert resp.status_code not in (401, 500)
     finally:
         await client.aclose()
+
+
+# ─── Slack-only boot (F-14-H8-4): TEAMS secret absent → startup OK; Teams 503 ─
+
+
+@pytest.mark.asyncio
+async def test_slack_only_boot_teams_route_503_slack_works(
+    oidc_stub: tuple[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A Slack-only deployment (TEAMS_WEBHOOK_SECRET absent, SLACK_SIGNING_SECRET
+    present) boots without error; /webhooks/teams 503s (no Teams secret) while
+    /webhooks/slack works normally. Proves the per-channel-conditional startup."""
+    issuer, key = oidc_stub
+    monkeypatch.setenv("OIDC_ISSUER_URL", issuer)
+    monkeypatch.setenv("OIDC_AUDIENCE", AUDIENCE)
+    monkeypatch.setenv("VERDACA_ALLOWED_USER_IDS", "user-1")
+    monkeypatch.delenv("TEAMS_WEBHOOK_SECRET", raising=False)  # Slack-only
+    monkeypatch.setenv("SLACK_SIGNING_SECRET", SLACK_SECRET)
+
+    app_obj = WebhookApp()
+    await app_obj.startup()  # MUST NOT raise — at least one channel secret present
+    assert app_obj._secret is None  # Teams secret absent → route will 503
+    assert app_obj._slack_secret == SLACK_SECRET
+
+    app = create_webhook_app(app_obj)
+    client = httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://testserver"
+    )
+    try:
+        # /webhooks/teams → 503 (no Teams secret on this deploy).
+        teams_resp = await client.post("/webhooks/teams", content=b"{}")
+        assert teams_resp.status_code == 503
+
+        # /webhooks/slack still works end-to-end (auth-first spine live).
+        body = _app_mention("1700000000.000900")
+        token = _mint_token(key, issuer, nonce="slack-only-nonce-1")
+        slack_resp = await client.post(
+            "/webhooks/slack", content=body, headers=_signed_headers(body, token=token)
+        )
+        assert slack_resp.status_code == 200, slack_resp.text
+        assert "blocks" in slack_resp.json()
+    finally:
+        await client.aclose()

@@ -61,6 +61,9 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
 from praxis.adapters.channels.slack.adapter import SlackAdapter
+from praxis.adapters.channels.slack.events import (
+    BearerRequiredError as SlackBearerRequiredError,
+)
 from praxis.adapters.channels.slack.events import parse_event
 from praxis.adapters.channels.slack.webhook import ConfigurationError as SlackConfigError
 from praxis.adapters.channels.slack.webhook import (
@@ -70,7 +73,11 @@ from praxis.adapters.channels.slack.webhook import (
     receive_webhook as slack_receive_webhook,
 )
 from praxis.adapters.channels.teams.adapter import TeamsAdapter
+from praxis.adapters.channels.teams.events import (
+    BearerRequiredError as TeamsBearerRequiredError,
+)
 from praxis.adapters.channels.teams.events import parse_activity
+from praxis.adapters.channels.teams.webhook import ConfigurationError as TeamsConfigError
 from praxis.adapters.channels.teams.webhook import (
     WebhookResponse,
     load_webhook_secret,
@@ -138,6 +145,16 @@ def _maybe_load_slack_secret() -> str | None:
         return None
 
 
+def _maybe_load_teams_secret() -> str | None:
+    """Teams secret is CONDITIONAL — a deployment may serve Slack-only. Returns
+    None when TEAMS_WEBHOOK_SECRET is unset; /webhooks/teams then 503s.
+    Symmetric to _maybe_load_slack_secret (F-14-H8-4 fix)."""
+    try:
+        return load_webhook_secret()  # env TEAMS_WEBHOOK_SECRET
+    except TeamsConfigError:
+        return None
+
+
 class WebhookApp:
     """Composes ONE runtime gateway and serves inbound Teams and/or Slack webhooks.
 
@@ -178,12 +195,18 @@ class WebhookApp:
         )
         # STEP-3 parity with the MCP entrypoint: prod posture fail-closed.
         policy_health_check(policy=policy)
-        # Teams secret REQUIRED regardless of which routes are mounted — a
-        # Slack-only deploy (without TEAMS_WEBHOOK_SECRET) will fail HERE at boot
-        # (F-14-H8-4). Slack-only support is a named micro-follow-up: startup()
-        # must be made per-channel-conditional (require ≥1 channel secret).
-        self._secret = load_webhook_secret()  # env TEAMS_WEBHOOK_SECRET (fail-closed)
-        self._slack_secret = _maybe_load_slack_secret()  # conditional (None ⇒ 503)
+        # Per-channel-conditional secret load (F-14-H8-4 fix): a deployment may
+        # serve Teams-only, Slack-only, or both. Each absent secret ⇒ that route
+        # 503s; at least ONE is required so the transport isn't a no-op boot.
+        teams_secret = _maybe_load_teams_secret()
+        slack_secret = _maybe_load_slack_secret()
+        if teams_secret is None and slack_secret is None:
+            raise TeamsConfigError(
+                "At least one channel secret is required: "
+                "TEAMS_WEBHOOK_SECRET (Teams) or SLACK_SIGNING_SECRET (Slack)."
+            )
+        self._secret = teams_secret  # None ⇒ /webhooks/teams 503s (name kept: O-11 test seeds it)
+        self._slack_secret = slack_secret  # None ⇒ /webhooks/slack 503s
         self._exec_lock = anyio.Lock()
         self._gateway = gateway
 
@@ -214,8 +237,12 @@ class WebhookApp:
                 event = parse(
                     payload, authorization_header=auth_header, verifier=verifier
                 )
-            except ValueError as exc:
-                # Missing bearer / required claims → typed auth error → 401.
+            except (TeamsBearerRequiredError, SlackBearerRequiredError) as exc:
+                # Typed catch: only "bearer token required" from parse_activity /
+                # parse_event → 401 via AuthRequiredError. Any other ValueError
+                # from inside the parser is NOT caught here — it propagates to 500
+                # (internal fault, not an auth failure). Closes F-13-V3 merge-gate:
+                # the over-broad except ValueError → 401 path.
                 raise AuthRequiredError(str(exc)) from exc
             if event is None:  # non-actionable event (e.g. non-mention) → ignore
                 return WebhookResponse(status_code=200, payload={"status": "ignored"})

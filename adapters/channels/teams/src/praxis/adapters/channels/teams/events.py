@@ -17,6 +17,19 @@ from praxis.ports.gateway_dto import (
 )
 
 
+class BearerRequiredError(ValueError):
+    """Raised when parse_activity / parse_event receives no bearer token
+    (payload is None). Typed so _dispatch catches ONLY this case and not
+    all ValueError. The dict-claims branch (IdP-claim coercion, D2
+    cross-window contract test_M_T_AUTH_E1_CONSUMES_E2_IDP_FIXTURE_01)
+    is intentionally preserved: it is unreachable from the live transport
+    (webhook_app._dispatch never passes claims=; always uses
+    authorization_header). F-13-V3-PARSE-ACTIVITY-CLAIMS-DICT-BYPASS-01
+    merge-gate: this types the exception to close the _dispatch over-broad
+    catch; full dict-path removal is a separate scoped decision if desired.
+    """
+
+
 @dataclass(frozen=True, slots=True)
 class TeamsEvent:
     intent: StartAnalysisRequest
@@ -87,7 +100,7 @@ def _resolve_claims(
     verifier: JwtVerifier,
 ) -> dict[str, str]:
     if payload is None:
-        raise ValueError("Teams auth claims or bearer token are required")
+        raise BearerRequiredError("Teams auth claims or bearer token are required")
     if isinstance(payload, str):
         if verifier is None:
             raise ValueError("Teams bearer token requires a JwtVerifier")
