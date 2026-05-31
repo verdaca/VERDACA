@@ -113,6 +113,12 @@ class JwksCache:
         self._lock = asyncio.Lock()
 
     async def get_or_fetch(self, issuer: str) -> tuple[OidcMetadata, dict[str, Any]]:
+        # Fast-path: this unlocked read is safe ONLY because O-11 (_exec_lock in
+        # the webhook transport) serializes all callers onto a single in-flight
+        # gateway execution — so no concurrent invalidate() can mutate _store
+        # mid-read (F-14-H8-2). When O-11 is resolved (concurrent callers become
+        # possible), this fast-path MUST also be lock-guarded to avoid a race
+        # with invalidate(). Documentation only — no behavior change here.
         entry = self._store.get(issuer)
         if entry is not None and self._is_fresh(entry):
             return entry.metadata, entry.jwks

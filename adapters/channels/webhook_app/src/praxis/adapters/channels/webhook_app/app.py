@@ -118,6 +118,12 @@ def _ctx_status(exc: GatewayCtxError) -> int:
     if field.startswith("policy"):
         return 403
     if field.startswith("budget"):
+        # defensive — NOT reached by the current service: BudgetExhaustedError
+        # surfaces as auth:…BudgetExhaustedError via _auth_error wrapping → 401,
+        # not 402 (F-14-H8-3). Reserved for if the kernel ever emits a
+        # budget:-prefixed GatewayCtxError (a frozen-surface change → REFREEZE).
+        # Both directions verified: test_phase_b_hermetic_gaps.py::test_G6_* (the
+        # real auth→401 path) + ::test_G2_ctx_status_prefix_mapping (this mapping).
         return 402
     return 400
 
@@ -172,8 +178,12 @@ class WebhookApp:
         )
         # STEP-3 parity with the MCP entrypoint: prod posture fail-closed.
         policy_health_check(policy=policy)
+        # Teams secret REQUIRED regardless of which routes are mounted — a
+        # Slack-only deploy (without TEAMS_WEBHOOK_SECRET) will fail HERE at boot
+        # (F-14-H8-4). Slack-only support is a named micro-follow-up: startup()
+        # must be made per-channel-conditional (require ≥1 channel secret).
         self._secret = load_webhook_secret()  # env TEAMS_WEBHOOK_SECRET (fail-closed)
-        self._slack_secret = _maybe_load_slack_secret()  # conditional
+        self._slack_secret = _maybe_load_slack_secret()  # conditional (None ⇒ 503)
         self._exec_lock = anyio.Lock()
         self._gateway = gateway
 

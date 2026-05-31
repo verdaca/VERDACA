@@ -424,9 +424,16 @@ def _build_memory() -> MemoryPort:
     products) and a DIAL-backed Mem0 embedder config is not yet built. So the
     SECONDARY adapter Letta (native passage-search) is wired — the
     ``letta_client`` SDK reads ``LETTA_API_KEY`` / ``LETTA_BASE_URL`` natively
-    (no invented convention). Fail-closed if neither is set. Construction does
-    not contact the server (``on_init``/``health`` is not called by
-    ``build_gateway``).
+    (no invented convention).
+
+    Config precision (F-14-H8-1): the guard raises only if NEITHER
+    ``LETTA_API_KEY`` nor ``LETTA_BASE_URL`` is set. A base-URL-only config is a
+    VALID local-Letta mode (e.g. ``http://localhost:8283``) — construction
+    succeeds and any auth failure surfaces at first call, NOT at startup. Both
+    key + base URL are needed only for hosted Letta; local mode = base URL
+    alone. So this is a presence-of-config gate, not a full hosted-credential
+    fail-closed. Construction does not contact the server (``on_init``/
+    ``health`` is not called by ``build_gateway``).
     """
     if not _is_production_profile():
         return _DemoStubMemory()

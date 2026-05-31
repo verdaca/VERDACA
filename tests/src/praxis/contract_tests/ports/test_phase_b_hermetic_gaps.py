@@ -159,9 +159,14 @@ m._build_memory()
 # Modules we LAZY-IMPORT inside the if _is_production_profile() branches:
 OUR_LAZY_MODULES = (
     # praxis.kernel.gateway.dial is NOT listed here: service.py imports
-    # DIAL_LITELLM_PROVIDER/MODEL from it at the kernel level (transitive,
-    # pre-existing, not our production-branch lazy import).
-    # What we guard: OUR lazy-import code in the _build_* if-branches.
+    # DIAL_LITELLM_PROVIDER/MODEL from it at kernel load — it is ALREADY in
+    # sys.modules before our _build_llm_proxy() runs, regardless of profile.
+    # CONSEQUENCE (F-14-H8-5): call-isolation of create_dial_llm_proxy CANNOT be
+    # verified via sys.modules (its module is always present). The invariant
+    # this probe actually proves is narrower: the ADAPTER packages (virtual_keys,
+    # pi_mono_native, letta) were NOT imported by a non-prod compose. The DIAL
+    # LLM-proxy non-invocation on the dev/test path is instead covered by the
+    # _DemoStubLLMProxy positive-stub assertions (control #5), not here.
     "praxis.adapters.litellm.virtual_keys",   # _build_virtual_keys prod branch
     "praxis.adapters.pi_mono_native",         # _build_cost_meter prod branch
     "praxis.adapters.pi_mono_native.adapter", # _build_cost_meter prod branch
