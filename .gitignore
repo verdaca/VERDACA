@@ -1,6 +1,6 @@
 # Verdaca — Clean repo scope
-# Only source code (kernel/, ports/, adapters/, tests/, shell/, assets/) is tracked.
-# Everything else (BMAD framework, planning workspace, docs, knowledge, Claude config) is excluded.
+# Only source code (kernel/, ports/, adapters/, shell/) is tracked.
+# Everything else (BMAD framework, planning workspace, docs, knowledge, tests, assets, Claude config) is excluded.
 
 # ============================================================
 # Step 1: Exclude everything at root by default
@@ -13,9 +13,7 @@
 !kernel/
 !ports/
 !adapters/
-!tests/
 !shell/
-!assets/
 !pyproject.toml
 !.python-version
 !uv.lock
