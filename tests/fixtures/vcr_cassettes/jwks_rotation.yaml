@@ -1,0 +1,25 @@
+# Synthetic JWKS rotation cassette for Stage 12 H#3.2.
+# RSA public JWKs were generated with cryptography; only public components are committed.
+interactions:
+  - request:
+      method: GET
+      uri: https://login.microsoftonline.com/stage12-tenant/discovery/v2.0/keys
+    response:
+      status:
+        code: 200
+      headers:
+        content-type: application/json
+      body:
+        string: |
+          {"keys":[{"alg":"RS256","e":"AQAB","kid":"key-001","kty":"RSA","n":"n3xj-6wfsr4gsoxj0OI3bYF23F3uWymXz-hQXaWv32iGoMNqfgD_jE4eVM2Iyh558gc7VoahNQj1oOBG85TgsPydPFqK3h17NMFx2qeec5t0u6GZ5Bw1zKFI-oQkH3b5wWpt7l83Cy26VOxc_YgBUNs0387dSCZVcI0F06rik8zmdkBD275oTvh4HB14l4m2lA-kZRhkdCjL-nHxb44K5RTvKlu2GlpHLAhydXAlAJ-1K8sQoGiYb7YnXbrsfX5DLf2uDrlJZaMF-F7IPP1nIjNWyL9OcdgQw8v8Dx-st_VZOPOmV54o_aF-mpioqAANq08fc_NVHipUsdu05jXDkQ","use":"sig"}]}
+  - request:
+      method: GET
+      uri: https://login.microsoftonline.com/stage12-tenant/discovery/v2.0/keys
+    response:
+      status:
+        code: 200
+      headers:
+        content-type: application/json
+      body:
+        string: |
+          {"keys":[{"alg":"RS256","e":"AQAB","kid":"key-001","kty":"RSA","n":"n3xj-6wfsr4gsoxj0OI3bYF23F3uWymXz-hQXaWv32iGoMNqfgD_jE4eVM2Iyh558gc7VoahNQj1oOBG85TgsPydPFqK3h17NMFx2qeec5t0u6GZ5Bw1zKFI-oQkH3b5wWpt7l83Cy26VOxc_YgBUNs0387dSCZVcI0F06rik8zmdkBD275oTvh4HB14l4m2lA-kZRhkdCjL-nHxb44K5RTvKlu2GlpHLAhydXAlAJ-1K8sQoGiYb7YnXbrsfX5DLf2uDrlJZaMF-F7IPP1nIjNWyL9OcdgQw8v8Dx-st_VZOPOmV54o_aF-mpioqAANq08fc_NVHipUsdu05jXDkQ","use":"sig"},{"alg":"RS256","e":"AQAB","kid":"key-003","kty":"RSA","n":"j60s8Atm2MHzBl4Z1_mKlOBoo1ivoWW-QKV_xBsnF04nOWA1glkgL8-Y7KiTEwZ9OjPYuAS5uyWrnXh6hLiZmaCTISpAfD2PS1JARdlVvP8-j1sgTLzYi0zzfb6aK061XEIUGg69FRbnKoWtp4mwur6dATCvAGHpOV1FL3nkjrQecO2-GQlV6Ct1GFMCmiNAJsXHK8A-8mjWTSSJSu5iBvye7bRxYnISrIsORV3gVMNUTM_pqnZMpydoCsFsgplfUgoZOZK9KORWNg_lvVpPF7ErjRQHM1i4gITldinhYEirZ7nv-w7LwFKeKpsml60OOexnl0sMZ2NUAKAeXYchEw","use":"sig"}]}

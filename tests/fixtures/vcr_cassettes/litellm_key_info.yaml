@@ -1,0 +1,13 @@
+# Synthetic LiteLLM key-info cassette for Stage 12 H#4.
+interactions:
+  - request:
+      method: GET
+      uri: https://litellm.example.invalid/key/info?key_alias=stage12-key
+    response:
+      status:
+        code: 200
+      headers:
+        content-type: application/json
+      body:
+        string: |
+          {"info":{"token":"sk-stage12-existing","spend":7.5,"max_budget":25.0}}
