@@ -1,8 +1,8 @@
-# Synthetic LiteLLM key-info error cassette for Stage 12 H#4.
+# Synthetic LiteLLM key-list error cassette for Stage 12 H#4.
 interactions:
   - request:
       method: GET
-      uri: https://litellm.example.invalid/key/info?key_alias=stage12-key
+      uri: https://litellm.example.invalid/key/list?key_alias=stage12-key&return_full_object=true
     response:
       status:
         code: 500

@@ -80,7 +80,19 @@ class _OverBudgetAsyncClient:
         return None
 
     async def get(self, url: str, **kwargs: object) -> _FakeResp:
-        return _FakeResp({"info": {"spend": 12.0, "max_budget": 5.0, "token": "sk-x"}})
+        # Real LiteLLM alias lookup is /key/list (return_full_object) — match shape.
+        return _FakeResp(
+            {
+                "keys": [
+                    {
+                        "key_alias": "user-1",
+                        "spend": 12.0,
+                        "max_budget": 5.0,
+                        "token": "sk-x",
+                    }
+                ]
+            }
+        )
 
 
 @pytest.mark.asyncio

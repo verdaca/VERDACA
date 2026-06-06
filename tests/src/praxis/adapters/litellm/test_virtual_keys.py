@@ -128,7 +128,26 @@ async def test_M_T_VKEY_INFO_HAPPY_01_parses_spend_and_budget(
     assert info.spend == 7.5
     assert info.max_budget == 25.0
     assert info.is_over_budget is False
-    assert client.requests[0]["params"] == {"key_alias": "stage12-key"}
+    assert client.requests[0]["url"] == f"{BASE_URL}/key/list"
+    assert client.requests[0]["params"] == {
+        "key_alias": "stage12-key",
+        "return_full_object": "true",
+    }
+
+
+@pytest.mark.asyncio
+async def test_M_T_VKEY_INFO_NOT_FOUND_01_raises_when_alias_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    client = _QueuedAsyncClient([_HttpResponse(status_code=200, payload={"keys": []})])
+    adapter = _adapter_with_client(monkeypatch, client)
+
+    with pytest.raises(LiteLLMProxyError) as exc_info:
+        await adapter.get_key_info("absent-alias")
+
+    assert exc_info.value.operation == "get_key_info"
+    assert exc_info.value.status_code is None
+    assert "no virtual key with alias" in str(exc_info.value)
 
 
 @pytest.mark.no_waiver

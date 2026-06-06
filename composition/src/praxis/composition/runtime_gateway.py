@@ -447,6 +447,11 @@ def _build_memory() -> MemoryPort:
 
     from praxis.adapters.letta import LettaAdapter
 
+    # Construction stays server-free (per this module's contract). The Letta
+    # system agent is resolved/created by LettaAdapter.on_init(), which the
+    # runtime ENTRYPOINT must invoke after composition — NOT here. See
+    # F-14-LETTA-ONINIT-UNWIRED-01: no entrypoint currently calls on_init(),
+    # so the live memory path routes to agent_id=None until that is wired.
     return LettaAdapter(letta_client=Letta())
 
 

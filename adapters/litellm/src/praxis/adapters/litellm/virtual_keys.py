@@ -70,25 +70,43 @@ class LiteLLMVirtualKeyAdapter:
         )
 
     async def get_key_info(self, key_alias: str) -> VirtualKeyInfo:
+        # Real LiteLLM keys /key/info by the token (?key=sk-...), NOT by alias —
+        # /key/info?key_alias=... 404s. The gateway only knows the caller's sub
+        # (the key_alias), so resolve via /key/list (return_full_object exposes
+        # spend/max_budget/token per entry) and match on key_alias.
         async with httpx.AsyncClient() as client:
             resp = await client.get(
-                f"{self._base_url}/key/info",
-                params={"key_alias": key_alias},
+                f"{self._base_url}/key/list",
+                params={"key_alias": key_alias, "return_full_object": "true"},
                 headers=self._headers,
                 timeout=10.0,
             )
             self._raise_for_error("get_key_info", resp.status_code)
             data = cast(dict[str, Any], resp.json())
-        info = cast(dict[str, Any], data.get("info", {}))
-        spend = float(info.get("spend", 0.0))
-        max_budget = float(info.get("max_budget", 0.0))
+        entry = self._find_key_entry(data, key_alias)
+        if entry is None:
+            raise LiteLLMProxyError(
+                "get_key_info",
+                None,
+                f"no virtual key with alias {key_alias!r}",
+            )
+        spend = float(entry.get("spend") or 0.0)
+        max_budget = float(entry.get("max_budget") or 0.0)
         return VirtualKeyInfo(
             key_alias=key_alias,
-            token=str(info.get("token", "")),
+            token=str(entry.get("token", "")),
             spend=spend,
             max_budget=max_budget,
             is_over_budget=spend >= max_budget > 0,
         )
+
+    @staticmethod
+    def _find_key_entry(data: dict[str, Any], key_alias: str) -> dict[str, Any] | None:
+        keys = data.get("keys", []) if isinstance(data, dict) else []
+        for entry in keys:
+            if isinstance(entry, dict) and entry.get("key_alias") == key_alias:
+                return cast(dict[str, Any], entry)
+        return None
 
     async def check_budget(self, key_alias: str) -> None:
         info = await self.get_key_info(key_alias)
