@@ -1,14 +1,26 @@
 name: Contract Tests
 
+# Required gate. The full `tests/` suite was gitignored until 2026-06, so its
+# "green" was never CI-enforced and silently rotted (a ratified no_waiver
+# invariant shipped unbuilt; 36 stale failures accumulated). This gate runs the
+# whole suite on every PR and every push to a stage branch, and asserts the
+# ratified marker pin (14/9/23) as a distinct, legible step.
+
 on:
   pull_request:
     paths:
       - "adapters/**"
       - "ports/**"
+      - "composition/**"
+      - "kernel/**"
       - "tests/**"
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/contract-tests.yml"
+  push:
+    branches:
+      - "main"
+      - "stage-**"
   workflow_dispatch:
 
 jobs:
@@ -22,9 +34,17 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Sync workspace
         run: uv sync --all-packages
-      - name: Run no-waiver inventory
-        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports/test_no_waiver_inventory.py -q
-      - name: Run no-waiver contract tests
-        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports -m no_waiver -q
-      - name: Run port contract tests
-        run: uv run --package praxis-contract-tests pytest tests/src/praxis/contract_tests/ports -q
+
+      # README-parity: the documented quick-start command must stay green.
+      - name: Run full contract suite
+        run: uv run pytest tests/ -q
+
+      # G-CI-2: machine-check the ratified pin as its own step so a count/marker
+      # drift (e.g. an unbuilt ratified no_waiver invariant) fails legibly here.
+      - name: Verify ratified no_waiver marker pin (14/9/23)
+        run: >
+          uv run pytest -q
+          tests/src/praxis/contract_tests/test_stage12_no_waiver_count.py
+          tests/src/praxis/contract_tests/test_stage13_no_waiver_count.py
+          tests/src/praxis/contract_tests/test_stage14_no_waiver_count.py
+          tests/src/praxis/contract_tests/ports/test_ast_gates_stage14.py
