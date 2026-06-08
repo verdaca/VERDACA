@@ -518,8 +518,25 @@ async def compose_auth_quartet() -> tuple[JwtVerifier, OidcPolicy]:
     return await _build_oidc_policy()
 
 
+def initialize_runtime_adapters(gateway: GatewayPort) -> None:
+    """Run post-composition adapter lifecycle (F-14-LETTA-ONINIT-UNWIRED-01).
+
+    ``build_runtime_gateway`` keeps construction server-free by contract, so the
+    real memory adapter's ``on_init()`` (LettaAdapter/Mem0Adapter — resolves or
+    creates the backend system agent, reading VERDACA_LETTA_DEFAULT_MODEL) is
+    NOT run at build time. The runtime ENTRYPOINT must invoke this once after
+    composition, before serving. Guarded so Tier-1 dev/test stubs (no on_init)
+    are a no-op and the credential-less hermetic path stays server-free.
+    """
+    memory = getattr(gateway, "memory", None)
+    on_init = getattr(memory, "on_init", None)
+    if callable(on_init):
+        on_init()
+
+
 __all__ = [
     "ConfigurationError",
     "build_runtime_gateway",
     "compose_auth_quartet",
+    "initialize_runtime_adapters",
 ]

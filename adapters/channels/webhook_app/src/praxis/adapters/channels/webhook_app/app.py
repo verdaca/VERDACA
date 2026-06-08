@@ -86,6 +86,7 @@ from praxis.adapters.channels.teams.webhook import (
 from praxis.composition.runtime_gateway import (
     build_runtime_gateway,
     compose_auth_quartet,
+    initialize_runtime_adapters,
 )
 from praxis.kernel.gateway.policy import policy_health_check
 from praxis.ports.gateway import GatewayPort
@@ -193,6 +194,9 @@ class WebhookApp:
         gateway, policy = build_runtime_gateway(
             jwt_verifier=jwt_verifier, oidc_policy=oidc_policy
         )
+        # Post-composition lifecycle: init the real memory adapter's backend
+        # (Letta system agent). No-op for Tier-1 stubs. F-14-LETTA-ONINIT-UNWIRED-01.
+        initialize_runtime_adapters(gateway)
         # STEP-3 parity with the MCP entrypoint: prod posture fail-closed.
         policy_health_check(policy=policy)
         # Per-channel-conditional secret load (F-14-H8-4 fix): a deployment may
