@@ -1,22 +1,20 @@
 <p align="center">
-  <img src="assets/verdaca-banner-dark-2x.png" alt="Verdaca — multi-agent reasoning engine for strategic advisory" width="100%">
+  <img src="assets/verdaca-banner-dark-2x.png" alt="Verdaca — governed AI decision workflow with contract-tested vendor seams" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://verdaca.com"><img src="https://img.shields.io/badge/status-LIVE-6B1F25?style=flat-square" alt="status: LIVE"></a>
-  <a href="https://verdaca.com"><img src="https://img.shields.io/badge/site-verdaca.com-6B1F25?style=flat-square" alt="site: verdaca.com"></a>
+  <img src="https://img.shields.io/badge/status-prototype-6B1F25?style=flat-square" alt="status: prototype">
   <img src="https://img.shields.io/badge/version-v0.13.0-1F2226?style=flat-square" alt="version: v0.13.0">
   <img src="https://img.shields.io/badge/substrate-v1.0-1F2226?style=flat-square" alt="substrate: v1.0">
   <img src="https://img.shields.io/badge/python-3.12%2B-1F2226?style=flat-square" alt="python: 3.12+">
-  <img src="https://img.shields.io/badge/coverage-90%25%2B-1F2226?style=flat-square" alt="coverage: 90%+">
   <img src="https://img.shields.io/badge/license-proprietary-967853?style=flat-square" alt="license: proprietary">
 </p>
 
-**Multi-agent reasoning engine for strategic advisory.**
+**Governed AI decision workflow — every vendor behind a contract-tested seam.**
 
-Verdaca runs a structured panel of AI agents over your question and returns explicit trade-offs, red-team dissent, named scenarios, and scope limits — in minutes, not weeks.
+Verdaca is an auth-first gateway that runs an AI request end to end against real services: identity (OIDC/JWT, replay protection), per-key budget check, memory retrieval, compaction, model call, cost ledger and session index. Every vendor sits behind a typed port; memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree stub) swaps are proven by shared contract suites. A multi-agent deliberation loop (producer, isolated reviewer, quality gates) is designed and implemented as a tested state machine, but it is not yet wired to live model calls.
 
-> **Codename note:** The internal codename is **Praxis** (Stages 1–6). The Python namespace `src/praxis/` preserves that name as the internal module path. See `docs/rename-praxis-to-verdaca.md`.
+> **Codename note:** The internal codename is **Praxis** (Stages 1–6). The Python namespace `praxis` (under each workspace package's `src/praxis/`) preserves that name as the internal module path.
 
 ## Architecture
 
@@ -52,15 +50,15 @@ kernel/
 shell/                  POV delivery harness (Next.js + FastAPI + Clerk + Stripe)
 ```
 
-The uv workspace has **23 active members** managed under a single `uv.lock` with SHA-pinned dependencies.
+The uv workspace has **24 active members** managed under a single `uv.lock` with SHA-pinned dependencies.
 
 ## Channels
 
 | Channel | Status | Auth |
 |---|---|---|
-| **Claude Desktop** | LIVE | MCP stdio / Streamable HTTP |
-| **Microsoft Teams** | LIVE | HMAC-SHA256 webhook |
-| **Slack** | LIVE | X-Slack-Signature v0 webhook |
+| **Claude Desktop** | Contract-tested | MCP stdio / Streamable HTTP |
+| **Microsoft Teams** | Contract-tested | HMAC-SHA256 webhook |
+| **Slack** | Contract-tested | X-Slack-Signature v0 webhook |
 
 ## MCP integration
 
@@ -78,33 +76,39 @@ It also exposes 5 resources and 1 prompt.
 
 ## Key metrics
 
+### Measured
+
 | Metric | Value |
 |---|---|
-| Quality vs. vanilla single-agent | **+47%** composite improvement |
-| Quality vs. enhanced single-agent | **+21%** composite improvement |
-| Deep session cost (internal) | ~$2.50 |
-| Deep session time | ~12 minutes |
-| Quick session time | ~4 minutes |
-| Tests passed | 411+ (19 skipped, 0 failed) |
+| Tests passed | 420+ (19 skipped, 0 failed) |
 | `no_waiver` markers | 23 |
-| Coverage | 90%+ across modules |
-| uv workspace members | 23 |
+| uv workspace members | 24 |
 | Python | 3.12.12 (pinned) |
 
-*Quality metrics are from internal scoring (A4 Spearman ρ validation pending). Cite these numbers only with the "(internal scoring; A4 Spearman pending)" caveat.*
+### Design-stage estimates
+
+The multi-agent deliberation is not yet wired to live model calls, so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
+
+| Metric | Value | Basis |
+|---|---|---|
+| Quality vs. vanilla single-agent | +47% composite | Self-graded, N=10, emulated in one session |
+| Quality vs. enhanced single-agent | +21% composite | Same run |
+| Deep session cost | ~$2.50 | Estimated from word counts and budget ratios; not metered |
+| Deep session time | ~12 minutes | Estimate; not metered |
+| Quick session time | ~4 minutes | Estimate; not metered |
 
 ## Stack
 
 - **Package manager:** uv (workspace, SHA-pinned `uv.lock`)
-- **Backend:** Python 3.12.12, FastAPI, Pydantic v2, SQLAlchemy
+- **Backend:** Python 3.12.12, FastAPI, Pydantic v2, SQLAlchemy (earlier modules) + raw sqlite3
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS
 - **Auth:** authlib (OIDC discovery, JWKS cache, JWT alg-pin), httpx; HMAC-SHA256 (Teams); X-Slack-Signature v0 (Slack); Clerk (shell)
-- **LLM:** Anthropic Claude (Opus 4.6 / Sonnet 4.6) via LiteLLM — virtual keys with per-key budget, TPM, and RPM caps
+- **LLM:** Model-agnostic via LiteLLM (tested with gpt-4o) — virtual keys with per-key budget, TPM, and RPM caps
 - **MCP gateway:** FastMCP / MCP SDK
 - **Compaction:** LLMLingua (primary) + in-tree stub (CI fallback)
-- **Serialization:** tree-sitter + TONL
+- **Serialization:** TONL adapter (deferred)
 - **Session store:** SQLite FTS5
-- **Billing:** Stripe (per-session: $29 quick / $149 deep) — shell only
+- **Billing:** Stripe client interface only (no SDK wired) — shell only
 - **CI:** GitHub Actions + Renovate Bot (supply-chain gates, pip-audit)
 
 ## Quick start
@@ -133,11 +137,9 @@ npm install
 npm run dev
 ```
 
-## Built with Verdaca
+## How it was designed
 
-The architecture of this product was designed using the product itself. Every major decision — port ratification, adapter selection, auth design, channel onboarding — went through a Verdaca multi-agent session. The deliberation outputs are captured in the `docs/` and per-module `architecture.md` files throughout the repo.
-
-That means the trade-off records, red-team dissents, and scope limits you see in the documentation are not retrospective write-ups. They are the actual session outputs.
+Architecture decisions were made in multi-agent BMAD sessions in Claude Code; their trade-off records, red-team critiques and scope limits live in `docs/`. These were not produced by the Verdaca engine itself.
 
 ## Module documentation
 
