@@ -74,6 +74,27 @@ It also exposes 5 resources and 1 prompt.
 
 **Transports:** stdio (Claude Desktop) and Streamable HTTP (`stateless_http=True`).
 
+## Real deliberation (model-backed)
+
+`IterationController.run_deliberation` (`kernel/mac/src/praxis/kernel/mac/cycle/iteration_controller.py`) drives the existing 9-state machine with model calls instead of a scripted scenario: a producer drafts, a reviewer writes a counterargument from the question and evidence alone and then critiques the draft, and a synthesizer returns a typed outcome (`answer`, `clarify`, `abstain`, `escalate`). A blocking critique backtracks once; a second one fails the run. Every run returns a JSON receipt (evidence, draft, critique, diff, per-call tokens and cost, outcome, state log, SHA-256 of the content).
+
+| Claim | Check |
+|---|---|
+| Roles run in order through the state machine | `kernel/mac/tests/mac/deliberation/` AC1 |
+| Reviewer's first call never contains the draft or producer prompt | AC2 |
+| Receipt is valid JSON with all parts; hash detects edits (a hash, not a signature) | AC3, AC3b |
+| `diff` is the unified diff of draft to final answer | AC4 |
+| Invalid JSON, unknown outcome, unknown or missing citation: run fails closed to `escalate` | AC5, AC5b, AC5c, AC6, AC6b |
+| One backtrack, then terminal failure; budget exhaustion or a provider error yields a partial `escalate` receipt | AC7, AC7b, AC8, AC11 |
+| A model with no price gets `cost_usd: null`, never 0 | AC9 |
+| LiteLLM calls use provider `anthropic`, no `api_base`; cost comes from `PiMonoNativeAdapter.PRICING_TABLE` | `tests/src/praxis/contract_tests/deliberation/` AC12 |
+| MCP tool `verdaca_deliberate` exists only when a deliberator is bound; default server keeps its five tools | AC11 (in-memory FastMCP) |
+| CI runs the six `kernel/` suites; no tracked file holds an API key; `.env` is ignored | AC13, AC14 |
+
+All of these run against a scripted model. Prices are the repo's own table (`claude-haiku-4-5` at $0.80 / $4 per million tokens), not re-checked against Anthropic's current price list.
+
+**Not done:** no run against a real model has been recorded (`docs/receipts/` holds no receipts), and no session in Claude Desktop. To record the first one, put `ANTHROPIC_API_KEY=...` in the gitignored `.env`, then `uv run python scripts/live/deliberate_live.py` (direct) or register `scripts/live/deliberate_mcp_server.py` in Claude Desktop (config snippet in its docstring). The server logs each call to `docs/receipts/mcp-server.log`.
+
 ## Key metrics
 
 ### Measured
@@ -87,7 +108,7 @@ It also exposes 5 resources and 1 prompt.
 
 ### Design-stage estimates
 
-The multi-agent deliberation is not yet wired to live model calls, so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
+The multi-agent deliberation is wired to model calls in code (see Real deliberation) but no real-model run has been recorded, so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
 
 | Metric | Value | Basis |
 |---|---|---|
