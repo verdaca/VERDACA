@@ -1,0 +1,25 @@
+{
+  "question": "Can the +47% quality headline in kernel/mac/pre-sales-report.md be cited as validated evidence that the multi-agent engine outperforms a single agent?",
+  "evidence": [
+    {
+      "id": "E1",
+      "source": "kernel/mac/pre-sales-report.md:16",
+      "text": "Praxis MAC beats vanilla single-agent by **+25.2 composite points (+47% relative)** and enhanced single-agent by **+13.7 composite points (+21% relative)** across 10 strategic questions"
+    },
+    {
+      "id": "E2",
+      "source": "kernel/mac/pre-sales-report.md:96",
+      "text": "Scores assigned by the same agent that generated the outputs. Full-blinding is not achievable under Path B manual orchestration."
+    },
+    {
+      "id": "E3",
+      "source": "kernel/mac/pre-sales-report.md:23",
+      "text": "| Spearman ρ (Andrey A4) | pending | ≥ 0.6 | — | ⏳ pending |"
+    },
+    {
+      "id": "E4",
+      "source": "kernel/mac/pre-sales-report.md:5",
+      "text": "Path B — manual in-session orchestration on Claude Max subscription (no API key, no `LLMJudgeClient.call_live()`)"
+    }
+  ]
+}

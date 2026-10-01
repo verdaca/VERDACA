@@ -1,0 +1,132 @@
+{
+  "schema_version": "verdaca.receipt/1",
+  "receipt_id": "ba3b5bfab1cc4938ac5e7664f7435bd5",
+  "created_at": "2026-10-01T12:50:28.669427Z",
+  "question": "Can the +47% quality headline in kernel/mac/pre-sales-report.md be cited as validated evidence that the multi-agent engine outperforms a single agent?",
+  "evidence": [
+    {
+      "id": "E1",
+      "source": "kernel/mac/pre-sales-report.md:16",
+      "text": "Praxis MAC beats vanilla single-agent by **+25.2 composite points (+47% relative)** and enhanced single-agent by **+13.7 composite points (+21% relative)** across 10 strategic questions"
+    },
+    {
+      "id": "E2",
+      "source": "kernel/mac/pre-sales-report.md:96",
+      "text": "Scores assigned by the same agent that generated the outputs. Full-blinding is not achievable under Path B manual orchestration."
+    },
+    {
+      "id": "E3",
+      "source": "kernel/mac/pre-sales-report.md:23",
+      "text": "| Spearman ρ (Andrey A4) | pending | ≥ 0.6 | — | ⏳ pending |"
+    },
+    {
+      "id": "E4",
+      "source": "kernel/mac/pre-sales-report.md:5",
+      "text": "Path B — manual in-session orchestration on Claude Max subscription (no API key, no `LLMJudgeClient.call_live()`)"
+    }
+  ],
+  "draft": "No, the +47% quality headline **cannot be cited as validated evidence** that the multi-agent engine outperforms a single agent.\n\n**Critical limitations:**\n\n1. **Methodological compromise**: The scoring was performed by the same agent that generated the outputs [E2], meaning there is no independent validation and full-blinding was not achieved [E2].\n\n2. **Incomplete validation**: The statistical validation metric (Spearman ρ) shows a status of \"pending\" [E3], indicating the results have not yet been formally validated.\n\n3. **Constrained testing environment**: The evaluation was conducted under Path B manual orchestration on a Claude Max subscription without API integration [E4], which may not represent standard production conditions.\n\n**What is missing:**\n- Independent third-party scoring or blind evaluation\n- Completed statistical significance testing\n- Validation under standard API conditions\n- Peer review or external verification\n\nThe +47% figure represents a preliminary finding, not validated evidence suitable for claims about performance superiority.",
+  "critique": {
+    "counterargument": "**Case against citing +47% as validated evidence: it should not be cited that way.**\n\n1. **The scorer was not independent (E2).** The same agent that generated the outputs also scored them, and the report admits full blinding \"is not achievable.\" The agent knew which condition it was scoring, so self-preference and expectation bias can inflate the gap. That is a direct threat to the headline, not a minor caveat. A multi-agent output may simply be longer, more structured, or more in the style the scorer favors.\n\n2. **The scoring was never validated against an external check (E3).** The Spearman ρ against Andrey's (A4) ratings is \"pending,\" with a target of ≥ 0.6. Until that comes back, nobody knows whether the composite score tracks human judgment. \"Validated\" implies this gate has passed, and it has not. The report's own status table says so.\n\n3. **The setup is manual and hard to reproduce (E4).** Path B was in-session manual orchestration. It did not use `LLMJudgeClient.call_live()`, so there was no automated, logged judge pipeline. The operator could have influenced prompts, retries, or what counted as \"the output,\" and nobody else can rerun it. That makes it a pilot or demonstration, not a replicable benchmark.\n\n4. **The headline picks the most flattering comparison (E1).** +47% is measured against vanilla single-agent. The fairer comparison is the enhanced single-agent, at +21% (+13.7 points). Even that figure carries the bias problems above, and part of the +47% may come from prompt enhancement rather than multi-agent architecture. A relative percentage on a low baseline also inflates the headline.\n\n5. **The statistical support is thin (E1).** Only 10 strategic questions were used. The evidence shows no variance, confidence intervals, significance tests, or number of runs per question. It also doesn't say how the questions were chosen or whether they were tuned to the system.\n\n6. **The report contradicts itself.** The same document reports the +47% in its summary and discloses the bias and pending validation elsewhere. Quoting only line 16 strips out the qualifiers the authors themselves attached.\n\n**What can be said:** the report shows a *preliminary, self-scored, unblinded* gain of +47% over vanilla and +",
+    "blocking": false,
+    "issues": [
+      "The conclusion is right and supported by E2/E3, so it is safe to publish. The draft is thinner than it should be, though.",
+      "It misses the comparison issue in E1: +47% is against vanilla single-agent, while the fairer enhanced-single-agent figure is +21% (+13.7 points). Part of the gap may come from prompt enhancement, not multi-agent architecture.",
+      "It doesn't mention the small sample (10 questions) or the absence of variance, confidence intervals, significance tests, or question-selection details. Its 'completed statistical significance testing' bullet implies a test was planned, which E3 doesn't show; E3 only shows the pending Spearman ρ correlation with Andrey's ratings, not a significance test.",
+      "It mischaracterizes E3. Spearman ρ (≥0.6 target) is a check of agreement between the score and a human rater (A4), not a general 'statistical validation metric'. The point that matters is that the scoring has not been checked against external human judgment.",
+      "On E4, 'may not represent standard production conditions' is a weak reading. The real issue is reproducibility: manual in-session orchestration with no logged automated judge pipeline (`LLMJudgeClient.call_live()` unused), so nobody else can rerun it and operator influence can't be ruled out.",
+      "It omits the bias mechanism: the scorer knew which condition it was scoring, so self-preference and expectation bias or a style/length preference could inflate the gap.",
+      "'Validation under standard API conditions' and 'peer review' are speculative asks not grounded in the evidence.",
+      "It doesn't state what can be said: a preliminary, self-scored, unblinded gain, cited with its qualifiers."
+    ],
+    "summary": "The 'no, not validated' verdict is correct and well supported, but the draft omits the vanilla-versus-enhanced baseline issue and the small sample, and it slightly mischaracterizes the pending Spearman check and the Path B reproducibility problem."
+  },
+  "superseded_rounds": [],
+  "final": {
+    "outcome": "answer",
+    "answer": "No, the +47% quality headline cannot be cited as validated evidence that the multi-agent engine outperforms a single agent [E1][E2][E3][E4]. The scoring was performed by the same agent that generated the outputs with no independent blinding [E2], creating risk of self-preference and expectation bias. The external validation check—Spearman ρ correlation against human rater A4—remains pending [E3], so the composite score has not been verified against independent human judgment. The evaluation used manual in-session orchestration without the automated `LLMJudgeClient.call_live()` pipeline [E4], making it unreproducible and vulnerable to operator influence. Additionally, the +47% figure compares against vanilla single-agent; the fairer comparison to enhanced single-agent shows only +21% (+13.7 points) [E1], and the sample size of 10 strategic questions lacks variance, confidence intervals, or significance testing. The headline represents a preliminary, self-scored, unblinded finding, not validated evidence suitable for performance superiority claims.",
+    "cited_evidence_ids": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+    ],
+    "rationale": "The draft's core conclusion is sound and supported by the evidence, but it should be strengthened by explicitly addressing the vanilla-versus-enhanced baseline discrepancy, the small sample size and absence of statistical rigor, the specific reproducibility problem (missing automated judge pipeline), and the bias mechanism (scorer knowledge of condition). The pending Spearman ρ is correctly identified as a gap, though it should be characterized as a check against external human judgment rather than a generic 'statistical validation metric.'"
+  },
+  "diff": "--- draft\n+++ final\n@@ -1,17 +1 @@\n-No, the +47% quality headline **cannot be cited as validated evidence** that the multi-agent engine outperforms a single agent.\n-\n-**Critical limitations:**\n-\n-1. **Methodological compromise**: The scoring was performed by the same agent that generated the outputs [E2], meaning there is no independent validation and full-blinding was not achieved [E2].\n-\n-2. **Incomplete validation**: The statistical validation metric (Spearman ρ) shows a status of \"pending\" [E3], indicating the results have not yet been formally validated.\n-\n-3. **Constrained testing environment**: The evaluation was conducted under Path B manual orchestration on a Claude Max subscription without API integration [E4], which may not represent standard production conditions.\n-\n-**What is missing:**\n-- Independent third-party scoring or blind evaluation\n-- Completed statistical significance testing\n-- Validation under standard API conditions\n-- Peer review or external verification\n-\n-The +47% figure represents a preliminary finding, not validated evidence suitable for claims about performance superiority.+No, the +47% quality headline cannot be cited as validated evidence that the multi-agent engine outperforms a single agent [E1][E2][E3][E4]. The scoring was performed by the same agent that generated the outputs with no independent blinding [E2], creating risk of self-preference and expectation bias. The external validation check—Spearman ρ correlation against human rater A4—remains pending [E3], so the composite score has not been verified against independent human judgment. The evaluation used manual in-session orchestration without the automated `LLMJudgeClient.call_live()` pipeline [E4], making it unreproducible and vulnerable to operator influence. Additionally, the +47% figure compares against vanilla single-agent; the fairer comparison to enhanced single-agent shows only +21% (+13.7 points) [E1], and the sample size of 10 strategic questions lacks variance, confidence intervals, or significance testing. The headline represents a preliminary, self-scored, unblinded finding, not validated evidence suitable for performance superiority claims.",
+  "outcome": "answer",
+  "terminal_reason": null,
+  "terminal_detail": null,
+  "backtrack_count": 0,
+  "state_log": [
+    "interpret",
+    "decompose",
+    "cycle_1_produce",
+    "cycle_2_review",
+    "cycle_3_verify",
+    "publish",
+    "complete"
+  ],
+  "calls": [
+    {
+      "seq": 1,
+      "role": "producer",
+      "cycle": "cycle_1_produce",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "response_id": "chatcmpl-5f9eccf2-d89d-4298-938c-9686f93c91c7",
+      "input_tokens": 339,
+      "output_tokens": 223,
+      "cost_usd": "0.001454",
+      "cost_status": "priced",
+      "latency_seconds": 2.9798,
+      "prompt_sha256": "f28973c8c4c4a8fee1db677ac4443ca3ba7c35dd6fd25cfe495821b51242c945"
+    },
+    {
+      "seq": 2,
+      "role": "reviewer_counter",
+      "cycle": "cycle_2_review",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "response_id": "chatcmpl-e4e3abf3-9127-42dd-9e5f-fcef6e34fd7d",
+      "input_tokens": 452,
+      "output_tokens": 1024,
+      "cost_usd": "0.011144",
+      "cost_status": "priced",
+      "latency_seconds": 9.2058,
+      "prompt_sha256": "3f40f75e99786acce9b02a01c10a7071d556a4a2ce6ef2b041db7de583a4670a"
+    },
+    {
+      "seq": 3,
+      "role": "reviewer_critique",
+      "cycle": "cycle_2_review",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "response_id": "chatcmpl-a8ed98c9-24fc-42ed-b966-cfee9fdffeae",
+      "input_tokens": 1598,
+      "output_tokens": 664,
+      "cost_usd": "0.009836",
+      "cost_status": "priced",
+      "latency_seconds": 5.6171,
+      "prompt_sha256": "df266b1bd8d47a84e0e7c81439111d50d1ba0aeeb4bc4cfa83ae94a297c6818d"
+    },
+    {
+      "seq": 4,
+      "role": "synthesizer",
+      "cycle": "cycle_3_verify",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "response_id": "chatcmpl-dbbeeb3a-a48e-48cd-9fc8-6fdbbddd2408",
+      "input_tokens": 1660,
+      "output_tokens": 411,
+      "cost_usd": "0.003715",
+      "cost_status": "priced",
+      "latency_seconds": 4.5226,
+      "prompt_sha256": "d146e123c994fcab44f833f1bfbf8121489ec2dfb17d856d7d65b130bf64a39e"
+    }
+  ],
+  "total_input_tokens": 4049,
+  "total_output_tokens": 2322,
+  "total_cost_usd": "0.026149",
+  "content_sha256": "4507b1e0733ffd59e7942106ee061977154eb56cbadc88f2a322f16aa455fb26"
+}

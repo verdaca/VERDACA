@@ -17,7 +17,7 @@ synchronous.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from decimal import Decimal
 from types import MappingProxyType
 from typing import Any, Mapping
@@ -35,6 +35,16 @@ from praxis.ports.gateway_dto import (
     ChannelKind,
     SessionHandle,
     StartAnalysisRequest,
+)
+
+# (question, evidence[{id, source, text}]) -> {"receipt": {...}, "receipt_path": str}.
+# Injected by the composition root; this adapter never imports the MAC kernel.
+Deliberator = Callable[[str, list[dict[str, str]]], Awaitable[dict[str, Any]]]
+
+DELIBERATE_TOOL_DESCRIPTION = (
+    "Run one producer, isolated-reviewer and synthesizer deliberation over the supplied "
+    "evidence and return the JSON receipt (evidence, draft, critique, diff, per-call cost, "
+    "typed outcome)."
 )
 
 TOOL_DESCRIPTIONS: Mapping[str, str] = MappingProxyType(
@@ -154,8 +164,26 @@ def _gateway_required(gateway: GatewayPort | None) -> GatewayPort:
     return gateway
 
 
-def register_tools(server: FastMCP, *, gateway: GatewayPort | None = None) -> None:
-    """Register the five Verdaca tools on a FastMCP server."""
+def register_tools(
+    server: FastMCP,
+    *,
+    gateway: GatewayPort | None = None,
+    deliberator: Deliberator | None = None,
+) -> None:
+    """Register the five Verdaca tools, plus ``verdaca_deliberate`` when a deliberator is bound."""
+
+    if deliberator is not None:
+
+        @server.tool(
+            name="verdaca_deliberate",
+            title="Deliberate With Receipt",
+            description=DELIBERATE_TOOL_DESCRIPTION,
+            structured_output=True,
+        )
+        async def verdaca_deliberate(
+            question: str, evidence: list[dict[str, str]]
+        ) -> dict[str, Any]:
+            return await deliberator(question, evidence)
 
     @server.tool(
         name="verdaca_start_analysis",
