@@ -93,7 +93,14 @@ It also exposes 5 resources and 1 prompt.
 
 All of these run against a scripted model. Prices come from the repo's own table (`claude-haiku-4-5` at $1 / $5 and `claude-sonnet-5-5` at $2 / $10 per million tokens, checked against Anthropic's pricing page on 2026-10-01). Other rows in that table are not re-verified.
 
-**Recorded run (2026-10-01):** `docs/receipts/receipt-ba3b5bfab1cc4938ac5e7664f7435bd5.json`, from `scripts/live/deliberate_live.py` on `scripts/live/deliberation_example.json`. Producer and synthesizer on `claude-haiku-4-5`, reviewer on `claude-sonnet-5-5`. 4 calls, 4,049 input + 2,322 output tokens, $0.026149, outcome `answer` ("No, the +47% quality headline cannot be cited as validated evidence…", citing E1-E4), hash verifies. The reviewer's counterargument stopped at the 1,024-token cap, so it is likely truncated; the receipt does not yet record `finish_reason`.
+**Recorded runs (2026-10-01),** both from `scripts/live/deliberate_live.py` on `scripts/live/deliberation_example.json`, producer and synthesizer on `claude-haiku-4-5`, reviewer on `claude-sonnet-5-5`, outcome `answer` ("No, the +47% quality headline cannot be cited as validated evidence…") citing E1-E4:
+
+| Receipt | Schema | max_tokens | Calls | Tokens in / out | Cost | Note |
+|---|---|---|---|---|---|---|
+| `receipt-ba3b5bfab1cc4938ac5e7664f7435bd5.json` | `/1` | 1,024 | 4 | 4,049 / 2,322 | $0.026149 | Reviewer counterargument stopped at exactly 1,024 tokens: truncated. Schema `/1` does not record stop reasons. Kept as the record of that run. |
+| `receipt-23e61c4c153f497eb7aabf43c6b124c0.json` | `/2` | 4,096 | 4 | 4,491 / 2,740 | $0.030744 | Every call `stop_reason: "stop"`, `truncated_calls: []`; counterargument 1,436 tokens. |
+
+Each per-call cost matches tokens × list price, and both files verify with `verify_receipt_json` (checked for every committed receipt by AC18c).
 
 **Not done:** no session in Claude Desktop yet. Register `scripts/live/deliberate_mcp_server.py` (config snippet in its docstring); the server logs each call to `docs/receipts/mcp-server.log`. Set `VERDACA_REVIEWER_MODEL=claude-sonnet-5-5` to match the recorded run.
 
