@@ -13,6 +13,10 @@ dependencies = [
     "praxis-kernel-auth",
     "praxis-kernel-gateway",
     "praxis-kernel-session-index",
+    "praxis-mac",
+    "praxis-adapter-litellm",
+    "praxis-adapter-pi_mono_native",
+    "python-dotenv>=1.0",
 ]
 
 [tool.uv.sources]
@@ -21,6 +25,9 @@ praxis-adapter-in_tree_compaction_stub = { workspace = true }
 praxis-kernel-auth = { workspace = true }
 praxis-kernel-gateway = { workspace = true }
 praxis-kernel-session-index = { workspace = true }
+praxis-mac = { workspace = true }
+praxis-adapter-litellm = { workspace = true }
+praxis-adapter-pi_mono_native = { workspace = true }
 
 [tool.setuptools.packages.find]
 where = ["src"]

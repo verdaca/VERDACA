@@ -6,7 +6,7 @@ from mcp.server.fastmcp import FastMCP
 
 from praxis.adapters.mcp_server.prompts import register_prompts
 from praxis.adapters.mcp_server.resources import register_resources
-from praxis.adapters.mcp_server.tools import register_tools
+from praxis.adapters.mcp_server.tools import Deliberator, register_tools
 from praxis.ports.gateway import GatewayPort
 
 SERVER_NAME = "verdaca-mcp"
@@ -24,6 +24,7 @@ def create_verdaca_mcp_server(
     *,
     gateway: GatewayPort | None = None,
     stateless_http: bool = True,
+    deliberator: Deliberator | None = None,
 ) -> FastMCP:
     """Create a FastMCP server and register the E2-owned tool surface."""
 
@@ -32,7 +33,7 @@ def create_verdaca_mcp_server(
         instructions=SERVER_INSTRUCTIONS,
         stateless_http=stateless_http,
     )
-    register_tools(server, gateway=gateway)
+    register_tools(server, gateway=gateway, deliberator=deliberator)
     register_resources(server, gateway=gateway)
     register_prompts(server)
     return server

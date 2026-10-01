@@ -42,6 +42,13 @@ docs/ai-news/
 !scripts/
 scripts/*
 !scripts/onboarding/
+# Deliberation live-run entrypoints (+ sample input). Everything else under
+# scripts/live/ (smokes, logs, relays) stays local.
+!scripts/live/
+scripts/live/*
+!scripts/live/deliberate_live.py
+!scripts/live/deliberate_mcp_server.py
+!scripts/live/deliberation_example.json
 
 # ============================================================
 # Workspace files — NEVER tracked
