@@ -49,6 +49,7 @@ class ScriptedModel:
     script: dict[str, list[str]]
     tokens: tuple[int, int] = (100, 50)
     model: str = "fake-model"
+    stops: dict[str, list[str]] = field(default_factory=dict)  # role -> stop reasons; default "stop"
     calls: list[dict] = field(default_factory=list)
 
     async def __call__(self, *, role: str, system: str, user: str) -> ModelReply:
@@ -61,6 +62,7 @@ class ScriptedModel:
             model=self.model,
             provider="fake",
             response_id=f"resp-{len(self.calls)}",
+            stop_reason=self.stops[role].pop(0) if self.stops.get(role) else "stop",
         )
 
     def roles_called(self) -> list[str]:

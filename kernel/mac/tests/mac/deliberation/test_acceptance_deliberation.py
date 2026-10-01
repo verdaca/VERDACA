@@ -16,7 +16,12 @@ import pytest
 
 from praxis.kernel.mac.budget import ResourceBudget
 from praxis.kernel.mac.cycle import IterationController, State
-from praxis.kernel.mac.deliberation import Outcome, Receipt, verify_receipt_hash
+from praxis.kernel.mac.deliberation import (
+    Outcome,
+    Receipt,
+    verify_receipt_hash,
+    verify_receipt_json,
+)
 
 from .conftest import (
     QUESTION,
@@ -232,3 +237,47 @@ async def test_ac11_provider_error_fails_closed_with_partial_receipt(request_, m
     assert receipt.terminal_detail == "ConnectionError: provider down"
     assert [c.role for c in receipt.calls] == ["producer"]
     assert receipt.state_log[-1] == "failed" and verify_receipt_hash(receipt)
+
+
+
+# AC12 ------------------------------------------------------------------
+async def test_ac12_every_call_records_its_stop_reason(request_, make_roles):
+    receipt = await IterationController().run_deliberation(
+        request_, make_roles(ScriptedModel(happy_script()))
+    )
+    assert [c.stop_reason for c in receipt.calls] == ["stop"] * 4
+    assert receipt.truncated_calls == ()
+    assert receipt.schema_version == "verdaca.receipt/2"
+
+
+async def test_ac12b_a_call_cut_off_by_max_tokens_is_flagged_not_hidden(request_, make_roles):
+    model = ScriptedModel(happy_script(), stops={"reviewer_counter": ["length"]})
+    receipt = await IterationController().run_deliberation(request_, make_roles(model))
+    assert receipt.calls[1].role == "reviewer_counter"
+    assert receipt.calls[1].stop_reason == "length"
+    assert receipt.truncated_calls == (2,)
+    doc = json.loads(receipt.model_dump_json())
+    assert doc["truncated_calls"] == [2]
+    assert verify_receipt_hash(receipt)
+
+
+async def test_ac12c_unknown_stop_reason_is_recorded_as_null(request_, make_roles):
+    model = ScriptedModel(happy_script())
+
+    async def no_reason(*, role, system, user):
+        reply = await model(role=role, system=system, user=user)
+        return reply.__class__(**{**reply.__dict__, "stop_reason": None})
+
+    receipt = await IterationController().run_deliberation(request_, make_roles(no_reason))
+    assert all(c.stop_reason is None for c in receipt.calls)
+    assert receipt.truncated_calls == ()
+
+
+# AC13 ------------------------------------------------------------------
+async def test_ac13_stored_json_verifies_as_written_and_detects_edits(request_, make_roles):
+    receipt = await IterationController().run_deliberation(
+        request_, make_roles(ScriptedModel(happy_script()))
+    )
+    text = receipt.model_dump_json(indent=2)
+    assert verify_receipt_json(text)
+    assert not verify_receipt_json(text.replace("DRAFT:", "EDITED:", 1))

@@ -11,6 +11,7 @@ from praxis.kernel.mac.deliberation.receipt import (
     Round,
     compute_receipt_hash,
     verify_receipt_hash,
+    verify_receipt_json,
 )
 from praxis.kernel.mac.deliberation.roles import (
     CostFn,
@@ -34,4 +35,5 @@ __all__ = (
     "Round",
     "compute_receipt_hash",
     "verify_receipt_hash",
+    "verify_receipt_json",
 )

@@ -29,7 +29,7 @@ from praxis.composition.live_deliberation import (
     load_anthropic_key,
     make_price_fn,
 )
-from praxis.kernel.mac.deliberation import Receipt, verify_receipt_hash
+from praxis.kernel.mac.deliberation import Receipt, verify_receipt_hash, verify_receipt_json
 
 REPO = Path(__file__).resolve().parents[5]
 
@@ -39,11 +39,13 @@ EVIDENCE = [
 ]
 
 
-def _completion(content: str, prompt: int = 1000, completion: int = 500) -> MagicMock:
+def _completion(
+    content: str, prompt: int = 1000, completion: int = 500, finish: str = "stop"
+) -> MagicMock:
     usage = MagicMock()
     usage.model_dump.return_value = {"prompt_tokens": prompt, "completion_tokens": completion}
     choice = MagicMock()
-    choice.finish_reason = "stop"
+    choice.finish_reason = finish
     choice.message.content = content
     resp = MagicMock()
     resp.id = "resp-x"
@@ -230,6 +232,9 @@ def test_ac16_run_models_are_priced_at_verified_list_prices_with_a_source():
     assert mod.PRICING_TABLE[("anthropic", "claude-sonnet-5-5")] == {
         "input": Decimal("2"), "output": Decimal("10")
     }
+    assert mod.PRICING_TABLE[("anthropic", "claude-opus-4-7")] == {
+        "input": Decimal("5"), "output": Decimal("25")
+    }
     src = Path(mod.__file__).read_text()
     assert "platform.claude.com/docs/en/about-claude/pricing" in src and "2026-10-01" in src
 
@@ -268,3 +273,59 @@ def test_ac17b_builder_sends_no_temperature_to_a_sonnet_5_5_reviewer(tmp_path):
     ]
     assert ["temperature" in c.kwargs for c in comp.call_args_list] == [True, False, False, True]
     assert out["receipt"]["outcome"] == "answer"
+
+
+
+# AC18 -- output headroom and stop reasons -----------------------------------
+def test_ac18_every_role_gets_4096_output_tokens_by_default(tmp_path):
+    from praxis.composition.live_deliberation import build_live_deliberator
+
+    env = tmp_path / ".env"
+    env.write_text("ANTHROPIC_API_KEY=dummy\n")
+    deliberate = build_live_deliberator(
+        env_path=env, receipts_dir=tmp_path / "r", reviewer_model="claude-sonnet-5-5"
+    )
+    with patch("praxis.adapters.litellm.adapter.litellm.completion") as comp:
+        comp.side_effect = _script()
+        asyncio.run(deliberate("Q?", EVIDENCE))
+    assert [c.kwargs["max_tokens"] for c in comp.call_args_list] == [4096] * 4
+
+
+def test_ac18b_provider_length_stop_reaches_the_receipt_as_a_flag(tmp_path):
+    adapter = LiteLLMAdapter(api_keys={"anthropic": "k"})
+    caller = LiteLLMModelCaller(adapter=adapter, default_model="claude-haiku-4-5")
+    deliberator = build_deliberator(caller=caller, price=None, receipts_dir=tmp_path)
+    replies = iter(_script_contents())
+    finishes = iter(["stop", "length", "stop", "stop"])
+
+    def fake(**kw):
+        return _completion(next(replies), finish=next(finishes))
+
+    with patch("praxis.adapters.litellm.adapter.litellm.completion", side_effect=fake):
+        out = asyncio.run(deliberator("Q?", EVIDENCE))
+    r = out["receipt"]
+    assert [c["stop_reason"] for c in r["calls"]] == ["stop", "length", "stop", "stop"]
+    assert r["truncated_calls"] == [2]
+
+
+def test_ac18c_every_committed_receipt_verifies_as_written():
+    paths = sorted((REPO / "docs/receipts").glob("receipt-*.json"))
+    assert paths, "no committed receipts"
+    for p in paths:
+        assert verify_receipt_json(p.read_text(encoding="utf-8")), p.name
+
+
+def _script_contents() -> list[str]:
+    return [
+        "DRAFT: fine [E1]",
+        "COUNTER: check Annex 2",
+        json.dumps({"blocking": False, "issues": ["annex"], "summary": "ok"}),
+        json.dumps(
+            {
+                "outcome": "answer",
+                "answer": "Yes, conditionally [E1].",
+                "cited_evidence_ids": ["E1"],
+                "rationale": "SOC 2 present.",
+            }
+        ),
+    ]

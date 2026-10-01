@@ -64,7 +64,7 @@ class LiteLLMModelCaller:
         default_model: str,
         role_models: Mapping[str, str] | None = None,
         provider: str = DEFAULT_PROVIDER,
-        max_tokens: int = 1024,
+        max_tokens: int = 4096,
         temperature: float = 0.0,
     ) -> None:
         self._adapter = adapter
@@ -99,6 +99,7 @@ class LiteLLMModelCaller:
             model=model,
             provider=self._provider,
             response_id=response.raw_response_id,
+            stop_reason=response.finish_reason,
         )
 
 

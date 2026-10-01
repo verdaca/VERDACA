@@ -590,6 +590,7 @@ class IterationController:
                     prompt_sha256=hashlib.sha256(
                         f"{system}\n---\n{user}".encode()
                     ).hexdigest(),
+                    stop_reason=reply.stop_reason,
                 )
             )
             self._tokens_consumed += reply.input_tokens + reply.output_tokens
@@ -736,6 +737,7 @@ class IterationController:
             backtrack_count=self._backtrack_count,
             state_log=[s.value for s in self._transition_log],
             calls=tuple(calls),
+            truncated_calls=tuple(c.seq for c in calls if c.stop_reason == "length"),
             total_input_tokens=sum(c.input_tokens for c in calls),
             total_output_tokens=sum(c.output_tokens for c in calls),
             total_cost_usd=total_cost,

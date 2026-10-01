@@ -27,6 +27,8 @@ class ModelReply:
     model: str
     provider: str
     response_id: str
+    stop_reason: str | None = None
+    """Why generation stopped ("stop", "length", ...); None if the caller doesn't know."""
 
 
 class ModelCaller(Protocol):
