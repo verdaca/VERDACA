@@ -97,8 +97,9 @@ class Receipt(_Frozen):
     backtrack_count: int
     state_log: list[str]
     calls: tuple[CallRecord, ...]
-    truncated_calls: tuple[int, ...] = ()
-    """``seq`` of every call that stopped on its max_tokens limit."""
+    truncated_calls: tuple[int, ...] | None = None
+    """``seq`` of every call that stopped on its max_tokens limit. ``None`` means not
+    recorded (schema ``/1``), which is different from ``()`` (none truncated)."""
     total_input_tokens: int
     total_output_tokens: int
     total_cost_usd: Decimal | None

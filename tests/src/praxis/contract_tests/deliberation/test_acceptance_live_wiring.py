@@ -329,3 +329,13 @@ def _script_contents() -> list[str]:
             }
         ),
     ]
+
+
+
+def test_ac18d_schema_1_receipt_reads_as_not_recorded_rather_than_not_truncated():
+    first = REPO / "docs/receipts/receipt-ba3b5bfab1cc4938ac5e7664f7435bd5.json"
+    r = Receipt.model_validate_json(first.read_text(encoding="utf-8"))
+    assert r.schema_version == "verdaca.receipt/1"
+    assert r.truncated_calls is None  # unknown, not "none truncated"
+    assert all(c.stop_reason is None for c in r.calls)
+    assert r.calls[1].output_tokens == 1024  # the cap the first run hit
