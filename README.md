@@ -56,7 +56,7 @@ The uv workspace has **24 active members** managed under a single `uv.lock` with
 
 | Channel | Status | Auth |
 |---|---|---|
-| **Claude Desktop** | Contract-tested | MCP stdio / Streamable HTTP |
+| **Claude Desktop** | Contract-tested; `verdaca_deliberate` run once from Claude Desktop over stdio (`docs/receipts/mcp-server.log`) | MCP stdio / Streamable HTTP |
 | **Microsoft Teams** | Contract-tested | HMAC-SHA256 webhook |
 | **Slack** | Contract-tested | X-Slack-Signature v0 webhook |
 
@@ -70,7 +70,7 @@ The `adapters/mcp_server/` FastMCP adapter exposes five tools:
 - `verdaca_list_sessions`
 - `verdaca_get_artifact`
 
-It also exposes 5 resources and 1 prompt.
+It also exposes 5 resources and 1 prompt. A sixth tool, `verdaca_deliberate`, is registered when a deliberator is bound (`scripts/live/deliberate_mcp_server.py`).
 
 **Transports:** stdio (Claude Desktop) and Streamable HTTP (`stateless_http=True`).
 
@@ -93,16 +93,22 @@ It also exposes 5 resources and 1 prompt.
 
 All of these run against a scripted model. Prices come from the repo's own table (`claude-haiku-4-5` at $1 / $5 and `claude-sonnet-5-5` at $2 / $10 per million tokens, checked against Anthropic's pricing page on 2026-10-01). Other rows in that table are not re-verified.
 
-**Recorded runs (2026-10-01),** both from `scripts/live/deliberate_live.py` on `scripts/live/deliberation_example.json`, producer and synthesizer on `claude-haiku-4-5`, reviewer on `claude-sonnet-5-5`, outcome `answer` ("No, the +47% quality headline cannot be cited as validated evidence…") citing E1-E4:
+**Recorded runs (2026-10-01).** The first two came from `scripts/live/deliberate_live.py` on `scripts/live/deliberation_example.json`. The third came from Claude Desktop calling `verdaca_deliberate` with the same question and evidence pasted in. In all three, producer and synthesizer on `claude-haiku-4-5`, reviewer on `claude-sonnet-5-5`, outcome `answer` ("No, the +47% quality headline cannot be cited as validated evidence…") citing E1-E4:
 
 | Receipt | Schema | max_tokens | Calls | Tokens in / out | Cost | Note |
 |---|---|---|---|---|---|---|
 | `receipt-ba3b5bfab1cc4938ac5e7664f7435bd5.json` | `/1` | 1,024 | 4 | 4,049 / 2,322 | $0.026149 | Reviewer counterargument stopped at exactly 1,024 tokens: truncated. Schema `/1` does not record stop reasons. Kept as the record of that run. |
 | `receipt-23e61c4c153f497eb7aabf43c6b124c0.json` | `/2` | 4,096 | 4 | 4,491 / 2,740 | $0.030744 | Every call `stop_reason: "stop"`, `truncated_calls: []`; counterargument 1,436 tokens. |
+| `receipt-ab32840af1c34679810a1c2b73144d68.json` (Claude Desktop) | `/2` | 4,096 | 4 | 4,686 / 2,789 | $0.031389 | Every call `stop`, `truncated_calls: []`. The tool call and the four model calls are in `docs/receipts/mcp-server.log`. |
 
-Each per-call cost matches tokens × list price, and both files verify with `verify_receipt_json` (checked for every committed receipt by AC18c).
+Each per-call cost matches tokens × list price, and every file verifies with `verify_receipt_json` (checked for every committed receipt by AC18c).
 
-**Not done:** no session in Claude Desktop yet. Register `scripts/live/deliberate_mcp_server.py` (config snippet in its docstring); the server logs each call to `docs/receipts/mcp-server.log`. Set `VERDACA_REVIEWER_MODEL=claude-sonnet-5-5` to match the recorded run.
+**Limitations seen in these runs:**
+
+- **Pasted input is not byte-identical.** The Desktop question and evidence E1, E2 and E4 contain line breaks from pasting. They match `deliberation_example.json` only after whitespace is normalised. Their prompt hashes (`prompt_sha256`) therefore differ from the script runs, and the Desktop run cannot be matched to the example input by hash. (`content_sha256` differs between any two receipts anyway, because each has its own id and timestamp.)
+- **The synthesizer can be more certain than the evidence.** In the Desktop receipt, the reviewer wrote that no confidence intervals were "shown" in the excerpts and that other parts of the report "may add mitigations". The final answer states flatly that "the evidence shows n=10 questions with no confidence intervals". The critique says the bias "likely favors the reported direction"; the final answer states the bias as "favoring the multi-agent arm". Next step: the synthesizer must carry the reviewer's hedges forward, or flag each one it removes.
+- **The reviewer partly grades against itself.** In cycle 2 the same reviewer role writes the counterargument and then critiques the draft against that counterargument, a mild self-evaluation loop. Next step: give the counterargument and the critique to separate calls that don't share a role, so the critic isn't checking its own argument.
+- **N=3 runs of one question.** These runs make no quality, latency or typical-cost claim. The receipt is hashed, not signed.
 
 ## Key metrics
 
