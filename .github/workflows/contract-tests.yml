@@ -39,6 +39,18 @@ jobs:
       - name: Run full contract suite
         run: uv run pytest tests/ -q
 
+      # Each kernel/ module carries its own pytest config (pythonpath, markers,
+      # asyncio mode), so each suite runs from its own directory. --no-sync reuses
+      # the env from the sync step above. The shell loop fails on the first red suite.
+      - name: Run kernel suites
+        run: |
+          set -e
+          for suite in kernel/mac kernel/compression kernel/memory kernel/runtime kernel/studio kernel/pi-mono/src; do
+            echo "::group::$suite"
+            (cd "$suite" && uv run --no-sync python -m pytest -q)
+            echo "::endgroup::"
+          done
+
       # G-CI-2: machine-check the ratified pin as its own step so a count/marker
       # drift (e.g. an unbuilt ratified no_waiver invariant) fails legibly here.
       - name: Verify ratified no_waiver marker pin (14/9/23)
