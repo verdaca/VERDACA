@@ -229,5 +229,6 @@ async def test_ac11_provider_error_fails_closed_with_partial_receipt(request_, m
     receipt = await IterationController().run_deliberation(request_, make_roles(boom))
     assert receipt.outcome is Outcome.ESCALATE
     assert receipt.terminal_reason == "model_call_failed"
+    assert receipt.terminal_detail == "ConnectionError: provider down"
     assert [c.role for c in receipt.calls] == ["producer"]
     assert receipt.state_log[-1] == "failed" and verify_receipt_hash(receipt)

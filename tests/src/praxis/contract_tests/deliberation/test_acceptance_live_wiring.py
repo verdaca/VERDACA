@@ -232,3 +232,39 @@ def test_ac16_run_models_are_priced_at_verified_list_prices_with_a_source():
     }
     src = Path(mod.__file__).read_text()
     assert "platform.claude.com/docs/en/about-claude/pricing" in src and "2026-10-01" in src
+
+
+# AC17 -- models that reject `temperature` ------------------------------------
+def test_ac17_temperature_is_omitted_only_for_configured_models():
+    adapter = LiteLLMAdapter(
+        api_keys={"anthropic": "k"}, omit_temperature_models=frozenset({"claude-sonnet-5-5"})
+    )
+    caller = LiteLLMModelCaller(adapter=adapter, default_model="claude-haiku-4-5",
+                                role_models={"reviewer_counter": "claude-sonnet-5-5"})
+    with patch("praxis.adapters.litellm.adapter.litellm.completion") as comp:
+        comp.return_value = _completion("x")
+        asyncio.run(caller(role="producer", system="s", user="u"))
+        asyncio.run(caller(role="reviewer_counter", system="s", user="u"))
+    haiku_kw, sonnet_kw = (c.kwargs for c in comp.call_args_list)
+    assert haiku_kw["temperature"] == 0.0
+    assert "temperature" not in sonnet_kw
+
+
+def test_ac17b_builder_sends_no_temperature_to_a_sonnet_5_5_reviewer(tmp_path):
+    from praxis.composition.live_deliberation import build_live_deliberator
+
+    env = tmp_path / ".env"
+    env.write_text("ANTHROPIC_API_KEY=dummy\n")
+    deliberate = build_live_deliberator(
+        env_path=env, receipts_dir=tmp_path / "r", reviewer_model="claude-sonnet-5-5"
+    )
+    with patch("praxis.adapters.litellm.adapter.litellm.completion") as comp:
+        comp.side_effect = _script()
+        out = asyncio.run(deliberate("Q?", EVIDENCE))
+    models = [c.kwargs["model"] for c in comp.call_args_list]
+    assert models == [
+        "anthropic/claude-haiku-4-5", "anthropic/claude-sonnet-5-5",
+        "anthropic/claude-sonnet-5-5", "anthropic/claude-haiku-4-5",
+    ]
+    assert ["temperature" in c.kwargs for c in comp.call_args_list] == [True, False, False, True]
+    assert out["receipt"]["outcome"] == "answer"

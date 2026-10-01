@@ -88,6 +88,7 @@ class Receipt(_Frozen):
     diff: str
     outcome: Outcome
     terminal_reason: str | None
+    terminal_detail: str | None = None
     backtrack_count: int
     state_log: list[str]
     calls: tuple[CallRecord, ...]

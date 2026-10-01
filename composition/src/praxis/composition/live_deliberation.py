@@ -156,6 +156,8 @@ def build_deliberator(
 
 
 DEFAULT_MODEL = "claude-haiku-4-5"
+# The Anthropic API rejects `temperature` for these models (observed 2026-10-01).
+OMIT_TEMPERATURE_MODELS = frozenset({"claude-sonnet-5-5"})
 
 
 def build_live_deliberator(
@@ -168,7 +170,10 @@ def build_live_deliberator(
 ) -> Deliberator:
     """Anthropic via LiteLLM, priced by the in-tree cost meter. Raises
     :class:`MissingApiKeyError` if the key is absent from ``env_path``."""
-    adapter = LiteLLMAdapter(api_keys={DEFAULT_PROVIDER: load_anthropic_key(env_path)})
+    adapter = LiteLLMAdapter(
+        api_keys={DEFAULT_PROVIDER: load_anthropic_key(env_path)},
+        omit_temperature_models=OMIT_TEMPERATURE_MODELS,
+    )
     caller = LiteLLMModelCaller(
         adapter=adapter,
         default_model=producer_model,

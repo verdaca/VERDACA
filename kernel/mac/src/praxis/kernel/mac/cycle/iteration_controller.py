@@ -347,9 +347,10 @@ class ControllerResult:
 class _RunHalt(Exception):
     """A model-backed run cannot continue; ``reason`` becomes the receipt's terminal_reason."""
 
-    def __init__(self, reason: str) -> None:
+    def __init__(self, reason: str, detail: str | None = None) -> None:
         super().__init__(reason)
         self.reason = reason
+        self.detail = detail
 
 
 # =============================================================================
@@ -570,7 +571,7 @@ class IterationController:
             try:
                 reply = await roles.call(role=role, system=system, user=user)
             except Exception as exc:  # provider/network/auth failure: fail closed, keep the receipt
-                raise _RunHalt("model_call_failed") from exc
+                raise _RunHalt("model_call_failed", f"{type(exc).__name__}: {str(exc)[:300]}") from exc
             latency = time.monotonic() - started
             cost = roles.price(reply) if roles.price is not None else None
             calls.append(
@@ -600,10 +601,10 @@ class IterationController:
                 raise _RunHalt("budget_exceeded") from exc
             return reply.content
 
-        def fail(reason: str) -> Receipt:
+        def fail(reason: str, detail: str | None = None) -> Receipt:
             self._transition(State.FAILED)
             return self._receipt(
-                request, calls, rounds, draft, critique, None, Outcome.ESCALATE, reason
+                request, calls, rounds, draft, critique, None, Outcome.ESCALATE, reason, detail
             )
 
         await self._emit("mac.cycle.started", {"cycle_id": self._cycle_id})
@@ -622,7 +623,7 @@ class IterationController:
                     _prompts.producer_user(q, ev, *prior),
                 )
             except _RunHalt as halt:
-                return fail(halt.reason)
+                return fail(halt.reason, halt.detail)
 
             self._transition(State.CYCLE_2_REVIEW)
             await self._emit(
@@ -643,7 +644,7 @@ class IterationController:
                     _prompts.reviewer_critique_user(q, ev, draft, counter),
                 )
             except _RunHalt as halt:
-                return fail(halt.reason)
+                return fail(halt.reason, halt.detail)
             try:
                 critique = _prompts.parse_critique(counter, raw_critique)
             except _prompts.ReplyInvalid:
@@ -674,7 +675,7 @@ class IterationController:
                 _prompts.synthesizer_user(q, ev, draft, critique),
             )
         except _RunHalt as halt:
-            return fail(halt.reason)
+            return fail(halt.reason, halt.detail)
         try:
             final = _prompts.parse_final(raw_final)
         except _prompts.ReplyInvalid:
@@ -703,6 +704,7 @@ class IterationController:
         final: FinalAnswer | None,
         outcome: Outcome,
         terminal_reason: str | None,
+        terminal_detail: str | None = None,
     ) -> Receipt:
         diff = ""
         if draft is not None and final is not None:
@@ -730,6 +732,7 @@ class IterationController:
             diff=diff,
             outcome=outcome,
             terminal_reason=terminal_reason,
+            terminal_detail=terminal_detail,
             backtrack_count=self._backtrack_count,
             state_log=[s.value for s in self._transition_log],
             calls=tuple(calls),
