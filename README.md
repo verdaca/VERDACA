@@ -91,7 +91,7 @@ It also exposes 5 resources and 1 prompt.
 | MCP tool `verdaca_deliberate` exists only when a deliberator is bound; default server keeps its five tools | AC11 (in-memory FastMCP) |
 | CI runs the six `kernel/` suites; no tracked file holds an API key; `.env` is ignored | AC13, AC14 |
 
-All of these run against a scripted model. Prices are the repo's own table (`claude-haiku-4-5` at $0.80 / $4 per million tokens), not re-checked against Anthropic's current price list.
+All of these run against a scripted model. Prices come from the repo's own table (`claude-haiku-4-5` at $1 / $5 and `claude-sonnet-5-5` at $2 / $10 per million tokens, checked against Anthropic's pricing page on 2026-10-01). Other rows in that table are not re-verified.
 
 **Not done:** no run against a real model has been recorded (`docs/receipts/` holds no receipts), and no session in Claude Desktop. To record the first one, put `ANTHROPIC_API_KEY=...` in the gitignored `.env`, then `uv run python scripts/live/deliberate_live.py` (direct) or register `scripts/live/deliberate_mcp_server.py` in Claude Desktop (config snippet in its docstring). The server logs each call to `docs/receipts/mcp-server.log`.
 

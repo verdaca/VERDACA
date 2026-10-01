@@ -5,6 +5,7 @@
     "ts_source_fragment": "8a5edab282632443",
     "decimal_formula": "Decimal(price_per_M) / Decimal(1000000) * Decimal(tokens), per cost component (input + output)",
     "captured_at": "2026-05-08",
+    "regenerated_rows": "v3 (claude-haiku-4-5) regenerated 2026-10-01 at $1/$5 per MTok after the price was verified against https://platform.claude.com/docs/en/about-claude/pricing; the old 0.080 used the retired Haiku 3.5 price. Andrey approved the price correction in the redo-2026-10 session. Other rows unchanged.",
     "scope_restrictions_v0_1_0": [
       "input + output costs only; cacheRead/cacheWrite deferred (S3)",
       "service tier multiplier defaults to 1.0; flex/priority deferred (S4)"
@@ -13,7 +14,7 @@
   "vectors": [
     {"id": "v1", "provider": "anthropic", "model": "claude-opus-4-7",   "input_tokens": 1000,    "output_tokens": 500,   "expected_cost_usd": "0.0525"},
     {"id": "v2", "provider": "anthropic", "model": "claude-sonnet-4-6", "input_tokens": 10000,   "output_tokens": 2000,  "expected_cost_usd": "0.060"},
-    {"id": "v3", "provider": "anthropic", "model": "claude-haiku-4-5",  "input_tokens": 50000,   "output_tokens": 10000, "expected_cost_usd": "0.080"},
+    {"id": "v3", "provider": "anthropic", "model": "claude-haiku-4-5",  "input_tokens": 50000,   "output_tokens": 10000, "expected_cost_usd": "0.100"},
     {"id": "v4", "provider": "openai",    "model": "gpt-5-chat-latest", "input_tokens": 5000,    "output_tokens": 1000,  "expected_cost_usd": "0.01625"},
     {"id": "v5", "provider": "openai",    "model": "gpt-4o",            "input_tokens": 2000,    "output_tokens": 800,   "expected_cost_usd": "0.013"},
     {"id": "v6", "provider": "google",    "model": "gemini-2.0-flash",  "input_tokens": 100000,  "output_tokens": 5000,  "expected_cost_usd": "0.012"},

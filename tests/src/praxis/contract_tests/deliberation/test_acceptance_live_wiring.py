@@ -114,10 +114,10 @@ def test_ac12_end_to_end_with_patched_litellm_writes_a_priced_verified_receipt(t
     receipt = Receipt.model_validate_json(saved.read_text())
     assert verify_receipt_hash(receipt)
     assert receipt.outcome.value == "answer"
-    # haiku-4-5 row in PiMonoNativeAdapter.PRICING_TABLE: $0.80 in / $4 out per MTok
-    per_call = Decimal("1000") * Decimal("0.80") / 1_000_000 + Decimal("500") * 4 / 1_000_000
+    # haiku-4-5, verified list price: $1 in / $5 out per MTok
+    per_call = Decimal("1000") * 1 / 1_000_000 + Decimal("500") * 5 / 1_000_000
     assert [c.cost_usd for c in receipt.calls] == [per_call] * 4
-    assert receipt.total_cost_usd == per_call * 4 == Decimal("0.0112")
+    assert receipt.total_cost_usd == per_call * 4 == Decimal("0.014")
     assert out["receipt"]["content_sha256"] == receipt.content_sha256
 
 
@@ -126,20 +126,20 @@ def test_ac12b_reviewer_can_be_routed_to_a_different_model():
     caller = LiteLLMModelCaller(
         adapter=adapter,
         default_model="claude-haiku-4-5",
-        role_models={"reviewer_counter": "claude-sonnet-4-6", "reviewer_critique": "claude-sonnet-4-6"},
+        role_models={"reviewer_counter": "claude-sonnet-5-5", "reviewer_critique": "claude-sonnet-5-5"},
     )
     with patch("praxis.adapters.litellm.adapter.litellm.completion") as comp:
         comp.return_value = _completion("x")
         r1 = asyncio.run(caller(role="producer", system="s", user="u"))
         r2 = asyncio.run(caller(role="reviewer_counter", system="s", user="u"))
-    assert (r1.model, r2.model) == ("claude-haiku-4-5", "claude-sonnet-4-6")
+    assert (r1.model, r2.model) == ("claude-haiku-4-5", "claude-sonnet-5-5")
 
 
 def test_ac12c_unpriced_model_gives_none_not_zero():
     price = make_price_fn(PiMonoNativeAdapter())
     from praxis.kernel.mac.deliberation import ModelReply
 
-    reply = ModelReply("x", 10, 10, model="claude-sonnet-5-5", provider="anthropic", response_id="r")
+    reply = ModelReply("x", 10, 10, model="claude-fable-5-1", provider="anthropic", response_id="r")
     assert price(reply) is None
 
 
@@ -218,3 +218,17 @@ def test_ac15b_mcp_server_script_builds_with_deliberate_tool_and_needs_a_key(tmp
     no_key.write_text("ANTHROPIC_API_KEY=dummy\n")
     names = {t.name for t in mod.build_server(env_path=no_key, receipts_dir=tmp_path)._tool_manager.list_tools()}
     assert "verdaca_deliberate" in names
+
+
+# AC16 -- verified prices ----------------------------------------------------
+def test_ac16_run_models_are_priced_at_verified_list_prices_with_a_source():
+    from praxis.adapters.pi_mono_native import adapter as mod
+
+    assert mod.PRICING_TABLE[("anthropic", "claude-haiku-4-5")] == {
+        "input": Decimal("1"), "output": Decimal("5")
+    }
+    assert mod.PRICING_TABLE[("anthropic", "claude-sonnet-5-5")] == {
+        "input": Decimal("2"), "output": Decimal("10")
+    }
+    src = Path(mod.__file__).read_text()
+    assert "platform.claude.com/docs/en/about-claude/pricing" in src and "2026-10-01" in src
