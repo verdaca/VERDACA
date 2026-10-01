@@ -182,10 +182,10 @@ def test_M_T_COST_BUDGET_EXCEEDED_01_over_threshold(
         scope_kind="workspace",
         scope_id="test-workspace",
     )
-    # Limit is $10. Opus 4.7 input=$15/M; 1M tokens = $15 > $10 limit.
+    # Limit is $10. Opus 4.7 input=$5/M (verified 2026-10-01); 3M tokens = $15 > $10 limit.
     adapter.record(
         _event(
-            input_tokens=1_000_000,
+            input_tokens=3_000_000,
             output_tokens=0,
             scope=scope,
             idempotency_key="budget-exceed",
