@@ -12,7 +12,7 @@
 
 **Governed AI decision workflow — every vendor behind a contract-tested seam.**
 
-Verdaca is an auth-first gateway that runs an AI request end to end against real services: identity (OIDC/JWT, replay protection), per-key budget check, memory retrieval, compaction, model call, cost ledger and session index. Every vendor sits behind a typed port; memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree stub) swaps are proven by shared contract suites. A multi-agent deliberation loop (producer, isolated reviewer, quality gates) is designed and implemented as a tested state machine, but it is not yet wired to live model calls.
+Verdaca is an auth-first gateway that runs an AI request end to end against real services: identity (OIDC/JWT, replay protection), per-key budget check, memory retrieval, compaction, model call, cost ledger and session index. Every vendor sits behind a typed port; memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree stub) swaps are proven by shared contract suites. A multi-agent deliberation loop (producer, isolated reviewer, synthesizer) runs on model calls inside the existing state machine and emits a JSON receipt; one real run is recorded (see Real deliberation).
 
 > **Codename note:** The internal codename is **Praxis** (Stages 1–6). The Python namespace `praxis` (under each workspace package's `src/praxis/`) preserves that name as the internal module path.
 
@@ -93,7 +93,9 @@ It also exposes 5 resources and 1 prompt.
 
 All of these run against a scripted model. Prices come from the repo's own table (`claude-haiku-4-5` at $1 / $5 and `claude-sonnet-5-5` at $2 / $10 per million tokens, checked against Anthropic's pricing page on 2026-10-01). Other rows in that table are not re-verified.
 
-**Not done:** no run against a real model has been recorded (`docs/receipts/` holds no receipts), and no session in Claude Desktop. To record the first one, put `ANTHROPIC_API_KEY=...` in the gitignored `.env`, then `uv run python scripts/live/deliberate_live.py` (direct) or register `scripts/live/deliberate_mcp_server.py` in Claude Desktop (config snippet in its docstring). The server logs each call to `docs/receipts/mcp-server.log`.
+**Recorded run (2026-10-01):** `docs/receipts/receipt-ba3b5bfab1cc4938ac5e7664f7435bd5.json`, from `scripts/live/deliberate_live.py` on `scripts/live/deliberation_example.json`. Producer and synthesizer on `claude-haiku-4-5`, reviewer on `claude-sonnet-5-5`. 4 calls, 4,049 input + 2,322 output tokens, $0.026149, outcome `answer` ("No, the +47% quality headline cannot be cited as validated evidence…", citing E1-E4), hash verifies. The reviewer's counterargument stopped at the 1,024-token cap, so it is likely truncated; the receipt does not yet record `finish_reason`.
+
+**Not done:** no session in Claude Desktop yet. Register `scripts/live/deliberate_mcp_server.py` (config snippet in its docstring); the server logs each call to `docs/receipts/mcp-server.log`. Set `VERDACA_REVIEWER_MODEL=claude-sonnet-5-5` to match the recorded run.
 
 ## Key metrics
 
@@ -108,7 +110,7 @@ All of these run against a scripted model. Prices come from the repo's own table
 
 ### Design-stage estimates
 
-The multi-agent deliberation is wired to model calls in code (see Real deliberation) but no real-model run has been recorded, so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
+The multi-agent deliberation now runs on model calls, but only one real run exists (a single question, not a benchmark), so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
 
 | Metric | Value | Basis |
 |---|---|---|
