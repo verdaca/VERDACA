@@ -174,6 +174,42 @@ npm install
 npm run dev
 ```
 
+### Run a deliberation
+
+The test suites above use scripted model calls: no key, no cost. A live run makes four paid model calls and writes a JSON receipt to `docs/receipts/`.
+
+**1. Key.** Put your own Anthropic key in the gitignored `.env` at the repo root as `ANTHROPIC_API_KEY=...`. The scripts read it from there; don't export it in your shell and never commit it.
+
+**2. One run from a script.** All three roles default to `claude-haiku-4-5`; the recorded runs used Claude Sonnet for the reviewer:
+
+```bash
+VERDACA_REVIEWER_MODEL=claude-sonnet-5-5 \
+  uv run python scripts/live/deliberate_live.py scripts/live/deliberation_example.json
+# prints: outcome=... reason=... calls=4 cost_usd=... receipt=docs/receipts/receipt-<id>.json
+```
+
+The three recorded runs with this setup cost $0.026–$0.031 each. That is three runs of one question, not a typical cost.
+
+**3. From Claude Desktop (MCP).** Add this to `claude_desktop_config.json`, restart Claude Desktop, and ask it to call `verdaca_deliberate` with a question and evidence items (`id`, `source`, `text`). Each call is logged to `docs/receipts/mcp-server.log`.
+
+```json
+"mcpServers": {
+  "verdaca": {
+    "command": "uv",
+    "args": ["run", "--directory", "/path/to/VERDACA", "python", "scripts/live/deliberate_mcp_server.py"],
+    "env": { "VERDACA_REVIEWER_MODEL": "claude-sonnet-5-5" }
+  }
+}
+```
+
+**4. Verify a receipt.** The hash detects edits to a stored receipt (it is a hash, not a signature):
+
+```bash
+uv run python -c "from pathlib import Path; from praxis.kernel.mac.deliberation.receipt import verify_receipt_json; [print(p.name, verify_receipt_json(p.read_text())) for p in sorted(Path('docs/receipts').glob('*.json'))]"
+```
+
+Deliberation runs from the script or the MCP tool only; it is not yet wired behind the gateway or the Teams and Slack channels.
+
 ## How it was designed
 
 Architecture decisions were made in multi-agent BMAD sessions in Claude Code; their trade-off records, red-team critiques and scope limits live in `docs/`. These were not produced by the Verdaca engine itself.
