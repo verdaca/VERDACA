@@ -12,7 +12,7 @@
 
 **Governed AI decision workflow — every vendor behind a contract-tested seam.**
 
-Verdaca is an auth-first gateway that runs an AI request end to end against real services: identity (OIDC/JWT, replay protection), per-key budget check, memory retrieval, compaction, model call, cost ledger and session index. Every vendor sits behind a typed port; memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree stub) swaps are proven by shared contract suites. A multi-agent deliberation loop (producer, isolated reviewer, synthesizer) runs on model calls inside the existing state machine and emits a JSON receipt; one real run is recorded (see Real deliberation).
+Verdaca is an auth-first gateway that runs an AI request end to end against real services: identity (OIDC/JWT, replay protection), per-key budget check, memory retrieval, compaction, model call, cost ledger and session index. Every vendor sits behind a typed port; memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree stub) swaps are proven by shared contract suites. A multi-agent deliberation loop (producer, isolated reviewer, synthesizer) runs on model calls inside the existing state machine and emits a hashed JSON receipt. Three real runs are recorded, one of them from Claude Desktop over MCP (see Real deliberation). Deliberation runs from a script or the MCP tool; it is not yet wired behind the gateway or the Teams and Slack channels.
 
 > **Codename note:** The internal codename is **Praxis** (Stages 1–6). The Python namespace `praxis` (under each workspace package's `src/praxis/`) preserves that name as the internal module path.
 
@@ -116,14 +116,15 @@ Each per-call cost matches tokens × list price, and every file verifies with `v
 
 | Metric | Value |
 |---|---|
-| Tests passed | 420+ (19 skipped, 0 failed) |
+| Tests passed, `tests/` | 442 (19 skipped, 0 failed) |
+| Tests passed, six `kernel/` suites | 1,453 in CI (30 skipped, 0 failed; GitHub Actions run 36879487696). Locally on macOS: 1,433, with 20 more runtime tests skipped |
 | `no_waiver` markers | 23 |
 | uv workspace members | 24 |
 | Python | 3.12.12 (pinned) |
 
 ### Design-stage estimates
 
-The multi-agent deliberation now runs on model calls, but only one real run exists (a single question, not a benchmark), so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
+The multi-agent deliberation now runs on model calls, but only three runs of a single question exist (not a benchmark), so these figures are not from real runs. The quality figures come from internal scoring; validation against human rankings (A4 Spearman ρ) is still pending. Cite them only with the "(internal scoring; A4 Spearman pending)" caveat.
 
 | Metric | Value | Basis |
 |---|---|---|

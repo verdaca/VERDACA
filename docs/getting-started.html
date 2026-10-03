@@ -70,6 +70,11 @@
       <p class="docs-content__page-eyebrow type-eyebrow">GET STARTED</p>
       <h1 class="docs-content__page-title type-display">Getting started</h1>
 
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">DESIGN PREVIEW</p>
+        <p class="docs-callout__body">This page describes the planned <code>verdaca</code> Python package. That package is not built yet, so the code samples on this page will not run. What runs today: the auth-first gateway, the contract-tested adapters, and model-backed deliberation from a script or the MCP tool <code>verdaca_deliberate</code>, which writes a hashed JSON receipt. See <a href="https://github.com/verdaca/VERDACA#real-deliberation-model-backed">Real deliberation</a> in the README and the recorded receipts in <code>docs/receipts/</code>.</p>
+      </div>
+
       <p class="type-body-editorial">Getting Verdaca running takes under five minutes if you have Python 3.11 or later and credentials for at least one supported LLM provider. This guide covers installation, a first session, and the configuration file that controls adapter selection.</p>
 
       <div class="docs-callout">
@@ -162,7 +167,7 @@ memory:
         <li><strong>Environment check</strong> &mdash; confirm the required variables are present: the OIDC issuer and audience, the channel signing secret, the LLM proxy URL and key, and the deploy profile.</li>
         <li><strong>Provision a key</strong> &mdash; issue a per-user virtual key with a conservative budget cap; the step prints the key prefix and how to revoke it.</li>
         <li><strong>Policy smoke test</strong> &mdash; build the gateway policy and run the startup health check; it fails closed if a production deployment is missing its virtual-key backing.</li>
-        <li><strong>First message</strong> &mdash; send a signed channel message through the auth-first spine and watch the deliberation result return to your thread.</li>
+        <li><strong>First message</strong> &mdash; drive one synthetic request through the auth-first spine (bearer token, OIDC identity, nonce, budget gate, gateway, memory, model) and print its round-trip time and cost. On this path the model output, cost and memory are demo stubs; only the auth spine runs for real. Deliberation is not yet wired behind the gateway.</li>
       </ol>
 
       <div class="docs-code-block" role="region" aria-label="Onboarding flow">

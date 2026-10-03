@@ -70,6 +70,11 @@
       <p class="docs-content__page-eyebrow type-eyebrow">CONCEPTS</p>
       <h1 class="docs-content__page-title type-display">Agent catalog</h1>
 
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">DESIGN PREVIEW</p>
+        <p class="docs-callout__body">This page describes the planned <code>verdaca</code> Python package. That package is not built yet, so the code samples on this page will not run. What runs today: the auth-first gateway, the contract-tested adapters, and model-backed deliberation from a script or the MCP tool <code>verdaca_deliberate</code>, which writes a hashed JSON receipt. See <a href="https://github.com/verdaca/VERDACA#real-deliberation-model-backed">Real deliberation</a> in the README and the recorded receipts in <code>docs/receipts/</code>.</p>
+      </div>
+
       <p class="type-body-editorial">The catalog lists every agent persona available in Verdaca's current release, organized by the deliberation context each one is optimized for. Personas are not interchangeable by default &mdash; each carries a role contract, a constraint set, and an output format spec. Choose the ones whose domain focus matches what you need in the room.</p>
 
       <p class="type-caption">However a request arrives &mdash; local session, Microsoft Teams, or Slack &mdash; it reaches these agents only through the authenticated gateway: signature, identity, replay, and budget checks run before any persona is invoked. See <a href="conceptual-model.html">the front door</a>.</p>

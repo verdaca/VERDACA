@@ -70,6 +70,11 @@
       <p class="docs-content__page-eyebrow type-eyebrow">OVERVIEW</p>
       <h1 class="docs-content__page-title type-display">Verdaca docs</h1>
 
+      <div class="docs-callout">
+        <p class="docs-callout__severity type-eyebrow">DESIGN PREVIEW</p>
+        <p class="docs-callout__body">This page describes the planned <code>verdaca</code> Python package. That package is not built yet, so the code samples on this page will not run. What runs today: the auth-first gateway, the contract-tested adapters, and model-backed deliberation from a script or the MCP tool <code>verdaca_deliberate</code>, which writes a hashed JSON receipt. See <a href="https://github.com/verdaca/VERDACA#real-deliberation-model-backed">Real deliberation</a> in the README and the recorded receipts in <code>docs/receipts/</code>.</p>
+      </div>
+
       <p class="type-body-editorial">This documentation covers Verdaca's deliberation platform &mdash; how it is architected, how to run your first session, and how to extend it with custom agents and adapter substrates. It is written for practitioners: consultants, engineers, and technical leads who need to understand the system well enough to configure and deploy it.</p>
 
       <div class="docs-callout">
@@ -87,7 +92,7 @@
         <li><strong>Agent catalog</strong> &mdash; Available personas, capabilities, and how to load them.</li>
         <li><strong>Build your own agent</strong> &mdash; Define a custom persona and bind it to a session.</li>
         <li><strong>Workflow recipes</strong> &mdash; Pre-built deliberation patterns ready to run or adapt.</li>
-        <li><strong>Output review</strong> &mdash; Scoring, audit trails, and custom rubrics.</li>
+        <li><strong>Output review</strong> &mdash; Scoring and custom rubrics (design preview).</li>
       </ul>
 
       <h2 class="docs-content__section-heading type-headline">Quick start</h2>
@@ -166,7 +171,7 @@ result  = session.run("[workflow-placeholder]")</code></pre>
                 font-size="21" font-weight="600" letter-spacing="1.8" fill="#6B1F25">VERDACA KERNEL</text>
           <text x="400" y="253" text-anchor="middle"
                 font-family="'Inter Tight', ui-sans-serif, system-ui"
-                font-size="13" fill="#42454A">Deliberation loop &middot; synthesis &middot; audit trail</text>
+                font-size="13" fill="#42454A">Deliberation loop &middot; synthesis &middot; hashed receipt</text>
 
           <!-- vertical axis label -->
           <line x1="40" y1="300" x2="70" y2="300" stroke="#6B1F25" stroke-width="2"/>

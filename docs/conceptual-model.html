@@ -151,7 +151,7 @@
 
       <p class="type-body-editorial">Before any agent reasons, a request has to get in. A message from Microsoft Teams or Slack arrives at one channel-neutral gateway and clears four sequential checks &mdash; signature verification, per-user OIDC identity (RS256 / JWKS), replay/nonce rejection, and a budget ceiling. Only an authenticated, in-budget request reaches the deliberation loop below; anything that fails a check is rejected at the door.</p>
 
-      <p class="type-caption">Design-partner preview. The spine is verified against a local OIDC validator; connectors for commercial identity providers (Entra, Okta, Auth0) are configuration-level and not yet exercised &mdash; shown dashed below.</p>
+      <p class="type-caption">Design-partner preview. The Teams and Slack channels are contract-tested against recorded traffic, not validated in a live workspace, and the gateway does not yet hand requests to the deliberation loop. The spine is verified against a local OIDC validator; connectors for commercial identity providers (Entra, Okta, Auth0) are configuration-level and not yet exercised &mdash; shown dashed below.</p>
 
       <div class="docs-diagram">
         <svg viewBox="0 0 800 362" role="img" aria-labelledby="fd-title fd-desc"
