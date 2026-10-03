@@ -1,0 +1,14 @@
+# Synthetic OIDC discovery cassette for Stage 12 H#3.3 algorithm pinning.
+# The discovery payload intentionally advertises unsafe `none` alongside `RS256`.
+interactions:
+  - request:
+      method: GET
+      uri: https://login.microsoftonline.com/stage12-tenant/v2.0/.well-known/openid-configuration
+    response:
+      status:
+        code: 200
+      headers:
+        content-type: application/json
+      body:
+        string: |
+          {"issuer":"https://login.microsoftonline.com/stage12-tenant/v2.0","jwks_uri":"https://login.microsoftonline.com/stage12-tenant/discovery/v2.0/keys","id_token_signing_alg_values_supported":["none","RS256"]}

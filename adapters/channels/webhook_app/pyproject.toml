@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-adapter-channels-webhook-app"
+version = "0.1.0"
+description = "Verdaca channel webhook ASGI entrypoint (Stage 14 Phase-1 O-6) — composes a runtime gateway and serves inbound Teams/Slack webhooks"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "praxis-kernel-gateway",
+    "praxis-adapter-channels-teams",
+    "praxis-adapter-channels-slack",
+    # Stage 14 Day-2: composition (build_runtime_gateway / compose_auth_quartet)
+    # HOISTED out of the mcp_server adapter into the neutral praxis-composition
+    # member (D-O6-6 RESOLVED) — the channel no longer pulls mcp_server/FastMCP.
+    "praxis-composition",
+    "anyio>=4",
+    "starlette>=0.40",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+praxis-kernel-gateway = { workspace = true }
+praxis-adapter-channels-teams = { workspace = true }
+praxis-adapter-channels-slack = { workspace = true }
+praxis-composition = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"

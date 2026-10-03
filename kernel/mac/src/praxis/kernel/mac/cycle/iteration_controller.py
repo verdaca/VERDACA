@@ -53,7 +53,13 @@ Binding anchors:
 
 from __future__ import annotations
 
+import difflib
+import hashlib
+import time
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from decimal import Decimal
 from enum import Enum
 from typing import Any, Mapping, Protocol, runtime_checkable
 
@@ -63,6 +69,19 @@ from praxis.kernel.mac.budget import (
     ResourceBudget,
 )
 from praxis.kernel.mac.cycle.section_router import GATE_SECTION_ROUTES
+from praxis.kernel.mac.deliberation import (
+    CallRecord,
+    Critique,
+    DeliberationRequest,
+    DeliberationRoles,
+    FinalAnswer,
+    Outcome,
+    Receipt,
+    Round,
+    compute_receipt_hash,
+)
+from praxis.kernel.mac.deliberation import prompts as _prompts
+from praxis.kernel.mac.deliberation import roles as _roles
 from praxis.kernel.mac.integrations.runtime import MacPathBEmitter
 
 
@@ -325,6 +344,15 @@ class ControllerResult:
     re-entry. None when no backtrack occurred."""
 
 
+class _RunHalt(Exception):
+    """A model-backed run cannot continue; ``reason`` becomes the receipt's terminal_reason."""
+
+    def __init__(self, reason: str, detail: str | None = None) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.detail = detail
+
+
 # =============================================================================
 # IterationController
 # =============================================================================
@@ -512,6 +540,209 @@ class IterationController:
                 retry_producer_input,
                 final_scores=effective,
             )
+
+    # ------------------------------------------------------------------
+    # Model-backed deliberation driver
+    # ------------------------------------------------------------------
+
+    async def run_deliberation(
+        self, request: DeliberationRequest, roles: DeliberationRoles
+    ) -> Receipt:
+        """Drive the same state machine with real model calls and return a receipt.
+
+        CYCLE_1_PRODUCE runs the producer; CYCLE_2_REVIEW runs the reviewer
+        twice (a counterargument written from question + evidence only, then a
+        critique of the draft); CYCLE_3_VERIFY runs the synthesizer. A blocking
+        critique backtracks once (arch §5.5); a second one is terminal FAILED.
+        Every failure path returns a receipt with outcome ``escalate``.
+
+        One controller instance serves one deliberation.
+        """
+        calls: list[CallRecord] = []
+        rounds: list[Round] = []
+        draft: str | None = None
+        critique: Critique | None = None
+        prior: tuple[str | None, Critique | None] = (None, None)
+        ev = request.evidence
+        q = request.question
+
+        async def call(role: str, cycle: State, system: str, user: str) -> str:
+            started = time.monotonic()
+            try:
+                reply = await roles.call(role=role, system=system, user=user)
+            except Exception as exc:  # provider/network/auth failure: fail closed, keep the receipt
+                raise _RunHalt("model_call_failed", f"{type(exc).__name__}: {str(exc)[:300]}") from exc
+            latency = time.monotonic() - started
+            cost = roles.price(reply) if roles.price is not None else None
+            calls.append(
+                CallRecord(
+                    seq=len(calls) + 1,
+                    role=role,
+                    cycle=cycle.value,
+                    provider=reply.provider,
+                    model=reply.model,
+                    response_id=reply.response_id,
+                    input_tokens=reply.input_tokens,
+                    output_tokens=reply.output_tokens,
+                    cost_usd=cost,
+                    cost_status="priced" if cost is not None else "unpriced",
+                    latency_seconds=round(latency, 4),
+                    prompt_sha256=hashlib.sha256(
+                        f"{system}\n---\n{user}".encode()
+                    ).hexdigest(),
+                    stop_reason=reply.stop_reason,
+                )
+            )
+            self._tokens_consumed += reply.input_tokens + reply.output_tokens
+            self._elapsed_seconds += latency
+            try:
+                self._budget.check_tokens(self._tokens_consumed)
+                self._budget.check_wall_seconds(self._elapsed_seconds)
+            except BudgetExceededError as exc:
+                raise _RunHalt("budget_exceeded") from exc
+            return reply.content
+
+        def fail(reason: str, detail: str | None = None) -> Receipt:
+            self._transition(State.FAILED)
+            return self._receipt(
+                request, calls, rounds, draft, critique, None, Outcome.ESCALATE, reason, detail
+            )
+
+        await self._emit("mac.cycle.started", {"cycle_id": self._cycle_id})
+        self._transition(State.DECOMPOSE)
+
+        while True:
+            self._transition(State.CYCLE_1_PRODUCE)
+            await self._emit(
+                "mac.cycle.cycle_1_produce_entered", {"cycle_id": self._cycle_id}
+            )
+            try:
+                draft = await call(
+                    _roles.ROLE_PRODUCER,
+                    State.CYCLE_1_PRODUCE,
+                    _prompts.PRODUCER_SYSTEM,
+                    _prompts.producer_user(q, ev, *prior),
+                )
+            except _RunHalt as halt:
+                return fail(halt.reason, halt.detail)
+
+            self._transition(State.CYCLE_2_REVIEW)
+            await self._emit(
+                "mac.cycle.cycle_2_review_entered", {"cycle_id": self._cycle_id}
+            )
+            try:
+                # Blind pass: the reviewer sees the question and evidence only.
+                counter = await call(
+                    _roles.ROLE_REVIEWER_COUNTER,
+                    State.CYCLE_2_REVIEW,
+                    _prompts.REVIEWER_COUNTER_SYSTEM,
+                    _prompts.reviewer_counter_user(q, ev),
+                )
+                raw_critique = await call(
+                    _roles.ROLE_REVIEWER_CRITIQUE,
+                    State.CYCLE_2_REVIEW,
+                    _prompts.REVIEWER_CRITIQUE_SYSTEM,
+                    _prompts.reviewer_critique_user(q, ev, draft, counter),
+                )
+            except _RunHalt as halt:
+                return fail(halt.reason, halt.detail)
+            try:
+                critique = _prompts.parse_critique(counter, raw_critique)
+            except _prompts.ReplyInvalid:
+                return fail("reviewer_output_invalid")
+
+            self._transition(State.CYCLE_3_VERIFY)
+            await self._emit(
+                "mac.cycle.cycle_3_verify_entered", {"cycle_id": self._cycle_id}
+            )
+            if not critique.blocking:
+                break
+            if self._backtrack_count == 0:
+                self._transition(State.BACKTRACK_SET)
+                self._backtrack_count = 1
+                rounds.append(Round(draft=draft, critique=critique))
+                prior = (draft, critique)
+                await self._emit(
+                    "mac.cycle.backtrack_fired", {"cycle_id": self._cycle_id}
+                )
+                continue
+            return fail("second_consecutive_blocking_critique")
+
+        try:
+            raw_final = await call(
+                _roles.ROLE_SYNTHESIZER,
+                State.CYCLE_3_VERIFY,
+                _prompts.SYNTHESIZER_SYSTEM,
+                _prompts.synthesizer_user(q, ev, draft, critique),
+            )
+        except _RunHalt as halt:
+            return fail(halt.reason, halt.detail)
+        try:
+            final = _prompts.parse_final(raw_final)
+        except _prompts.ReplyInvalid:
+            return fail("synthesizer_output_invalid")
+        known = {e.id for e in ev}
+        if not set(final.cited_evidence_ids) <= known:
+            return fail("unknown_evidence_cited")
+        if final.outcome is Outcome.ANSWER and not final.cited_evidence_ids:
+            return fail("answer_without_citation")
+
+        self._transition(State.PUBLISH)
+        await self._emit("mac.cycle.publish_entered", {"cycle_id": self._cycle_id})
+        self._transition(State.COMPLETE)
+        await self._emit("mac.cycle.complete", {"cycle_id": self._cycle_id})
+        return self._receipt(
+            request, calls, rounds, draft, critique, final, final.outcome, None
+        )
+
+    def _receipt(
+        self,
+        request: DeliberationRequest,
+        calls: list[CallRecord],
+        rounds: list[Round],
+        draft: str | None,
+        critique: Critique | None,
+        final: FinalAnswer | None,
+        outcome: Outcome,
+        terminal_reason: str | None,
+        terminal_detail: str | None = None,
+    ) -> Receipt:
+        diff = ""
+        if draft is not None and final is not None:
+            diff = "".join(
+                difflib.unified_diff(
+                    draft.splitlines(keepends=True),
+                    final.answer.splitlines(keepends=True),
+                    fromfile="draft",
+                    tofile="final",
+                )
+            )
+        costs = [c.cost_usd for c in calls]
+        total_cost = (
+            sum(costs, Decimal(0)) if costs and all(c is not None for c in costs) else None
+        )
+        receipt = Receipt(
+            receipt_id=uuid.uuid4().hex,
+            created_at=datetime.now(timezone.utc),
+            question=request.question,
+            evidence=request.evidence,
+            draft=draft,
+            critique=critique,
+            superseded_rounds=tuple(rounds),
+            final=final,
+            diff=diff,
+            outcome=outcome,
+            terminal_reason=terminal_reason,
+            terminal_detail=terminal_detail,
+            backtrack_count=self._backtrack_count,
+            state_log=[s.value for s in self._transition_log],
+            calls=tuple(calls),
+            truncated_calls=tuple(c.seq for c in calls if c.stop_reason == "length"),
+            total_input_tokens=sum(c.input_tokens for c in calls),
+            total_output_tokens=sum(c.output_tokens for c in calls),
+            total_cost_usd=total_cost,
+        )
+        return receipt.model_copy(update={"content_sha256": compute_receipt_hash(receipt)})
 
     # ------------------------------------------------------------------
     # Failure helper

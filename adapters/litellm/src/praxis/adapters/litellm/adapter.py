@@ -237,8 +237,14 @@ class LiteLLMAdapter:
         api_base_overrides: dict[str, str] | None = None,
         api_version_overrides: dict[str, str] | None = None,
         default_correlation_id: str | None = None,
+        omit_temperature_models: frozenset[str] = frozenset(),
     ) -> None:
         """Construct an adapter.
+
+        `omit_temperature_models`: model names for which `temperature` is not
+        sent (e.g. `claude-sonnet-5-5`, which the Anthropic API rejects with
+        "`temperature` is deprecated for this model"). Default empty, so
+        existing behavior is unchanged.
 
         `api_keys` is the per-provider API key map per advisor H#1 auth-
         pattern approval. Optional — caller MAY pass {} (or None) and
@@ -272,6 +278,7 @@ class LiteLLMAdapter:
         self._api_base_overrides = dict(api_base_overrides or {})
         self._api_version_overrides = dict(api_version_overrides or {})
         self._default_correlation_id = default_correlation_id or uuid.uuid4().hex
+        self._omit_temperature_models = frozenset(omit_temperature_models)
         # DS-4 idempotency cache; call()-only per DS-5 strict-β.
         self._idempotency_cache: dict[str, LLMResponse] = {}
 
@@ -320,14 +327,17 @@ class LiteLLMAdapter:
         messages_payload = [
             {"role": m.role, "content": m.content} for m in request.messages
         ]
+        extra: dict[str, Any] = {}
+        if request.model not in self._omit_temperature_models:
+            extra["temperature"] = request.temperature
         litellm_response = litellm.completion(
             model=f"{request.provider}/{request.model}",
             messages=messages_payload,
             max_tokens=request.max_tokens,
-            temperature=request.temperature,
             api_key=self._api_keys.get(request.provider),
             api_base=self._api_base_overrides.get(request.provider),
             api_version=self._api_version_overrides.get(request.provider),
+            **extra,
         )
 
         # 3. Compression detection (v0.1.0 no-op per scope restriction;

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-composition"
+version = "0.1.0"
+description = "Verdaca runtime composition root (neutral apex) — wires kernel + adapter substrates into a deployable GatewayPort (hoisted from mcp_server per D-1 / D-O6-6)"
+requires-python = ">=3.12"
+dependencies = [
+    "praxis-ports",
+    "praxis-adapter-in_tree_compaction_stub",
+    "praxis-kernel-auth",
+    "praxis-kernel-gateway",
+    "praxis-kernel-session-index",
+    "praxis-mac",
+    "praxis-adapter-litellm",
+    "praxis-adapter-pi_mono_native",
+    "python-dotenv>=1.0",
+]
+
+[tool.uv.sources]
+praxis-ports = { workspace = true }
+praxis-adapter-in_tree_compaction_stub = { workspace = true }
+praxis-kernel-auth = { workspace = true }
+praxis-kernel-gateway = { workspace = true }
+praxis-kernel-session-index = { workspace = true }
+praxis-mac = { workspace = true }
+praxis-adapter-litellm = { workspace = true }
+praxis-adapter-pi_mono_native = { workspace = true }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "TID", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["praxis"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"

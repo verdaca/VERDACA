@@ -1,0 +1,137 @@
+{
+  "schema_version": "verdaca.receipt/2",
+  "receipt_id": "ab32840af1c34679810a1c2b73144d68",
+  "created_at": "2026-10-01T14:45:06.329955Z",
+  "question": "Can the +47% quality headline in kernel/mac/pre-sales-report.md be cited as validated\n  evidence that the multi-agent engine outperforms a single agent?",
+  "evidence": [
+    {
+      "id": "E1",
+      "source": "kernel/mac/pre-sales-report.md:16",
+      "text": "Praxis MAC beats vanilla single-agent by **+25.2 composite points (+47% relative)** and\n  enhanced single-agent by **+13.7 composite points (+21% relative)** across 10 strategic questions"
+    },
+    {
+      "id": "E2",
+      "source": "kernel/mac/pre-sales-report.md:96",
+      "text": "Scores assigned by the same agent that generated the outputs. Full-blinding is not\n  achievable under Path B manual orchestration."
+    },
+    {
+      "id": "E3",
+      "source": "kernel/mac/pre-sales-report.md:23",
+      "text": "| Spearman ρ (Andrey A4) | pending | ≥ 0.6 | — | ⏳ pending |"
+    },
+    {
+      "id": "E4",
+      "source": "kernel/mac/pre-sales-report.md:5",
+      "text": "Path B — manual in-session orchestration on Claude Max subscription (no API key, no\n  `LLMJudgeClient.call_live()`)"
+    }
+  ],
+  "draft": "**No, the +47% quality headline cannot be cited as validated evidence.**\n\nWhile [E1] documents the +47% relative improvement claim, critical validity concerns undermine its use as validated evidence:\n\n1. **Methodological compromise**: [E2] explicitly states that \"Scores assigned by the same agent that generated the outputs\" and \"Full-blinding is not achievable under Path B manual orchestration.\" This introduces severe bias risk—the evaluating agent scored its own outputs.\n\n2. **Incomplete validation**: [E3] shows the Spearman correlation coefficient is \"pending\" with a target of ≥0.6, meaning statistical validation of the scoring methodology has not been completed.\n\n3. **Operational limitations**: [E4] indicates Path B used manual orchestration without API instrumentation, which may limit reproducibility and rigor compared to standard evaluation protocols.\n\n**What is missing for validated evidence:**\n- Completed inter-rater reliability or blinded evaluation results\n- Third-party or independent agent scoring\n- Finalized statistical validation metrics [E3]\n- Methodological documentation addressing the self-evaluation bias\n\nThe headline represents a *claimed* result, not yet *validated* evidence suitable for substantiating performance superiority.",
+  "critique": {
+    "counterargument": "**Short answer: no. A hasty \"yes, it's +47% across 10 questions\" would overstate what the evidence supports.**\n\n**1. The scorer is the generator (E2).**\n- The same agent produced the outputs and assigned the scores, so there is no independence.\n- An LLM judging its own work is prone to self-preference bias. It also knows which arm is the \"MAC\" arm, because blinding was not possible.\n- The expected bias favors the more elaborate, longer, more structured multi-agent output. That is exactly the direction of the reported effect.\n- The report itself concedes that full blinding \"is not achievable\" under this setup. That is a design limitation, not a minor caveat.\n\n**2. The validation gate is open (E3).**\n- The check that would tie the scores to human judgment, Spearman ρ against Andrey's A4 ratings with a threshold of ≥0.6, is \"pending\" with no value.\n- Until that passes, there is no evidence the composite measures real quality rather than the judge's own preferences.\n- The report's own acceptance criteria are unmet. Citing the headline as validated contradicts the document's own status table.\n\n**3. The method is not the product (E4).**\n- Path B was manual in-session orchestration, without an API key and without `LLMJudgeClient.call_live()`.\n- So the automated judging pipeline was never exercised.\n- The run is a hand-driven simulation of the engine. It is not a reproducible test of the engine as shipped.\n- Operator discretion in the manual orchestration is an uncontrolled variable, and it favors the system being sold.\n\n**4. The statistics are thin (E1).**\n- n=10 questions, with no confidence intervals, variance, per-question breakdown, or significance test shown.\n- The relative figures imply baselines of roughly 54 (vanilla) and 65 (enhanced) on the composite scale. A +47% relative figure is therefore a modest absolute shift that is amplified by the framing.\n- Nothing in the evidence shows how the questions were chosen, whether the rubric was fixed before scoring, or whether the arms were compute- or token-matched. A multi-agent arm that simply spends more tokens would not demonstrate architectural superiority.\n- The \"enhanced single-agent\" baseline is undefined here. A weak baseline inflates the gap.\n\n**5. Context and framing.**\n- This is a pre-sales report, which is a document with a persuasive purpose.\n- The +47% headline sits at line 16, while the disqualifying caveat sits at line 96. A reader who cites only the headline will miss it.\n\n**What can be claimed:** \"In an unblinded, self-scored, manually orchestrated pilot on 10 questions, MAC scored higher than single-agent baselines. This is directional and unvalidated, and human-correlation validation is pending.\"\n\n**What would change the answer:**\n- ρ ≥ 0.6 against human raters.\n- Blinded or independent judges.\n- Automated reruns through the real pipeline.\n- A larger question set with confidence intervals.\n- Matched-compute baselines.\n\nI have seen only these four excerpts, so other parts of the report may add mitigations. Nothing quoted here does.",
+    "blocking": false,
+    "issues": [
+      "Omits the sample-size and statistics weakness: n=10, with no confidence intervals, variance, significance test or per-question breakdown shown.",
+      "Does not mention possible unmatched compute or token budgets, or the undefined 'enhanced single-agent' baseline, so architectural superiority is not separated from simply spending more.",
+      "Never gives a usable alternative claim. The counterargument offers wording like 'unblinded, self-scored, manual pilot, directional only'.",
+      "Understates E2: it says only 'bias risk' and does not say the scorer knew which arm was MAC, or that the bias likely favors the reported direction.",
+      "Treats E4 as vague ('may limit reproducibility') and misses that the automated judging pipeline (LLMJudgeClient.call_live) was never exercised. It also misses the operator-discretion confound.",
+      "Ignores the framing and placement issue: the headline is at line 16 and the caveat at line 96, in a persuasive pre-sales document, so a headline-only citation would mislead.",
+      "The missing-evidence list is generic. 'Inter-rater reliability' is imprecise: the pending check is Spearman ρ against human (Andrey A4) ratings. It also lacks larger samples and matched-compute baselines.",
+      "Does not note that the draft sees only excerpts and that other report sections might add mitigations."
+    ],
+    "summary": "The draft reaches the correct conclusion (no, not validated) with accurate use of E1–E4, but it is thinner than the counterargument: it omits the statistical weakness, baseline and compute confounds, and framing issues, and it gives no safe alternative wording. These are gaps, not errors, so it is safe to publish."
+  },
+  "superseded_rounds": [],
+  "final": {
+    "outcome": "answer",
+    "answer": "No, the +47% quality headline cannot be cited as validated evidence that the multi-agent engine outperforms a single agent. [E1] reports the claim, but [E2] reveals that the same agent generated outputs and assigned scores with no blinding possible, creating uncontrolled self-preference bias favoring the multi-agent arm. [E3] shows the critical validation gate—Spearman correlation against human raters—remains pending, meaning the scores have not been tied to real quality. [E4] indicates the evaluation used manual orchestration without the automated judging pipeline (`LLMJudgeClient.call_live()`), so the engine was never tested as shipped. Additionally, the evidence shows n=10 questions with no confidence intervals, significance tests, per-question breakdown, or matched-compute baselines, making it impossible to separate architectural superiority from token-budget differences. The headline sits in a pre-sales document with persuasive intent; the disqualifying caveats appear much later. A defensible claim would be: 'In an unblinded, self-scored, manually orchestrated pilot on 10 questions, MAC scored higher than single-agent baselines. This is directional and unvalidated; human-correlation validation is pending.'",
+    "cited_evidence_ids": [
+      "E1",
+      "E2",
+      "E3",
+      "E4"
+    ],
+    "rationale": "The draft correctly concludes the headline is not validated evidence, with accurate citation of methodological bias (E2), incomplete validation (E3), and operational limitations (E4). However, the answer is strengthened by explicitly noting the statistical thinness (n=10, no confidence intervals or significance tests), the undefined baselines and possible compute confounds, the framing risk (headline at line 16, caveat at line 96 in a persuasive document), and by offering safe alternative wording that acknowledges what can be claimed."
+  },
+  "diff": "--- draft\n+++ final\n@@ -1,17 +1 @@\n-**No, the +47% quality headline cannot be cited as validated evidence.**\n-\n-While [E1] documents the +47% relative improvement claim, critical validity concerns undermine its use as validated evidence:\n-\n-1. **Methodological compromise**: [E2] explicitly states that \"Scores assigned by the same agent that generated the outputs\" and \"Full-blinding is not achievable under Path B manual orchestration.\" This introduces severe bias risk—the evaluating agent scored its own outputs.\n-\n-2. **Incomplete validation**: [E3] shows the Spearman correlation coefficient is \"pending\" with a target of ≥0.6, meaning statistical validation of the scoring methodology has not been completed.\n-\n-3. **Operational limitations**: [E4] indicates Path B used manual orchestration without API instrumentation, which may limit reproducibility and rigor compared to standard evaluation protocols.\n-\n-**What is missing for validated evidence:**\n-- Completed inter-rater reliability or blinded evaluation results\n-- Third-party or independent agent scoring\n-- Finalized statistical validation metrics [E3]\n-- Methodological documentation addressing the self-evaluation bias\n-\n-The headline represents a *claimed* result, not yet *validated* evidence suitable for substantiating performance superiority.+No, the +47% quality headline cannot be cited as validated evidence that the multi-agent engine outperforms a single agent. [E1] reports the claim, but [E2] reveals that the same agent generated outputs and assigned scores with no blinding possible, creating uncontrolled self-preference bias favoring the multi-agent arm. [E3] shows the critical validation gate—Spearman correlation against human raters—remains pending, meaning the scores have not been tied to real quality. [E4] indicates the evaluation used manual orchestration without the automated judging pipeline (`LLMJudgeClient.call_live()`), so the engine was never tested as shipped. Additionally, the evidence shows n=10 questions with no confidence intervals, significance tests, per-question breakdown, or matched-compute baselines, making it impossible to separate architectural superiority from token-budget differences. The headline sits in a pre-sales document with persuasive intent; the disqualifying caveats appear much later. A defensible claim would be: 'In an unblinded, self-scored, manually orchestrated pilot on 10 questions, MAC scored higher than single-agent baselines. This is directional and unvalidated; human-correlation validation is pending.'",
+  "outcome": "answer",
+  "terminal_reason": null,
+  "terminal_detail": null,
+  "backtrack_count": 0,
+  "state_log": [
+    "interpret",
+    "decompose",
+    "cycle_1_produce",
+    "cycle_2_review",
+    "cycle_3_verify",
+    "publish",
+    "complete"
+  ],
+  "calls": [
+    {
+      "seq": 1,
+      "role": "producer",
+      "cycle": "cycle_1_produce",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "response_id": "chatcmpl-15da2400-fe4f-4b30-8839-14990ee2a989",
+      "input_tokens": 347,
+      "output_tokens": 272,
+      "cost_usd": "0.001707",
+      "cost_status": "priced",
+      "latency_seconds": 3.8231,
+      "prompt_sha256": "4c8970cba580172a35f7081c048fb76a73410c43d6af176addefb73fee920c5c",
+      "stop_reason": "stop"
+    },
+    {
+      "seq": 2,
+      "role": "reviewer_counter",
+      "cycle": "cycle_2_review",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "response_id": "chatcmpl-be466744-1cfa-4e10-821a-547a6d8f943d",
+      "input_tokens": 460,
+      "output_tokens": 1493,
+      "cost_usd": "0.015850",
+      "cost_status": "priced",
+      "latency_seconds": 13.2885,
+      "prompt_sha256": "47ff0b55dcbbe474d169000980dacb3c4f61ef258b31f573d8c9a58ea1ba0dc9",
+      "stop_reason": "stop"
+    },
+    {
+      "seq": 3,
+      "role": "reviewer_critique",
+      "cycle": "cycle_2_review",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "response_id": "chatcmpl-df9bdf87-bdb9-43c4-98a7-810b6a1773a6",
+      "input_tokens": 1993,
+      "output_tokens": 568,
+      "cost_usd": "0.009666",
+      "cost_status": "priced",
+      "latency_seconds": 5.1487,
+      "prompt_sha256": "ff3607c99f1f7e36dfc873e27dd32b05e97f3f18cbe48353b824201311a0cbd4",
+      "stop_reason": "stop"
+    },
+    {
+      "seq": 4,
+      "role": "synthesizer",
+      "cycle": "cycle_3_verify",
+      "provider": "anthropic",
+      "model": "claude-haiku-4-5",
+      "response_id": "chatcmpl-c780cc83-fd32-4c16-8424-89accd07d375",
+      "input_tokens": 1886,
+      "output_tokens": 456,
+      "cost_usd": "0.004166",
+      "cost_status": "priced",
+      "latency_seconds": 5.1363,
+      "prompt_sha256": "68da67709389fdb8a590a346dad475567af5a27ac7f563894104d7e668d44e9b",
+      "stop_reason": "stop"
+    }
+  ],
+  "truncated_calls": [],
+  "total_input_tokens": 4686,
+  "total_output_tokens": 2789,
+  "total_cost_usd": "0.031389",
+  "content_sha256": "2698c0383dd515b5060a865573ed234171d3a0bbdd24cccfe96ed74e975169b0"
+}

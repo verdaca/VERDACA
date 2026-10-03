@@ -87,10 +87,15 @@ _PORT_NAME = "cost_meter"
 
 
 PRICING_TABLE: dict[tuple[str, str], dict[str, Decimal]] = {
-    ("anthropic", "claude-opus-4-7"):    {"input": Decimal("15"),    "output": Decimal("75")},
+    # The opus-4-7, haiku-4-5 and sonnet-5-5 rows were verified 2026-10-01 against
+    # https://platform.claude.com/docs/en/about-claude/pricing (base input / output, USD per
+    # MTok). Previous opus-4-7 row was $15 / $75 (the Opus 4 / 4.1 price); previous haiku-4-5
+    # row was $0.80 / $4 (the retired Haiku 3.5 price). Other rows are NOT re-verified.
+    ("anthropic", "claude-opus-4-7"):    {"input": Decimal("5"),     "output": Decimal("25")},
     ("anthropic", "claude-opus-4-6"):    {"input": Decimal("5"),     "output": Decimal("25")},
     ("anthropic", "claude-sonnet-4-6"):  {"input": Decimal("3"),     "output": Decimal("15")},
-    ("anthropic", "claude-haiku-4-5"):   {"input": Decimal("0.80"),  "output": Decimal("4")},
+    ("anthropic", "claude-haiku-4-5"):   {"input": Decimal("1"),     "output": Decimal("5")},
+    ("anthropic", "claude-sonnet-5-5"):  {"input": Decimal("2"),     "output": Decimal("10")},
     ("openai", "gpt-5-chat-latest"):     {"input": Decimal("1.25"),  "output": Decimal("10")},
     ("openai", "gpt-4o"):                {"input": Decimal("2.50"),  "output": Decimal("10")},
     ("google", "gemini-2.0-flash"):      {"input": Decimal("0.10"),  "output": Decimal("0.40")},

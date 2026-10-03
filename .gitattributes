@@ -1,0 +1,10 @@
+# Stage 14 O-10 fix — frozen MCP-server snapshot is SHA-pinned (LF bytes).
+#
+# tests/src/praxis/contract_tests/ports/test_mcp_jsonrpc_golden.py pins
+# STDIO_SHA256 over the *bytes* of src/stdio.ts in this frozen snapshot. The
+# blob is LF in git's index, but Windows core.autocrlf smudges it to CRLF on
+# checkout, so the working-copy byte hash diverged from the pinned LF hash
+# (the O-10 red). Forcing eol=lf for the whole frozen snapshot makes the
+# working copy match the index + the pinned SHA on every platform. The tree is
+# immutable reference material (all text), so this is purely a checkout-eol pin.
+tests/reference/spike-mcp-server-snapshot-d93f71a/** text eol=lf

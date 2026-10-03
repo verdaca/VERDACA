@@ -1,0 +1,2 @@
+{"kind":"metadata","source_snapshot":"spike-mcp-server-snapshot-d93f71a","source_file":"src/stdio.ts","source_file_sha256":"23e550582c17ffaa9442fd1d1031b29af25014cdb8a2817699496fee406f4a34","transport":"stdio","protocol":"json-rpc-2.0","capture_policy":"snapshot-derived-error-frame"}
+{"kind":"frame","direction":"server_to_client","name":"invalid_request","bytes":"{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32600,\"message\":\"Invalid Request\"}}"}

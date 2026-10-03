@@ -1,0 +1,15 @@
+# Synthetic LiteLLM key-list cassette for Stage 12 H#4 (alias-based info lookup).
+# Real LiteLLM /key/info is keyed by token; alias resolution goes via /key/list
+# with return_full_object=true (verified live 2026-06 against ghcr.io/berriai/litellm).
+interactions:
+  - request:
+      method: GET
+      uri: https://litellm.example.invalid/key/list?key_alias=stage12-key&return_full_object=true
+    response:
+      status:
+        code: 200
+      headers:
+        content-type: application/json
+      body:
+        string: |
+          {"keys":[{"key_alias":"stage12-key","token":"sk-stage12-existing","spend":7.5,"max_budget":25.0}],"total_count":1,"current_page":1,"total_pages":1}

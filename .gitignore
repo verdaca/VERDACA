@@ -1,6 +1,6 @@
 # Verdaca — Clean repo scope
-# Only source code and brand assets (kernel/, ports/, adapters/, shell/, assets/) are tracked.
-# Everything else (BMAD framework, planning workspace, docs, knowledge, tests, Claude config) is excluded.
+# Only source code, the contract test suite, and brand assets (kernel/, ports/, adapters/, composition/, shell/, scripts/, tests/, assets/) are tracked.
+# Everything else (BMAD framework, planning workspace, docs, knowledge, Claude config) is excluded.
 
 # ============================================================
 # Step 1: Exclude everything at root by default
@@ -9,25 +9,46 @@
 
 # Step 2: Re-include the Verdaca project directories
 !.gitignore
+!.gitattributes
 !.github/
 !README.md
 !kernel/
 !ports/
+!composition/
 !adapters/
 !assets/
 !shell/
+!tests/
 !docs/
 !pyproject.toml
 !.python-version
 !uv.lock
 
-# docs/ holds the verdaca.com website (*.html + styles.css). Keep operational
-# working docs (handovers, advisor notes, close memos as *.md) OUT of the remote.
+# docs/ holds the verdaca.com website (*.html + styles.css) AND operational
+# working docs (handovers, advisor notes, close memos as *.md). Re-include the
+# website; keep the operational markdown OUT of the repo/remote.
 docs/*.md
 docs/*.mp3
 docs/*.json
 docs/_archive/
 docs/ai-news/
+
+# Track ONLY the onboarding pipeline under scripts/ (Stage 14 Phase-1 H#4).
+# There is NO separate *.ps1 rule — the local helpers (load-design-env.ps1,
+# pull-digest-archive.ps1) are protected only by /* + scripts/ not being
+# re-included. So after re-including the dir, "scripts/*" MUST re-exclude its
+# contents before onboarding/ alone is re-included. Verify with:
+#   git check-ignore -v scripts/load-design-env.ps1   (must stay ignored)
+!scripts/
+scripts/*
+!scripts/onboarding/
+# Deliberation live-run entrypoints (+ sample input). Everything else under
+# scripts/live/ (smokes, logs, relays) stays local.
+!scripts/live/
+scripts/live/*
+!scripts/live/deliberate_live.py
+!scripts/live/deliberate_mcp_server.py
+!scripts/live/deliberation_example.json
 
 # ============================================================
 # Workspace files — NEVER tracked

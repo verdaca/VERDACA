@@ -9,6 +9,7 @@
 [tool.uv.workspace]
 members = [
     "ports",
+    "composition",
     "adapters/beads",
     "adapters/tonl",
     "adapters/in_tree_compaction_stub",
@@ -17,6 +18,7 @@ members = [
     "adapters/mcp_server",
     "adapters/channels/teams",
     "adapters/channels/slack",
+    "adapters/channels/webhook_app",
     "adapters/mem0",
     "adapters/letta",
     "adapters/llmlingua",

@@ -27,6 +27,17 @@ class InvalidBearerError(ValueError):
     """Raised when the gateway receives an empty bearer token."""
 
 
+class OperationalMisconfigurationError(RuntimeError):
+    """Raised at startup when production deployment lacks required dependencies.
+
+    Stage 14 B2: surfaces operationally significant misconfiguration that would
+    silently fail at first request OR allow unbounded cost (e.g.,
+    GatewayPolicy.virtual_keys is None at production profile). Catches what
+    Stage 13 V3.A's per-request fail-closed would only surface on actual
+    traffic — moved earlier to startup so the operator notices.
+    """
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GatewayPolicy:
     """Gateway policy configuration and Stage 12 auth orchestration."""
@@ -85,15 +96,42 @@ def verify_bearer_token(token: str | None) -> bool:
     return secrets.compare_digest(candidate, expected)
 
 
-def policy_health_check() -> bool:
-    """Warn at startup when deployment bearer auth is not configured."""
+def policy_health_check(
+    policy: GatewayPolicy | None = None,
+    profile_env_var: str = "VERDACA_DEPLOY_PROFILE",
+) -> None:
+    """Validate gateway operational configuration at startup.
+
+    Bearer auth: warn if VERDACA_GATEWAY_BEARER_TOKEN is unset.
+    Virtual-key budget (if policy supplied): warn at any profile when
+    policy.virtual_keys is None; fail-closed via
+    OperationalMisconfigurationError when ``profile_env_var`` resolves to
+    'production' (case-insensitive).
+
+    Stage 14 B2 contract: return type changed bool → None (existing call
+    sites were side-effect-only). Backward-compatible at the no-args call;
+    passing a configured GatewayPolicy enables the vkey-presence check.
+    """
     if os.environ.get(_DEPLOYMENT_TOKEN_ENV) is None:
         _LOGGER.warning(
             "Bearer auth not configured (%s unset): all requests will be rejected",
             _DEPLOYMENT_TOKEN_ENV,
         )
-        return False
-    return True
+
+    if policy is not None and policy.virtual_keys is None:
+        profile = os.environ.get(profile_env_var, "").lower()
+        if profile == "production":
+            raise OperationalMisconfigurationError(
+                f"GatewayPolicy.virtual_keys is None and {profile_env_var}=production; "
+                "production deployments MUST configure virtual_keys "
+                "(Stage 13 V3.A contract)."
+            )
+        _LOGGER.warning(
+            "GatewayPolicy.virtual_keys is None (%s=%s): vkey budget unenforced; "
+            "production deploys must configure virtual_keys",
+            profile_env_var,
+            profile or "<unset>",
+        )
 
 
 def evaluate_user_allowlist(
@@ -181,6 +219,7 @@ def _evaluate_scope_cap(
 __all__ = [
     "GatewayPolicy",
     "InvalidBearerError",
+    "OperationalMisconfigurationError",
     "PolicyDecision",
     "UnknownTenantError",
     "evaluate_budget_cap",
