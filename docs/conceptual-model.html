@@ -41,24 +41,17 @@
             <li class="docs-sidebar__nav-item">
               <a href="conceptual-model.html" class="docs-sidebar__link docs-sidebar__link--active type-caption" aria-current="page">Conceptual model</a>
             </li>
-            <li class="docs-sidebar__nav-item">
-              <a href="agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a>
-            </li>
           </ul>
         </div>
 
         <div class="docs-sidebar__section">
-          <p class="docs-sidebar__section-heading type-eyebrow">BUILD</p>
+          <p class="docs-sidebar__section-heading type-eyebrow">DESIGN PREVIEW &mdash; NOT BUILT</p>
           <ul class="docs-sidebar__nav" role="list">
-            <li class="docs-sidebar__nav-item">
-              <a href="build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a>
-            </li>
-            <li class="docs-sidebar__nav-item">
-              <a href="workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a>
-            </li>
-            <li class="docs-sidebar__nav-item">
-              <a href="output-review.html" class="docs-sidebar__link type-caption">Output review</a>
-            </li>
+            <li class="docs-sidebar__nav-item"><a href="design-preview/index.html" class="docs-sidebar__link type-caption">Planned package</a></li>
+            <li class="docs-sidebar__nav-item"><a href="design-preview/agent-catalog.html" class="docs-sidebar__link type-caption">Agent catalog</a></li>
+            <li class="docs-sidebar__nav-item"><a href="design-preview/build-your-own-agent.html" class="docs-sidebar__link type-caption">Build your own agent</a></li>
+            <li class="docs-sidebar__nav-item"><a href="design-preview/workflow-recipes.html" class="docs-sidebar__link type-caption">Workflow recipes</a></li>
+            <li class="docs-sidebar__nav-item"><a href="design-preview/output-review.html" class="docs-sidebar__link type-caption">Output review</a></li>
           </ul>
         </div>
 
@@ -151,7 +144,7 @@
 
       <p class="type-body-editorial">Before any agent reasons, a request has to get in. A message from Microsoft Teams or Slack arrives at one channel-neutral gateway and clears four sequential checks &mdash; signature verification, per-user OIDC identity (RS256 / JWKS), replay/nonce rejection, and a budget ceiling. Only an authenticated, in-budget request reaches the deliberation loop below; anything that fails a check is rejected at the door.</p>
 
-      <p class="type-caption">Design-partner preview. The Teams and Slack channels are contract-tested against recorded traffic, not validated in a live workspace, and the gateway does not yet hand requests to the deliberation loop. The spine is verified against a local OIDC validator; connectors for commercial identity providers (Entra, Okta, Auth0) are configuration-level and not yet exercised &mdash; shown dashed below.</p>
+      <p class="type-caption">Design-partner preview. The Teams and Slack channels are contract-tested against recorded traffic, not validated in a live workspace, and the gateway does not yet hand requests to the deliberation loop. The test suites verify the spine against a local OIDC validator. Auth0 was exercised once, in a manual end-to-end run in June 2026 that is recorded only in a working handover, with no committed log; Entra and Okta connectors are configuration-level only &mdash; shown dashed below.</p>
 
       <div class="docs-diagram">
         <svg viewBox="0 0 800 362" role="img" aria-labelledby="fd-title fd-desc"
@@ -220,10 +213,10 @@
           <text x="714" y="207" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
                 font-size="10.5" letter-spacing="0.4" fill="#42454A">LOOP &darr;</text>
 
-          <!-- dashed: commercial IdP connectors not yet exercised -->
+          <!-- dashed: commercial IdP connectors not exercised by the test suites -->
           <rect x="230" y="312" width="360" height="28" fill="none" stroke="#6B1F25" stroke-width="1.25" stroke-dasharray="4 3"/>
           <text x="246" y="330" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
-                font-size="9.5" letter-spacing="0.4" fill="#42454A">ENTRA &middot; OKTA &middot; AUTH0 &mdash; CONFIG-LEVEL, NOT YET EXERCISED</text>
+                font-size="9.5" letter-spacing="0.4" fill="#42454A">ENTRA &middot; OKTA CONFIG-LEVEL &middot; AUTH0 ONE MANUAL RUN, NO LOG</text>
 
           <!-- caption -->
           <text x="40" y="356" font-family="'JetBrains Mono', ui-monospace, Menlo, Consolas"
@@ -416,7 +409,7 @@
           <ul class="footer__links">
             <li class="footer__link-item"><a href="index.html" class="footer__link type-caption">Overview</a></li>
             <li class="footer__link-item"><a href="conceptual-model.html" class="footer__link type-caption">Concept</a></li>
-            <li class="footer__link-item"><a href="build-your-own-agent.html" class="footer__link type-caption">Build</a></li>
+            <li class="footer__link-item"><a href="getting-started.html" class="footer__link type-caption">Get started</a></li>
           </ul>
         </div>
 
