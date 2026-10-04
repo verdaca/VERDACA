@@ -63,15 +63,15 @@
 }
 .post__figure figcaption b { color: var(--color-verdaca-oxblood); font-weight: var(--font-weight-medium); }
 
-.post__references { border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.3); margin-top: 48px; padding-top: 8px; }
-.post__references p {
+#references { border-top: var(--border-width-hairline) solid rgba(66, 69, 74, 0.3); padding-top: 24px; }
+#references ~ p {
   font-size: 0.95rem;
   line-height: 1.55;
   padding-left: 24px;
   text-indent: -24px;
   color: var(--color-verdaca-graphite);
 }
-.post__references a { word-break: break-all; }
+#references ~ p a { word-break: break-all; }
 
 /* Blog index */
 .blog-list { padding-bottom: 96px; }

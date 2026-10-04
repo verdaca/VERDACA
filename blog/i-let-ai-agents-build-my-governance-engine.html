@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I let AI agents build my governance engine. Here&#x27;s what they didn&#x27;t tell me. — Verdaca blog</title>
+  <title>I let AI agents build my governance engine. Here&#x27;s what they didn&#x27;t tell me.</title>
   <meta name="description" content="How AI agents built Verdaca, what their summaries left out, and what the first real receipts caught.">
   <link rel="canonical" href="https://verdaca.com/blog/i-let-ai-agents-build-my-governance-engine">
-  <meta property="og:title" content="I let AI agents build my governance engine. Here&#x27;s what they didn&#x27;t tell me. — Verdaca blog">
+  <meta property="og:title" content="I let AI agents build my governance engine. Here&#x27;s what they didn&#x27;t tell me.">
   <meta property="og:description" content="How AI agents built Verdaca, what their summaries left out, and what the first real receipts caught.">
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://verdaca.com/blog/img/fig-6.png">
   <link rel="stylesheet" href="../styles.css?v=5">
-  <link rel="stylesheet" href="blog.css?v=2">
+  <link rel="stylesheet" href="blog.css?v=3">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
@@ -42,14 +42,14 @@
   <article class="post">
     <div class="container">
       <div class="post__body">
-        <section class="post__summary">
+        <div class="post__summary">
 <h2>Executive summary</h2>
 <p><strong>Problem.</strong> Regulated teams in finance, legal and risk want to use AI on decisions that matter. But an AI answer on its own leaves no record a reviewer can check. You can't see what evidence it relied on, what challenged it, what it cost, or who signed off. A fluent summary is not proof. Verdaca is built on one bet: the lasting value is the record, not the model. Every AI decision should leave a receipt.</p>
 <p><strong>Approach.</strong> I designed Verdaca, and AI coding agents built most of it over eight weeks (135 AI co-authored commits). That turned the build into a test of the idea. The agents reported every stage complete. Yet the headline feature, a deliberation in which a producer drafts, a reviewer challenges and a synthesizer merges, never called a model. The tests were green because the ones that mattered weren't running. I then wired the deliberation for real in one afternoon. Each run now ends in one of four set outcomes (answer, clarify, abstain, escalate to a human). Each also writes a receipt with the evidence, draft, critique, outcome, and each model call's cost and stop reason.</p>
 <p><strong>Results.</strong> Across three recorded runs of one question, the receipts exposed two failures a summary would have hidden. One reviewer was cut off at its output cap. One final answer dropped the reviewer's hedges, the same caveat-dropping the agents had shown in their stage summaries.</p>
 <p><strong>Limits.</strong> Three runs of one question are not a benchmark. No human sign-off is recorded yet, and receipts are hashed, not signed.</p>
 <p><strong>Takeaway.</strong> Whether it's an agent building software or a model answering a question, judge AI by its records, not its summaries.</p>
-        </section>
+        </div>
 <p>I reviewed Verdaca the way I'd review a candidate's project: run the tests, check every claim against the code. The review was not kind.</p>
 <h2>What Verdaca is, and who wrote it</h2>
 <p>Because the record is the product, every vendor sits behind a fixed interface, and you can swap one without the record changing shape.</p>
@@ -57,7 +57,7 @@
 <h2>What held</h2>
 <p>The architecture held. Each part that might change on its own (memory, context compression, model access, cost metering, the chat channel) sits behind a typed interface, and each vendor is an adapter plugged into it.</p>
 <p>The part I'd defend in any interview is the contract tests: one test suite that every adapter for an interface must pass. For memory, the same suite runs against Mem0 and against Letta. When I swapped one for the other, the tests told me whether the rest of the system would notice. That is a swap proven, not promised.</p>
-<figure class="post__figure"><img src="img/fig-1.png" alt="Diagram of two ports. The memory port connects to the Mem0 and Letta adapters; the compaction port connects to the LLMLingua and in-tree adapters. Under each pair: one contract suite, both adapters." loading="lazy" width="1608"><figcaption><b>FIG. 1</b>&nbsp; The two swaps that are proven, not promised: one contract suite per port, run against every adapter.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-1.png" alt="Diagram of two ports. The memory port connects to the Mem0 and Letta adapters; the compaction port connects to the LLMLingua and in-tree adapters. Under each pair: one contract suite, both adapters." width="1608"><figcaption><b>FIG. 1</b>&nbsp; The two swaps that are proven, not promised: one contract suite per port, run against every adapter.</figcaption></figure>
 
 <p>The request gateway held too, and the tests CI ran passed: 424, with 19 skipped.</p>
 <p>Now for what the agents didn't put in the summary.</p>
@@ -69,32 +69,32 @@
 <p>At one point the project reported 411 tests passing and none failing. That was false. The <code>tests/</code> folder wasn't tracked in git, so CI never ran it, and 36 failures had piled up out of sight. It was caught and fixed.</p>
 <p>Re-running everything, I found a quieter version of the same problem. More than 1,400 further tests lived inside the kernel packages, and CI didn't run them at all. A green badge tells you the tests that ran have passed. It doesn't tell you which tests ran.</p>
 <p>The same pattern showed up in the README. The Teams and Slack channels were marked "LIVE" but had only been tested against recorded traffic and a local relay. A benchmark claimed deliberation scored 47% higher than a single agent, but one AI session had played every role, generated all the outputs and scored them itself, on ten questions. Models grading their own work is a measured bias, not a hypothetical one (Yang et al., 2026). The caveats were in the report. They didn't survive the trip to the README.</p>
-<figure class="post__figure"><img src="img/fig-2.png" alt="Two-column comparison of what the summary said versus what the code did: stage complete versus hardcoded gate scores, no output and zero cost; 411 passing versus an untracked tests folder with 36 hidden failures; Teams and Slack live versus recorded traffic and a local relay; 47% better versus one session that played every role and scored itself on 10 questions." loading="lazy" width="1608"><figcaption><b>FIG. 2</b>&nbsp; The caveats existed. They lived in docstrings and reports, not in the summaries I read.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-2.png" alt="Two-column comparison of what the summary said versus what the code did: stage complete versus hardcoded gate scores, no output and zero cost; 411 passing versus an untracked tests folder with 36 hidden failures; Teams and Slack live versus recorded traffic and a local relay; 47% better versus one session that played every role and scored itself on 10 questions." width="1608"><figcaption><b>FIG. 2</b>&nbsp; The caveats existed. They lived in docstrings and reports, not in the summaries I read.</figcaption></figure>
 
 <h2>So I wired it</h2>
 <p>My review estimated one to two days to build the core for real. It took one afternoon: thirteen commits, mostly plugging real model calls into the state machine that was already there.</p>
 <p>Now a producer drafts an answer from the evidence it's given. A reviewer writes its own counterargument <em>before</em> it sees the draft, then critiques the draft, much as in chain-of-verification (Dhuliawala et al., 2024). A synthesizer merges the two. Every run ends in one of four set outcomes: answer, ask for clarification, abstain (Wen et al., 2025), or escalate to a human. Anything that goes wrong defaults to "escalate". CI now runs all six kernel suites: 1,453 tests that never ran in CI before. For now the loop runs from a script or Claude Desktop, not yet behind the gateway or Teams and Slack.</p>
-<figure class="post__figure"><img src="img/fig-3.png" alt="Flow diagram: question and numbered evidence go to the producer (claude-haiku-4-5), the reviewer (claude-sonnet-5-5) writes a counterargument before seeing the draft and then critiques it, the synthesizer (claude-haiku-4-5) merges them, and the run ends in an outcome (answer, clarify, abstain, escalate) plus a JSON receipt. Errors default to escalate." loading="lazy" width="1608"><figcaption><b>FIG. 3</b>&nbsp; The loop as it runs today: four model calls, one receipt. Script or Claude Desktop only, not yet behind the gateway.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-3.png" alt="Flow diagram: question and numbered evidence go to the producer (claude-haiku-4-5), the reviewer (claude-sonnet-5-5) writes a counterargument before seeing the draft and then critiques it, the synthesizer (claude-haiku-4-5) merges them, and the run ends in an outcome (answer, clarify, abstain, escalate) plus a JSON receipt. Errors default to escalate." width="1608"><figcaption><b>FIG. 3</b>&nbsp; The loop as it runs today: four model calls, one receipt. Script or Claude Desktop only, not yet behind the gateway.</figcaption></figure>
 
 <p>For the first real question I gave it the one closest to home: can the 47% benchmark headline be cited as evidence? The evidence was four lines from the benchmark report. All three recorded runs said no, and cited all four lines.</p>
 <h2>What a real receipt shows</h2>
 <p>Every run writes a JSON receipt. The run I'll show made four calls and cost about three cents: Claude Haiku drafted and merged, Claude Sonnet reviewed. I recomputed every cost from tokens and list prices, and they matched.</p>
-<figure class="post__figure"><img src="img/fig-4.png" alt="Receipt for run 2: outcome answer citing E1 to E4, four evidence lines, four model calls with tokens, cost and stop reason, total $0.030744, no truncated calls, a SHA-256 hash, and signature: none yet." loading="lazy" width="1608"><figcaption><b>FIG. 4</b>&nbsp; Run 2&#x27;s receipt, abridged. Every value is copied from receipt-23e61c4c….json in the repo.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-4.png" alt="Receipt for run 2: outcome answer citing E1 to E4, four evidence lines, four model calls with tokens, cost and stop reason, total $0.030744, no truncated calls, a SHA-256 hash, and signature: none yet." width="1608"><figcaption><b>FIG. 4</b>&nbsp; Run 2&#x27;s receipt, abridged. Every value is copied from receipt-23e61c4c….json in the repo.</figcaption></figure>
 
 <p>The first run taught me more than the clean ones. The reviewer's counterargument came back at exactly 1,024 tokens, which was the output cap. It had been cut off mid-argument, and the critique was built on a truncated argument. The receipt didn't say so, because it didn't record why each call stopped. I only noticed because the number was suspiciously round.</p>
-<figure class="post__figure"><img src="img/fig-5.png" alt="Bar chart of the reviewer counterargument&#x27;s output tokens: run 1 stops at exactly the 1,024-token cap, cut off and not flagged; run 2 reaches 1,436 and stopped normally." loading="lazy" width="1608"><figcaption><b>FIG. 5</b>&nbsp; Run 1 hit its output cap and nothing said so. The receipt now records each call&#x27;s stop reason and lists any calls that were cut off.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-5.png" alt="Bar chart of the reviewer counterargument&#x27;s output tokens: run 1 stops at exactly the 1,024-token cap, cut off and not flagged; run 2 reaches 1,436 and stopped normally." width="1608"><figcaption><b>FIG. 5</b>&nbsp; Run 1 hit its output cap and nothing said so. The receipt now records each call&#x27;s stop reason and lists any calls that were cut off.</figcaption></figure>
 
 <p>So the receipt now records each call's stop reason and lists any calls that were cut off. The first run's receipt stays in the repo unchanged, as the honest record. A third run was called as a tool in Claude Desktop, and its log is in the repo too. All three receipts are public: <a href="https://github.com/verdaca/VERDACA/tree/main/docs/receipts">github.com/verdaca/VERDACA/tree/main/docs/receipts</a></p>
 <h2>What the receipt caught</h2>
 <p>Reading the third receipt line by line, I found two problems. They're the most useful findings in the project.</p>
 <p><strong>The final answer was more certain than the review.</strong> The reviewer wrote that no confidence intervals were "shown", and that, having seen only four excerpts, other parts of the report "may add mitigations". The final answer said flatly that "the evidence shows n=10 questions with no confidence intervals". The reviewer said the bias "likely favors the reported direction". The final answer said "favoring the multi-agent arm". The conclusion was right, but the qualifications were gone. This is a documented pattern: LLM summaries of scientific papers were nearly five times as likely as human-written ones to generalize beyond the source, and asking for accuracy made it worse (Peters &amp; Chin-Yee, 2025).</p>
-<figure class="post__figure"><img src="img/fig-6.png" alt="Side-by-side quotes: the reviewer&#x27;s hedged statements (&#x27;may add mitigations&#x27;, &#x27;likely favors the reported direction&#x27;) next to the final answer&#x27;s flat versions (&#x27;the evidence shows&#x27;, &#x27;favoring the multi-agent arm&#x27;)." loading="lazy" width="1608"><figcaption><b>FIG. 6</b>&nbsp; Same conclusion, fewer qualifications. Quotes are verbatim from the Claude Desktop receipt (ab32840a…).</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-6.png" alt="Side-by-side quotes: the reviewer&#x27;s hedged statements (&#x27;may add mitigations&#x27;, &#x27;likely favors the reported direction&#x27;) next to the final answer&#x27;s flat versions (&#x27;the evidence shows&#x27;, &#x27;favoring the multi-agent arm&#x27;)." width="1608"><figcaption><b>FIG. 6</b>&nbsp; Same conclusion, fewer qualifications. Quotes are verbatim from the Claude Desktop receipt (ab32840a…).</figcaption></figure>
 
 <p>Anyone who has worked in finance has seen this. The auditor's qualified opinion turns into "the auditors signed off" by the time it reaches the board pack. My agents did it in their stage summaries, and now my product did it inside a single answer. The difference is that this time the record kept both versions, so the dropped hedges can be seen.</p>
 <p><strong>The reviewer partly marks its own homework.</strong> It writes the counterargument and then critiques the draft against that same counterargument. That is segregation of duties on paper, not quite in practice.</p>
 <h2>What a receipt needs</h2>
 <p>I spent twenty years in finance making numbers provable. In audit, a control that can't show its evidence didn't happen. Research on AI agents puts it just as bluntly: "no agent system can be accountable without auditability" (Nian et al., 2026). Here is what I now think a receipt for an AI decision needs, and where Verdaca stands:</p>
-<figure class="post__figure"><img src="img/fig-7.png" alt="Scorecard: what the AI relied on, has it; what exactly ran, has it; who challenged it independently, partly; what kind of outcome it was, has it; who signed off, not built; that nobody changed it afterwards, half (hashed, not signed)." loading="lazy" width="1608"><figcaption><b>FIG. 7</b>&nbsp; Six things an AI decision receipt needs, scored honestly against Verdaca today.</figcaption></figure>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/fig-7.png" alt="Scorecard: what the AI relied on, has it; what exactly ran, has it; who challenged it independently, partly; what kind of outcome it was, has it; who signed off, not built; that nobody changed it afterwards, half (hashed, not signed)." width="1608"><figcaption><b>FIG. 7</b>&nbsp; Six things an AI decision receipt needs, scored honestly against Verdaca today.</figcaption></figure>
 
 <ul>
 <li><strong>What the AI relied on</strong>, each claim tied to its source. <em>Has it</em>: each claim cites a numbered evidence passage.</li>
@@ -115,15 +115,13 @@
 <p>The honest limitation: three runs of one question is not a benchmark. I can show the loop works and what its records reveal, not how well it answers in general.</p>
 <p>The agents didn't lie to me. They wrote their caveats into docstrings, reports and skip messages. They just didn't raise them in the summary I actually read. My own system made the same mistake on its first real run. The difference is that the receipt caught it, and that's what a receipt is for.</p>
 <p><em>Next in this series: what twenty years of closing books taught me about governing AI.</em></p>
-        <section class="post__references">
-<h2>References</h2>
+<h2 id="references">References</h2>
 <p>Dhuliawala, S., Komeili, M., Xu, J., Raileanu, R., Li, X., Celikyilmaz, A., &amp; Weston, J. (2024). Chain-of-verification reduces hallucination in large language models. In <em>Findings of the Association for Computational Linguistics: ACL 2024</em> (pp. 3563–3578). Association for Computational Linguistics. <a href="https://doi.org/10.18653/v1/2024.findings-acl.212">https://doi.org/10.18653/v1/2024.findings-acl.212</a></p>
 <p>Krentsel, A., Agarwal, S., Cemri, M., Liu, S., Sankhe, S., Mao, Z., Zaharia, M., &amp; Stoica, I. (2026). <em>Reality is the final verifier: On two key gaps in agentic software engineering</em> (arXiv:2609.12039). arXiv. <a href="https://doi.org/10.48550/arXiv.2609.12039">https://doi.org/10.48550/arXiv.2609.12039</a></p>
 <p>Nian, Y., Yuan, A., Zhang, H., Li, J., Li, L., Hu, X., Wei, H., Xiao, X., Xiao, C., &amp; Zhao, Y. (2026). <em>Auditable agents</em> (arXiv:2604.05485). arXiv. <a href="https://doi.org/10.48550/arXiv.2604.05485">https://doi.org/10.48550/arXiv.2604.05485</a></p>
 <p>Peters, U., &amp; Chin-Yee, B. (2025). Generalization bias in large language model summarization of scientific research. <em>Royal Society Open Science, 12</em>(4), 241776. <a href="https://doi.org/10.1098/rsos.241776">https://doi.org/10.1098/rsos.241776</a></p>
 <p>Wen, B., Yao, J., Feng, S., Xu, C., Tsvetkov, Y., Howe, B., &amp; Wang, L. L. (2025). Know your limits: A survey of abstention in large language models. <em>Transactions of the Association for Computational Linguistics, 13</em>. <a href="https://doi.org/10.1162/tacl_a_00754">https://doi.org/10.1162/tacl_a_00754</a></p>
 <p>Yang, J., Hu, Z., Qiu, C., Deng, Z., Jiao, X., &amp; Zhou, T. (2026). <em>Quantifying and mitigating self-preference bias of LLM judges</em> (arXiv:2604.22891). arXiv. <a href="https://doi.org/10.48550/arXiv.2604.22891">https://doi.org/10.48550/arXiv.2604.22891</a></p>
-        </section>
       </div>
     </div>
   </article>
