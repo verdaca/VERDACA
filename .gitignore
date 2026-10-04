@@ -20,6 +20,7 @@
 !shell/
 !tests/
 !docs/
+!blog/
 !pyproject.toml
 !.python-version
 !uv.lock

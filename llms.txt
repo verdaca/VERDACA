@@ -28,6 +28,10 @@ Verdaca is built as ports and adapters: every external dependency sits behind a 
 - [About](https://verdaca.com/about.html): Three pillars — port contracts, pinned suppliers, replaceable by design
 - [Contact](https://verdaca.com/contact.html): Inquiry form
 
+## Blog
+
+- [I let AI agents build my governance engine. Here's what they didn't tell me.](https://verdaca.com/blog/i-let-ai-agents-build-my-governance-engine): How AI agents built Verdaca, the stub and the false green their summaries left out, and what the first real receipts caught (October 2026)
+
 ## Documentation
 
 - [Overview](https://verdaca.com/docs/index.html): What exists in the repo today
