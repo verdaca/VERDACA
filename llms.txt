@@ -1,41 +1,50 @@
 # Verdaca
 
-> A productized multi-agent deliberation platform. Where most AI agent tools generate one answer from one model, Verdaca runs specialized agents through structured deliberation — they critique each other, synthesize evidence, and converge on outputs you can verify.
+> A governed AI decision workflow. A question goes through a three-role, model-backed deliberation loop and every run writes a hashed JSON receipt. Early: no users or customers yet.
 
-Verdaca's distinguishing feature is substrate-neutrality: every external dependency — memory store, model gateway, compaction strategy, quality gates — sits behind a ratified port contract enforced by no-waiver tests. Adapters snap in like Lego (swap Mem0 for Letta, swap one provider for another, swap an in-process compactor for a managed one), and agent workflows never break, because they only ever talk to the port, not the substrate underneath.
+Verdaca is built as ports and adapters: every external dependency sits behind a port contract checked by shared no-waiver contract suites. Two swaps are proven by those suites today: memory (Mem0 ↔ Letta) and compaction (LLMLingua ↔ in-tree). Other swaps are WIP.
 
-Two axes of pluggability:
+## What runs today
 
-- Horizontal: swap agent personas (strategy / engineering / UX / data science / custom packs) without touching the kernel
-- Vertical: swap substrate adapters (Mem0/Letta · Anthropic/OpenAI · Forge/Caveman) without touching agents
+- Deliberation loop: a producer (Claude Haiku 4.5) drafts; a reviewer (Claude Sonnet 5.5) writes a counterargument from the question and evidence alone, then critiques the draft; a synthesizer (Claude Haiku 4.5) returns a typed outcome: answer, clarify, abstain or escalate. One backtrack allowed; errors fail closed to escalate.
+- Receipt: each run writes JSON with evidence, draft, critique, diff, outcome, state log, and per-call model, tokens, cost and stop reason. Hashed (SHA-256), not signed.
+- How it runs: from a script (`scripts/live/deliberate_live.py`) or as an MCP tool (`verdaca_deliberate`), called once from Claude Desktop.
+- Recorded runs: three on 2026-10-01, all on the same question; each cost about $0.03 ($0.026149, $0.030744, $0.031389). Receipts: https://github.com/verdaca/VERDACA/tree/main/docs/receipts
+- Auth-first gateway: OIDC/JWT identity, replay protection, per-key budgets via LiteLLM virtual keys. Tested against a local OIDC validator; one manual Auth0 run in June 2026, with no committed log. The gateway does not front the deliberation loop yet.
+- Tests: 440+ root and 1,450+ kernel tests in CI.
+- Known limits: in the Claude Desktop run the synthesizer dropped some of the reviewer's hedges; the reviewer critiques against its own counterargument.
+- Source: https://github.com/verdaca/VERDACA
 
-Audience: consultants, analysts, strategists, technical leaders, founders — decision-makers whose work is too consequential to outsource to one AI's first answer, but who can't always pull a real human team into the room.
+## WIP (designed, not built)
 
-Verdaca Studio delivers a scored, auditable deliberation trail per session — showing each agent's reasoning, what was challenged, and how the final synthesis was reached, with dissenting positions preserved rather than averaged away. Headline quality lift: +47% vs vanilla / +21% vs enhanced single-agent baselines (internal scoring; A4 deferred).
+- Teams / Slack channels (adapters tested against recorded traffic only), plug-in personas, workflow recipes, Verdaca Studio deliberation, an installable `verdaca` package
+- OpenAI ↔ Anthropic and Forge ↔ Caveman swaps (one adapter each, not swap-tested)
+- Signed receipts, human sign-off in the receipt, a separate critic
+- Quality figures: the earlier +47% / +21% numbers are self-graded (one session, N=10) and are not evidence
 
 ## Product
 
-- [Landing](https://verdaca.com/index.html): Hero, capability tiles, feature grid, pricing, supplier-cite, footer
-- [About](https://verdaca.com/about.html): Three pillars — substrate ownership, supplier-list quality signal, replaceable-by-design architecture
-- [Contact](https://verdaca.com/contact.html): Practitioner-register inquiry form
+- [Landing](https://verdaca.com/index.html): The deliberation loop, receipts, adapters, working with us
+- [About](https://verdaca.com/about.html): Three pillars — port contracts, pinned suppliers, replaceable by design
+- [Contact](https://verdaca.com/contact.html): Inquiry form
 
 ## Documentation
 
-- [Overview](https://verdaca.com/docs/index.html): What Verdaca is and how the docs are organized
-- [Getting started](https://verdaca.com/docs/getting-started.html): Installation, first session, configuration essentials
-- [Conceptual model](https://verdaca.com/docs/conceptual-model.html): Two-axis pluggability, deliberation loop, kernel responsibilities, vendored components (Mem0, Letta, TONL, Beads, Forge, Pi-Mono, RTK)
-- [Agent catalog](https://verdaca.com/docs/agent-catalog.html): Available personas (Sally, Winston, Amelia, Sophia, Caravaggio, Quinn, John, Mary, Murat) with role contracts and capability descriptions
-- [Build your own agent](https://verdaca.com/docs/build-your-own-agent.html): Define a custom persona — role card, constraints, output format, conformance verification
-- [Workflow recipes](https://verdaca.com/docs/workflow-recipes.html): Pre-built deliberation patterns for code review, requirements analysis, security audit, UX critique
-- [Output review](https://verdaca.com/docs/output-review.html): Scoring, audit trails, custom rubrics for deliberation evaluation
+- [Overview](https://verdaca.com/docs/index.html): What exists in the repo today
+- [Getting started](https://verdaca.com/docs/getting-started.html): Run a deliberation and verify its receipt
+- [Conceptual model](https://verdaca.com/docs/conceptual-model.html): Two-axis pluggability, auth-first gateway, deliberation loop, kernel responsibilities, vendored components
 
-## Technical posture
+## Design preview (WIP)
 
-- Architecture: Workflows → Agents → Kernel → Ports → Adapters (layered Lego pattern; substrate-neutral by construction)
-- Memory adapters shipping: Mem0 (hybrid vector + graph store, Apache-2.0) and Letta (stateful session memory, Apache-2.0) — both pass the same conformance suite
-- No customer-facing API: Verdaca is delivered as a CLI / tool / package, not a hosted API service. Local config, local kernel, local adapters. LLM provider credentials live as environment variables in the practitioner's environment; Verdaca does not store or proxy API keys
-- All metric citations carry the A4-deferred caveat: `(internal scoring; A4 deferred)` until Stage 7 ratifies external validation
+These pages describe the planned `verdaca` package. It is not built.
+
+- [Overview](https://verdaca.com/docs/design-preview/index.html)
+- [Getting started](https://verdaca.com/docs/design-preview/getting-started.html)
+- [Agent catalog](https://verdaca.com/docs/design-preview/agent-catalog.html)
+- [Build your own agent](https://verdaca.com/docs/design-preview/build-your-own-agent.html)
+- [Workflow recipes](https://verdaca.com/docs/design-preview/workflow-recipes.html)
+- [Output review](https://verdaca.com/docs/design-preview/output-review.html)
 
 ## Status
 
-LIVE 2026-05-11. Static site (HTML + CSS, no JavaScript). Built and ratified through a closed design cycle (Phase 2, D-9 second clean cycle against the Verdaca design system substrate v1.0).
+Static site, deployed from the `main` branch of the repo.

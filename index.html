@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Verdaca — Multi-Agent Deliberation</title>
 
-  <meta name="description" content="Verdaca runs a structured panel of specialized AI agents on your hardest questions — they argue, push back, and converge on an output that shows its reasoning.">
+  <meta name="description" content="Verdaca puts your question through a three-role, model-backed deliberation loop (draft, counterargument and critique, synthesis) and writes a hashed receipt for every run.">
   <meta property="og:title" content="Verdaca — Multi-Agent Deliberation">
-  <meta property="og:description" content="A structured panel of specialized AI agents that argue your hardest questions and converge on an output that shows its reasoning.">
+  <meta property="og:description" content="A three-role deliberation loop that drafts, argues the other side, and returns a typed outcome with a hashed receipt.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://verdaca.com/">
   <meta name="twitter:card" content="summary">
 
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <script>history.scrollRestoration='manual';addEventListener('pageshow',function(){if(!location.hash)scrollTo(0,0);});</script>
 </head>
@@ -41,7 +41,7 @@
 
       <h1 id="hero-headline" class="hero__headline type-display">The room your decision deserves, on demand.</h1>
 
-      <p class="hero__subheadline type-body-editorial">Verdaca runs a structured panel of specialized agents on your hardest questions — they argue, push back, and converge on an output that shows its reasoning. One question, multiple perspectives, deliberation visible.</p>
+      <p class="hero__subheadline type-body-editorial">Verdaca puts your question through a three-role loop: one model drafts, a second argues the other side and critiques the draft, and a third returns an answer, asks you to clarify, abstains or escalates. Every run writes a hashed receipt.</p>
 
       <div class="hero__cta-row">
         <a href="contact.html" class="cta cta--primary type-body">Book a pilot conversation</a>
@@ -55,11 +55,11 @@
   <section class="channels" aria-labelledby="channels-headline" id="channels">
     <div class="container">
       <div class="channels__inner">
-        <p class="channels__eyebrow type-eyebrow">DESIGN-PARTNER PREVIEW &middot; CHANNEL ACCESS</p>
+        <p class="channels__eyebrow type-eyebrow">WIP &middot; CHANNEL ACCESS</p>
         <h2 id="channels-headline" class="channels__headline type-headline">Reach the council from the room you already work in.</h2>
-        <p class="channels__body type-body-editorial">Drive a Verdaca deliberation from a Microsoft Teams or Slack message — the panel convenes, argues, and the synthesized result returns to your thread. One gateway, both channels.</p>
+        <p class="channels__body type-body-editorial">Planned: start a deliberation from a Microsoft Teams or Slack message. Today the gateway and the deliberation loop are separate; the channel adapters are tested against recorded traffic, not live workspaces.</p>
         <p class="channels__channels type-mono-cite"><span class="field">MICROSOFT TEAMS</span><span class="channels__separator">&middot;</span><span class="field">SLACK</span></p>
-        <p class="channels__trust type-caption">Every inbound message is identity-checked, replay-guarded, and budget-gated before any agent reasons. In this preview, identity is verified against a local OIDC validator; connectors for commercial identity providers are configuration-level and not yet exercised.</p>
+        <p class="channels__trust type-caption">The gateway identity-checks, replay-guards and budget-gates every inbound message. In tests, identity is verified against a local OIDC validator; one manual Auth0 run in June 2026, with no committed log.</p>
       </div>
     </div>
   </section>
@@ -71,16 +71,16 @@
       <div class="capabilities__grid">
 
         <article class="tile" aria-labelledby="tile-1-heading">
-          <p class="tile__eyebrow type-eyebrow">HORIZONTAL &middot; PLUG-IN PERSONAS</p>
+          <p class="tile__eyebrow type-eyebrow">WIP &middot; HORIZONTAL &middot; PLUG-IN PERSONAS</p>
           <h3 id="tile-1-heading" class="tile__heading type-headline">Plug-in personas</h3>
-          <p class="tile__body type-body">Swap UX expert &harr; data scientist &harr; legal counsel &harr; security architect &mdash; no kernel/workflow change.</p>
+          <p class="tile__body type-body">Planned: swap UX expert &harr; data scientist &harr; legal counsel &harr; security architect without changing workflow logic. Today the roles are fixed: producer, reviewer, synthesizer.</p>
           <p class="tile__pullquote type-narrative">The persona is the argument. Change who's in the room and the answer changes — without touching a line of workflow logic.</p>
         </article>
 
         <article class="tile" aria-labelledby="tile-2-heading">
           <p class="tile__eyebrow type-eyebrow">VERTICAL &middot; SUBSTRATE-NEUTRAL</p>
           <h3 id="tile-2-heading" class="tile__heading type-headline">Substrate-neutral adapters</h3>
-          <p class="tile__body type-body">Swap Mem0 &harr; Letta &middot; OpenAI &harr; Anthropic &middot; Forge &harr; Caveman &mdash; no agent change.</p>
+          <p class="tile__body type-body">Mem0 &harr; Letta (memory) and LLMLingua &harr; in-tree (compaction): proven by shared contract suites. OpenAI &harr; Anthropic and Forge &harr; Caveman: WIP, one adapter each, not swap-tested.</p>
         </article>
 
       </div>
@@ -99,32 +99,32 @@
 
         <div class="feature-item">
           <p class="feature-item__eyebrow type-eyebrow">MULTI-AGENT DELIBERATION</p>
-          <p class="feature-item__body type-body-editorial">Run a panel of specialized agents on a single question. Each persona reasons independently, challenges the others, and the kernel synthesizes a result that shows where they agreed — and where they didn't.</p>
+          <p class="feature-item__body type-body-editorial">A producer drafts; a reviewer writes a counterargument from the question and evidence alone, then critiques the draft; a synthesizer returns a typed outcome: answer, clarify, abstain or escalate. Errors fail closed to escalate.</p>
         </div>
 
         <div class="feature-item">
           <p class="feature-item__eyebrow type-eyebrow">ADAPTER REGISTRY</p>
-          <p class="feature-item__body type-body-editorial">Every external dependency sits behind a ratified port contract. Swap the backing implementation — memory store, model provider, compaction engine — without touching agent or workflow code.</p>
+          <p class="feature-item__body type-body-editorial">Every external dependency sits behind a ratified port contract. Swap the backing implementation without touching agent or workflow code: proven today for the memory store and the compaction engine; the model provider swap is WIP.</p>
         </div>
 
         <div class="feature-item">
           <p class="feature-item__eyebrow type-eyebrow">MEMORY SUBSTRATE</p>
-          <p class="feature-item__body type-body-editorial">Dual memory adapters ship out of the box: Mem0 for hybrid vector-plus-graph retrieval, Letta for stateful session memory. Both pass the same conformance suite; pick one or run both.</p>
+          <p class="feature-item__body type-body-editorial">Mem0 (hybrid vector-plus-graph retrieval) and Letta (stateful session memory) both pass the same memory contract suite; either can back the memory port.</p>
         </div>
 
         <div class="feature-item">
-          <p class="feature-item__eyebrow type-eyebrow">WORKFLOW RECIPES</p>
-          <p class="feature-item__body type-body-editorial">Pre-built deliberation patterns for strategy review, code audit, requirements analysis, and UX critique. Load a recipe, run it, adapt it — or define your own from the same composable primitives.</p>
+          <p class="feature-item__eyebrow type-eyebrow">WIP &middot; WORKFLOW RECIPES</p>
+          <p class="feature-item__body type-body-editorial">Planned: pre-built deliberation patterns for strategy review, code audit, requirements analysis and UX critique. <a href="docs/design-preview/workflow-recipes.html">Design preview</a>; not built yet.</p>
         </div>
 
         <div class="feature-item">
-          <p class="feature-item__eyebrow type-eyebrow">OUTPUT REVIEW</p>
-          <p class="feature-item__body type-body-editorial">Every session produces a scored, auditable output with the full deliberation trail attached. See what each agent proposed, what got challenged, and what the final synthesis discarded.</p>
+          <p class="feature-item__eyebrow type-eyebrow">RECEIPTS</p>
+          <p class="feature-item__body type-body-editorial">Each run writes a JSON receipt: evidence, draft, critique, diff, outcome, and per-call model, tokens and cost. Hashed (SHA-256), not signed. <a href="https://github.com/verdaca/VERDACA/tree/main/docs/receipts">Three recorded runs</a> on one question, each about $0.03, are public.</p>
         </div>
 
         <div class="feature-item">
-          <p class="feature-item__eyebrow type-eyebrow">DEPLOYMENT READY</p>
-          <p class="feature-item__body type-body-editorial">Ports and adapters are versioned, pinned, and tested against no-waiver conformance suites before release. Swap the substrate without a redeployment ceremony.</p>
+          <p class="feature-item__eyebrow type-eyebrow">PINNED AND CONTRACT-TESTED</p>
+          <p class="feature-item__body type-body-editorial">Adapters are version-pinned and run against no-waiver contract suites in CI: 440+ root and 1,450+ kernel tests.</p>
         </div>
 
       </div>
@@ -137,8 +137,8 @@
       <div class="pricing-cta__inner">
 
         <p class="pricing-cta__eyebrow type-eyebrow">WORKING WITH US</p>
-        <h2 id="pricing-headline" class="pricing-cta__headline type-display">Verdaca Studio runs a full structured deliberation per session, not a single model call.</h2>
-        <p class="pricing-cta__body type-body-editorial">Verdaca is early. We're working hands-on with a small number of design-partner teams before we set public pricing — shaping the product around real, high-stakes decisions. If your team has a decision worth deliberating, we'd like to talk.</p>
+        <h2 id="pricing-headline" class="pricing-cta__headline type-display">A deliberation per question, not a single model call.</h2>
+        <p class="pricing-cta__body type-body-editorial">Verdaca is early: the deliberation loop runs from a script or as an MCP tool (called once from Claude Desktop); Studio is WIP. We're working hands-on with a small number of design-partner teams before we set public pricing — shaping the product around real, high-stakes decisions. If your team has a decision worth deliberating, we'd like to talk.</p>
 
         <div class="pricing-cta__actions">
           <a href="contact.html" class="cta cta--primary type-body">Book a pilot conversation</a>
@@ -192,7 +192,7 @@
           <ul class="footer__links">
             <li class="footer__link-item"><a href="docs/index.html" class="footer__link type-caption">Overview</a></li>
             <li class="footer__link-item"><a href="docs/conceptual-model.html" class="footer__link type-caption">Concept</a></li>
-            <li class="footer__link-item"><a href="docs/build-your-own-agent.html" class="footer__link type-caption">Build</a></li>
+            <li class="footer__link-item"><a href="docs/getting-started.html" class="footer__link type-caption">Build</a></li>
           </ul>
         </div>
 
@@ -200,9 +200,7 @@
         <div>
           <p class="footer__col-heading type-eyebrow">LEGAL</p>
           <ul class="footer__links">
-            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Privacy</a></li>
-            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Terms</a></li>
-            <li class="footer__link-item"><a href="#" class="footer__link type-caption">Licenses</a></li>
+                                    <li class="footer__link-item"><a href="index.html#suppliers-eyebrow" class="footer__link type-caption">Licenses</a></li>
           </ul>
         </div>
 

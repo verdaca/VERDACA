@@ -859,3 +859,10 @@ img, svg { display: block; max-width: 100%; }
     transition: none;
   }
 }
+
+/* Inline links inside feature copy */
+.feature-item__body a {
+  color: inherit;
+  text-decoration-color: var(--color-rule-accent);
+  text-underline-offset: 2px;
+}
