@@ -45,6 +45,15 @@
 
 <figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/cover.png" alt="A ledger page listing the four model calls of one AI run with tokens out and cost, totalling $0.030744, with evidence lines, human sign-off not recorded and a SHA-256 hash, stamped Reconciled, Trail kept, Reviewed and Material?" width="1600"><figcaption>Illustration by the author. Ledger values are copied from one recorded run&#x27;s receipt.</figcaption></figure>
 
+<p><em>I wrote this article with the assistance of AI tools (Claude), which also helped build the figures. The experience, sources and conclusions are mine, and I checked every claim and citation.</em></p>
+        <div class="post__summary">
+<h2>Executive summary</h2>
+<p><strong>Problem.</strong> Swiss banks and insurers already use AI: in FINMA's 2025 survey of around 400 institutions, about half used it or were building it. Switzerland has no AI-specific law, but FINMA expects the existing rules on governance and risk to cover AI. Most talk about AI safety is about where data goes and who can call a model. Much less is about recording what the AI decided, and why.</p>
+<p><strong>Approach.</strong> I compare four habits from the month-end close (reconcile, keep the audit trail, separate preparer and reviewer, decide what is material) with what FINMA's guidance asks for, and with what each looked like in my own AI project.</p>
+<p><strong>Findings.</strong> Each habit matched a failure I saw: a test report that covered less than it seemed, a model call cut off without warning, a reviewer that is a second opinion rather than an independent check, and a final answer that dropped its caveats.</p>
+<p><strong>Limits.</strong> One project of my own and three recorded runs of one question. It shows how these failures happen, not how often.</p>
+<p><strong>Takeaway.</strong> Governing AI needs no new principle. It is the discipline finance already has, applied to a new kind of preparer.</p>
+        </div>
 <p>At the end of every month, finance teams close the books. Before anyone signs, the numbers are reconciled, the trail is checked, someone other than the preparer reviews them, and the team decides which differences matter. None of this is new. It is what makes a number trustworthy enough to sign.</p>
 <p>My background is in making financial numbers provable: IFRS reporting, consolidation, SOX controls. For the last two years I have been building AI systems. In <a href="i-let-ai-agents-build-my-governance-engine.html">my last article</a> I described what happened when I let AI agents build one of them: every stage was reported "done", and the headline feature had never worked. Looking back, most lessons from that project are ones that finance learned long ago.</p>
 <p>Verdaca is my working name for that system: it runs a small panel of AI models on a question and writes a receipt, a JSON record of the evidence, the draft, the critique, the outcome and the cost of every model call.</p>
