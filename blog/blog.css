@@ -106,3 +106,5 @@
   line-height: 1.5;
   margin: 0;
 }
+
+.blog-card + .blog-card { margin-top: 20px; }

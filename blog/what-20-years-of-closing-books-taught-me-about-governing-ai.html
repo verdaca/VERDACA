@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en" data-mode="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What 20 years of closing books taught me about governing AI</title>
+  <meta name="description" content="Four habits from the month-end close — reconcile, keep the trail, separate duties, decide what is material — and what each looked like in my own AI project.">
+  <link rel="canonical" href="https://verdaca.com/blog/what-20-years-of-closing-books-taught-me-about-governing-ai">
+  <meta property="og:title" content="What 20 years of closing books taught me about governing AI">
+  <meta property="og:description" content="Four habits from the month-end close — reconcile, keep the trail, separate duties, decide what is material — and what each looked like in my own AI project.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://verdaca.com/blog/img/closing-books/cover.png">
+  <link rel="stylesheet" href="../styles.css?v=5">
+  <link rel="stylesheet" href="blog.css?v=4">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+
+  <header class="site-nav" role="banner">
+    <div class="container nav__inner">
+      <a href="../index.html" class="nav__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+      <nav class="nav__links" aria-label="Primary navigation">
+        <a href="../index.html#product" class="nav__item type-eyebrow">PRODUCT</a>
+        <a href="../docs/index.html" class="nav__item type-eyebrow">DOCS</a>
+        <a href="../blog/index.html" class="nav__item type-eyebrow" aria-current="page">BLOG</a>
+        <a href="../about.html" class="nav__item type-eyebrow">ABOUT</a>
+        <a href="../contact.html" class="nav__item type-eyebrow">CONTACT</a>
+        <a href="../index.html#working-with-us" class="nav__item nav__item--cta type-eyebrow">GET STARTED</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="blog-hero" aria-labelledby="post-title">
+    <div class="container">
+      <p class="blog-hero__eyebrow type-eyebrow">BLOG &middot; FINANCE</p>
+      <h1 id="post-title" class="blog-hero__headline type-display">What 20 years of closing books taught me about governing AI</h1>
+      <p class="blog-hero__dek type-body-editorial">At month-end, nobody signs the accounts because the system says &quot;done&quot;. AI needs the same habit.</p>
+      <p class="blog-hero__meta type-caption">Andrey Popov &middot; <time datetime="2026-10-06">October 2026</time></p>
+    </div>
+  </section>
+
+  <article class="post">
+    <div class="container">
+      <div class="post__body">
+
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/cover.png" alt="A ledger page listing the four model calls of one AI run with tokens out and cost, totalling $0.030744, with evidence lines, human sign-off not recorded and a SHA-256 hash, stamped Reconciled, Trail kept, Reviewed and Material?" width="1600"><figcaption>Illustration by the author. Ledger values are copied from one recorded run&#x27;s receipt.</figcaption></figure>
+
+<p>At the end of every month, finance teams close the books. Before anyone signs, the numbers are reconciled, the trail is checked, someone other than the preparer reviews them, and the team decides which differences matter. None of this is new. It is what makes a number trustworthy enough to sign.</p>
+<p>My background is in making financial numbers provable: IFRS reporting, consolidation, SOX controls. For the last two years I have been building AI systems. In <a href="i-let-ai-agents-build-my-governance-engine.html">my last article</a> I described what happened when I let AI agents build one of them: every stage was reported "done", and the headline feature had never worked. Looking back, most lessons from that project are ones that finance learned long ago.</p>
+<p>Verdaca is my working name for that system: it runs a small panel of AI models on a question and writes a receipt, a JSON record of the evidence, the draft, the critique, the outcome and the cost of every model call.</p>
+<h2>Regulators are asking the same questions</h2>
+<p>Switzerland has no AI-specific law, and FINMA says so directly: "To date, there is no AI-specific legislation in Switzerland." The existing rules on governance and risk management apply to AI, scaled to how material each application is (FINMA, 2024). A broad AI act is not planned. In February 2025 the Federal Council decided to ratify the Council of Europe's AI Convention. Any new rules should be "as sector-specific as possible", and a draft bill is due for consultation by the end of 2026 (Swiss Federal Council, 2025).</p>
+<p>FINMA's Guidance 08/2024 reads like a close checklist: an inventory of AI applications, data quality, tests and ongoing monitoring, documentation, explainability and independent review.</p>
+<p>AI is already inside Swiss finance. In FINMA's survey of around 400 financial institutions, about half used AI or had applications in development, and another quarter planned to within three years. Among those using AI, 91% also used generative AI (FINMA, 2025).</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-1.png" alt="Four statistic tiles from FINMA&#x27;s 2025 survey: about 400 institutions surveyed; about 50% use AI or have applications in development; a further 25% plan to within three years; 91% of AI users also use generative AI." width="1608"><figcaption><b>FIG. 1</b>&nbsp; AI is already inside Swiss finance. Figures from FINMA&#x27;s survey press release, 24 April 2025.</figcaption></figure>
+
+<p>The United States has no federal AI law either, and a December 2025 executive order set up a federal task force to challenge state AI laws (Executive Order No. 14365, 2025). For banks, US supervisors replaced their model-risk guidance, the rules for how banks check the models they rely on, in April 2026. The new version says generative and agentic AI models "are not within the scope of this guidance" (Board of Governors of the Federal Reserve System et al., 2026). Leaving generative AI out of a framework does not remove the risk, or the duty to manage it (Godlove &amp; Buchanan, 2026). In the EU, the AI Act's main obligations for stand-alone high-risk systems now apply from 2 December 2027, after the July 2026 amendment (European Union, 2026).</p>
+<blockquote>
+<p>So the AI-specific rules are still being written. The duty to govern risk already applies. If AI touches a decision, you need to show your work.</p>
+</blockquote>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-2.png" alt="Three timelines. Switzerland: FINMA Guidance 08/2024 in December 2024; Federal Council decision in February 2025 to ratify the Council of Europe AI Convention with sector-specific changes; a consultation bill due by end 2026. United States: Executive Order 14365 in December 2025; SR 26-2 in April 2026, with generative and agentic AI out of scope. EU: Regulation 2026/1744 in force July 2026; high-risk obligations from 2 December 2027 and 2 August 2028. A marker shows today, October 2026." width="1608"><figcaption><b>FIG. 2</b>&nbsp; The AI-specific rules are still being written; the duty to govern risk already applies. Status checked on official sources, 4 October 2026.</figcaption></figure>
+
+<h2>Two layers of AI governance</h2>
+<p>"AI safety and governance" covers two different jobs, and it helps to keep them apart.</p>
+<p><strong>Layer 1: where your data goes and who can use the model.</strong> This is what cloud platforms offer. Anthropic's Claude models are available directly from Anthropic and through Amazon Bedrock, Google Cloud and Microsoft Foundry. Each route differs in who runs the model, where data is processed and which controls come with it. Here is a short summary of each provider's public documentation, as of October 2026.</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-3.png" alt="Table of five routes to Claude: the Claude API direct, Claude Platform on AWS, Amazon Bedrock, Google Cloud (Vertex AI) and Microsoft Foundry. For each: who processes the data, how access is controlled, and data handling and controls. Below the table, a second layer is named: what the AI decided and why, covering evidence used, what challenged it, cost, sign-off and surviving caveats." width="1608"><figcaption><b>FIG. 3</b>&nbsp; Two layers of AI governance. Layer 1 as described in each provider&#x27;s public documentation, October 2026; terms change, so check the current ones.</figcaption></figure>
+
+<p><strong>Layer 2: what the AI decided, and why.</strong> The controls above tell you who can call a model and where the data goes. Some go further: Amazon Bedrock, for example, can check whether an answer is grounded in its source documents (Amazon Web Services, n.d.-b). But these are filters applied at the moment of the call. They are not a decision record of what evidence an answer relied on, what challenged it, who signed off, and whether its caveats survived. That second layer is what this article is about, and it is the layer I work on in Verdaca. The two layers solve different problems. A fully locked-down model can still give a confident answer that nobody can reconstruct.</p>
+<p>The rest of this article is about layer 2. Here are four habits from the close, and what each looked like in my own AI project.</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-4.png" alt="A table of four habits: reconcile, keep the audit trail, separate preparer and reviewer, decide what is material. For each: what it means in the close, what it means in an AI system, and the question to ask." width="1608"><figcaption><b>FIG. 4</b>&nbsp; Four habits from the month-end close, and what each looks like when the preparer is an AI system.</figcaption></figure>
+
+<h2>1. Reconcile before you report</h2>
+<p>In finance, a number is not finished until it ties to something independent: a bank statement, a sub-ledger, a confirmation. For an AI answer, that can mean recomputing its numbers from the source, checking that every citation exists, or asking the same question more than once and comparing the answers (Wang &amp; Wang, 2025).</p>
+<p>My project once reported 411 tests passing and none failing. That was not true. The test folder was not tracked, so 36 failures sat where the automated checks never looked. The green signal was real; it just covered less than it seemed to. Later, when the system made real model calls, I recomputed every cost on its records from token counts and list prices. They matched. That second check is the one I trust.</p>
+<p><strong>Ask:</strong> what independent source does this AI result tie to, and who checked it?</p>
+<h2>2. Keep the audit trail, not the summary</h2>
+<p>Auditors don't accept "the system calculated it". They want the trail.</p>
+<p>Every run of my system writes that receipt, and for each model call it also keeps the tokens, the cost and the reason the call stopped. That trail caught something no summary would have shown. In the first run, one model call was cut off at its output limit, and the critique was built on a truncated argument. FINMA asks for the same kind of record for material applications: documentation of "assumptions, limitations, testing and controls as well as fallback solutions" (FINMA, 2024). When the model itself can't be inspected, "opacity does not eliminate accountability; it increases uncertainty" (Godlove &amp; Buchanan, 2026). An auditor would record a scope limitation and qualify the opinion: sign, but state clearly what could not be checked. The AI equivalent is to say so in the answer: mark it as limited, or escalate it to a person, rather than present it as complete.</p>
+<p>My trail is still incomplete. No human sign-off is recorded yet, and the receipts are hashed, not signed.</p>
+<p><strong>Ask:</strong> if this decision is challenged in a year, what record will you show?</p>
+<h2>3. Separate the preparer from the reviewer</h2>
+<p>The person who prepares a reconciliation does not approve it. That is segregation of duties.</p>
+<p>In my system, a reviewer model writes its own counterargument before it sees the draft, then critiques the draft. That is meant to avoid a model grading its own work, a setup that research shows is biased (Yang et al., 2026). But it is not full independence, because the reviewer judges the draft against its own argument. FINMA saw a similar gap in the institutions it supervises: it "did not observe a clear distinction between the development of AI applications and the independent review in all cases" (FINMA, 2024).</p>
+<p>In banks, the "second line" is a separate risk team that challenges the work of the people who build and use the models. A model inside my own system cannot be that.</p>
+<blockquote>
+<p>My reviewer is a second opinion, not a second line.</p>
+</blockquote>
+<p>Human review has its own weak spot. In one study, showing researchers which evidence supported each AI claim lowered their trust, yet they kept relying on the AI's edits anyway (Martin-Boyle et al., 2026). A reviewer on paper is not always a reviewer in practice.</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-5.png" alt="Left: governance, risk management, independent validation and internal audit. Right: the author&#x27;s system, in which producer, reviewer and synthesizer models sit inside one system with one owner; independent validation is not built and human sign-off is not recorded." width="1608"><figcaption><b>FIG. 5</b>&nbsp; Left: the four functions in Godlove &amp; Buchanan (2026). Right: where my reviewer actually sits.</figcaption></figure>
+
+<p><strong>Ask:</strong> who reviews the AI, and what makes them independent of whoever built it?</p>
+<h2>4. Decide what is material, and protect it</h2>
+<p>Not every difference matters. Materiality is how finance decides which ones do, and FINMA applies the same idea to AI: controls should match how material the application is (FINMA, 2024). FINMA lists factors such as the financial impact, the number of clients affected and the consequences of errors (FINMA, 2024). A low-impact productivity tool does not need the same validation as AI that influences credit or autonomous transactions (Godlove &amp; Buchanan, 2026).</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-6.png" alt="A scale from lighter assurance for a low-impact productivity tool to heavier assurance for AI influencing credit, employment or autonomous transactions. Factors: materiality, potential harm, autonomy, sensitive data access, regulatory exposure, architectural complexity, third-party dependencies." width="1608"><figcaption><b>FIG. 6</b>&nbsp; Materiality decides how much checking an AI use needs. Factors as listed by Godlove &amp; Buchanan (2026); FINMA (2024) asks for the same proportionality.</figcaption></figure>
+
+<p>Often the most material part of an AI answer is its qualifications. In one of my runs, the reviewer wrote that other parts of a report "may add mitigations". The final answer dropped that hedge and stated the conclusion flatly. This is a known pattern: in one study, AI summaries of scientific papers were nearly five times as likely as human-written ones to generalize beyond the source (Peters &amp; Chin-Yee, 2025). In finance we know it as the qualified audit opinion that becomes "the auditors signed off" by the time it reaches the board.</p>
+<figure class="post__figure"><img src="https://verdaca.com/blog/img/closing-books/fig-7.png" alt="Side-by-side quotes: the reviewer wrote that other parts of the report may add mitigations and that the bias likely favors the reported direction; the final answer states the evidence shows, and favoring the multi-agent arm." width="1608"><figcaption><b>FIG. 7</b>&nbsp; The material part of an answer is often its caveats. Reviewer vs final answer, verbatim from one of my runs.</figcaption></figure>
+
+<p><strong>Ask:</strong> which caveats in this output are material, and does the final answer keep them?</p>
+<h2>What I take from this</h2>
+<p>None of these four habits needs a new principle. Some need new tooling, such as a record of every AI run. The discipline is the one finance already has: reconcile, keep the trail, separate duties, and decide what matters.</p>
+<blockquote>
+<p>Governing AI is mostly that discipline applied to a new kind of preparer.</p>
+</blockquote>
+<p>The honest limitation: my evidence is one project of my own and three recorded runs of one question. It shows how these failures happen, not how often. FINMA says it will refine its expectations as its experience grows (FINMA, 2024). When it does, I will compare them with these four habits.</p>
+<h2 id="references">References</h2>
+<p>Amazon Web Services. (n.d.-a). <em>Data protection</em>. In <em>Amazon Bedrock user guide</em>. <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html">https://docs.aws.amazon.com/bedrock/latest/userguide/data-protection.html</a></p>
+<p>Amazon Web Services. (n.d.-b). <em>Detect and filter harmful content by using Amazon Bedrock Guardrails</em>. In <em>Amazon Bedrock user guide</em>. <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html">https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html</a></p>
+<p>Anthropic. (n.d.). <em>API and data retention</em>. Claude Platform Docs. <a href="https://platform.claude.com/docs/en/manage-claude/api-and-data-retention">https://platform.claude.com/docs/en/manage-claude/api-and-data-retention</a></p>
+<p>Board of Governors of the Federal Reserve System, Federal Deposit Insurance Corporation, &amp; Office of the Comptroller of the Currency. (2026, April 17). <em>Revised guidance on model risk management</em> (SR 26-2). Board of Governors of the Federal Reserve System. <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm">https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm</a></p>
+<p>European Union. (2026). <em>Regulation (EU) 2026/1744 of the European Parliament and of the Council of 8 July 2026 amending Regulations (EU) 2024/1689, (EU) 2018/1139 and (EU) 2023/1230 as regards the simplification of the implementation of harmonised rules on artificial intelligence (Digital Omnibus on AI)</em>. Official Journal of the European Union, L 2026/1744. <a href="https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng">https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng</a></p>
+<p>Executive Order No. 14365. (2025, December 11). <em>Ensuring a national policy framework for artificial intelligence</em>. Daily Compilation of Presidential Documents, DCPD-202501186. <a href="https://www.govinfo.gov/app/details/DCPD-202501186/">https://www.govinfo.gov/app/details/DCPD-202501186/</a></p>
+<p>FINMA. (2024, December 18). <em>Guidance 08/2024: Governance and risk management when using artificial intelligence</em>. Swiss Financial Market Supervisory Authority. <a href="https://www.finma.ch/en/news/2024/12/20241218-mm-finma-am-08-24/">https://www.finma.ch/en/news/2024/12/20241218-mm-finma-am-08-24/</a></p>
+<p>FINMA. (2025, April 24). <em>FINMA survey: Artificial intelligence gaining traction at Swiss financial institutions</em>. Swiss Financial Market Supervisory Authority. <a href="https://www.finma.ch/en/news/2025/04/20250424-mm-umfrage-ki/">https://www.finma.ch/en/news/2025/04/20250424-mm-umfrage-ki/</a></p>
+<p>Godlove, T., &amp; Buchanan, J. (2026). From model risk management to AI assurance: Integrating AI risk management, independent validation, and AI auditing for generative and agentic AI. <em>Transactions on Engineering and Computing Sciences, 14</em>(5), 19–62. <a href="https://doi.org/10.14738/tecs.1405.12205">https://doi.org/10.14738/tecs.1405.12205</a></p>
+<p>Google Cloud. (n.d.-a). <em>Claude at scale on Google Cloud: Frontier AI, built for enterprise production</em> [Blog post]. Google Cloud Blog. <a href="https://cloud.google.com/blog/products/ai-machine-learning/claude-at-scale-on-google-cloud-frontier-ai-built-for-enterprise-production">https://cloud.google.com/blog/products/ai-machine-learning/claude-at-scale-on-google-cloud-frontier-ai-built-for-enterprise-production</a></p>
+<p>Google Cloud. (n.d.-b). <em>Gemini Enterprise Agent Platform and zero data retention</em>. Google Cloud Documentation. <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/zero-data-retention">https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/zero-data-retention</a></p>
+<p>Martin-Boyle, A., Leckey, C. A. C., Brown, M. C., &amp; Kaur, H. (2026). PaperTrail: A claim-evidence interface for grounding provenance in LLM-based scholarly Q&amp;A. In <em>Proceedings of the 2026 CHI Conference on Human Factors in Computing Systems (CHI '26)</em>. ACM. <a href="https://doi.org/10.1145/3772318.3791101">https://doi.org/10.1145/3772318.3791101</a></p>
+<p>Microsoft. (2026). <em>Compare hosting options for Claude models in Microsoft Foundry</em>. Microsoft Learn. <a href="https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/claude-models-hosting-comparison">https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/claude-models-hosting-comparison</a></p>
+<p>Microsoft Azure. (2025). <em>Claude in Microsoft Foundry is now generally available</em> [Blog post]. Azure Blog. <a href="https://azure.microsoft.com/en-us/blog/claude-in-microsoft-foundry-is-now-generally-available/">https://azure.microsoft.com/en-us/blog/claude-in-microsoft-foundry-is-now-generally-available/</a></p>
+<p>Peters, U., &amp; Chin-Yee, B. (2025). Generalization bias in large language model summarization of scientific research. <em>Royal Society Open Science, 12</em>(4), 241776. <a href="https://doi.org/10.1098/rsos.241776">https://doi.org/10.1098/rsos.241776</a></p>
+<p>Popov, A. (2026, October 4). <em>I let AI agents build my governance engine. Here's what they didn't tell me.</em> Verdaca. <a href="https://verdaca.com/blog/i-let-ai-agents-build-my-governance-engine">https://verdaca.com/blog/i-let-ai-agents-build-my-governance-engine</a></p>
+<p>Swiss Federal Council. (2025, February 12). <em>AI regulation: Federal Council to ratify Council of Europe Convention</em> [Media release]. <a href="https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-104110.html">https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-104110.html</a></p>
+<p>Wang, J. J., &amp; Wang, V. X. (2025). <em>Assessing consistency and reproducibility in the outputs of large language models: Evidence across diverse finance and accounting tasks</em> [Working paper]. arXiv. <a href="https://doi.org/10.48550/arXiv.2503.16974">https://doi.org/10.48550/arXiv.2503.16974</a></p>
+<p>Yang, J., Hu, Z., Qiu, C., Deng, Z., Jiao, X., &amp; Zhou, T. (2026). <em>Quantifying and mitigating self-preference bias of LLM judges</em> (arXiv:2604.22891). arXiv. <a href="https://doi.org/10.48550/arXiv.2604.22891">https://doi.org/10.48550/arXiv.2604.22891</a></p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__wordmark-col">
+          <a href="../index.html" class="footer__wordmark type-marque-header" aria-label="Verdaca home">VERDACA</a>
+          <p class="footer__tagline type-caption">Structured deliberation. Verifiable outputs.</p>
+        </div>
+
+        <!-- About -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">ABOUT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../about.html" class="footer__link type-caption">Overview</a></li>
+          </ul>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">PRODUCT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../docs/index.html" class="footer__link type-caption">Overview</a></li>
+            <li class="footer__link-item"><a href="../docs/conceptual-model.html" class="footer__link type-caption">Concept</a></li>
+            <li class="footer__link-item"><a href="../docs/getting-started.html" class="footer__link type-caption">Build</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">LEGAL</p>
+          <ul class="footer__links">
+                                    <li class="footer__link-item"><a href="../index.html#suppliers-eyebrow" class="footer__link type-caption">Licenses</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <p class="footer__col-heading type-eyebrow">CONTACT</p>
+          <ul class="footer__links">
+            <li class="footer__link-item"><a href="../contact.html" class="footer__link type-caption">Reach out</a></li>
+          </ul>
+        </div>
+
+        <!-- Social -->
+        <div class="footer__social-row">
+          <a href="https://github.com/verdaca/VERDACA" class="footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Verdaca on GitHub">
+            <svg class="footer__social-icon" viewBox="0 0 24 24" width="20" height="20" fill="#1F2226" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span class="footer__social-label type-caption">GitHub</span>
+          </a>
+        </div>
+
+        <p class="footer__small-print type-caption">&copy; 2026 Verdaca. All rights reserved.</p>
+
+      </div>
+    </div>
+  </footer>
+
+
+</body>
+</html>
